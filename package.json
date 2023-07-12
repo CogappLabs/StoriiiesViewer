@@ -1,0 +1,33 @@
+{
+  "name": "storiiiesviewer",
+  "version": "0.1.0",
+  "description": "A viewer for Storiiies",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CogappLabs/StoriiiesViewer.git"
+  },
+  "contributors": [
+    {
+      "name": "Jon White",
+      "email": "jonw@cogapp.com"
+    }
+  ],
+  "keywords": [
+    "IIIF",
+    "OpenSeadragon",
+    "Storiiies",
+    "Cogapp",
+    "GLAM",
+    "Story telling"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "email": "storiiies@cogapp.com"
+  },
+  "homepage": "https://github.com/CogappLabs/StoriiiesViewer#readme"
+}
