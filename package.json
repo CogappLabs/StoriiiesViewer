@@ -2,6 +2,9 @@
   "name": "storiiiesviewer",
   "version": "0.1.0",
   "description": "A viewer for Storiiies",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
