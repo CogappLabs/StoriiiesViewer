@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
     "module": "esnext",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "strict": true,
-    "target": "es6"
+    "target": "es2020"
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]
