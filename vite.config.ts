@@ -10,4 +10,8 @@ export default defineConfig({
       formats: ["es"],
     },
   },
+  server: {
+    port: 43110,
+    strictPort: true,
+  },
 });
