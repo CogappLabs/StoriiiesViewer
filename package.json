@@ -15,14 +15,14 @@
   "scripts": {
     "build": "vite build",
     "cypress": "cypress run",
-    "cypress:dev": "cypress open",
+    "cypress:gui": "cypress open",
     "dev": "vite",
     "lint": "run-p lint:* prettier",
     "lint:scripts": "eslint --fix \"src/**/*.ts\"",
     "lint:styles": "stylelint --fix \"src/**/*.css\"",
     "prettier": "prettier -w \"src/**/*.(ts|css)\"",
     "test": "run-p dev cypress",
-    "test:dev": "run-p dev cypress:dev"
+    "test:gui": "run-p dev cypress:gui"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.0.0",
