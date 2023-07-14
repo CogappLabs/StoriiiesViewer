@@ -2,12 +2,11 @@
   "name": "storiiiesviewer",
   "version": "0.1.0",
   "description": "A viewer for Storiiies",
-  "type": "module",
   "exports": {
     "default": "./dist/index.js"
   },
   "files": [
-    "dist/index.js"
+    "dist"
   ],
   "engines": {
     "node": ">=18.0.0"
