@@ -21,8 +21,8 @@
     "lint:scripts": "eslint --fix \"src/**/*.ts\"",
     "lint:styles": "stylelint --fix \"src/**/*.css\"",
     "prettier": "prettier -w \"src/**/*.(ts|css)\"",
-    "test": "run-p dev cypress",
-    "test:gui": "run-p dev cypress:gui"
+    "test": "run-p -r dev cypress",
+    "test:gui": "run-p -r dev cypress:gui"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.0.0",
