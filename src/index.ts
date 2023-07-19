@@ -10,9 +10,9 @@ export default class StoriiiesViewer {
   private manifestUrl: string = "";
   public infoJson: string = "";
   public label: string | null = "";
-  public viewer: OpenSeadragon.Viewer | null = null;
-  public infoArea: HTMLElement | null = null;
   public instanceId: number;
+  public viewer!: OpenSeadragon.Viewer;
+  public infoArea!: HTMLElement;
 
   constructor(config: StoriiiesViewerConfig) {
     this.instanceId = document.querySelectorAll(".storiiies-viewer").length;
