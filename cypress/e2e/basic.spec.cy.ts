@@ -1,6 +1,6 @@
-describe("App rendering", () => {
+describe("Basic rendering", () => {
   beforeEach(() => {
-    cy.visit("/");
+    cy.visit("/basic.html");
   });
 
   it("Should render an Openseadragon viewer", () => {

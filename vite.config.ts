@@ -16,6 +16,7 @@ export default defineConfig({
       name: "StoriiiesViewer",
       formats: ["es", "umd"],
     },
+    copyPublicDir: false,
   },
   server: {
     port: 43110,
