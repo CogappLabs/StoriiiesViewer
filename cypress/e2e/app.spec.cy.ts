@@ -1,6 +1,13 @@
 describe("App rendering", () => {
-  it("Should display placeholder text", () => {
+  beforeEach(() => {
     cy.visit("/");
-    cy.contains("Storiiies Viewer goes here");
+  });
+
+  it("Should render an Openseadragon viewer", () => {
+    cy.get(".openseadragon-canvas");
+  });
+
+  it("Should initially display the label from the manifest", () => {
+    cy.contains("Test image");
   });
 });

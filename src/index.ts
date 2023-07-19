@@ -1,14 +1,14 @@
 import { loadManifest, Manifest } from "manifesto.js";
 import OpenSeadragon from "openseadragon";
 interface StoriiiesViewerConfig {
-  container: Element | HTMLElement | string;
+  container: Element | HTMLElement | string | null;
   manifestUrl: string;
 }
 
 export default class StoriiiesViewer {
   private containerEl: HTMLElement | null;
   private manifestUrl: string = "";
-  public infoJson: string | null = "";
+  public infoJson: string = "";
   public label: string | null = "";
   public viewer: OpenSeadragon.Viewer | null = null;
   public infoArea: HTMLElement | null = null;
@@ -46,12 +46,9 @@ export default class StoriiiesViewer {
 
     this.infoJson = manifest
       .getSequenceByIndex(0)
-      .getCanvases()[0]
-      .getImages()[0]
-      .getResource()
-      .getServices()[0]
-      .getInfoUri();
+      .getCanvasByIndex(0).imageServiceIds[0];
 
+    // Temporary styles to allow viewer to show
     if (this.containerEl) {
       this.containerEl.style.height = "80vh";
       this.containerEl.style.width = "80vw";

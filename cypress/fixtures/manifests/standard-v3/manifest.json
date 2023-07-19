@@ -1,0 +1,64 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://localhost:43110/manifests/standard-v3/manifest.json",
+  "type": "Manifest",
+  "label": {
+    "en": ["Test image"]
+  },
+  "items": [
+    {
+      "id": "http://localhost:43110/images/exact-tiles/canvas/p1",
+      "type": "Canvas",
+      "height": 2048,
+      "width": 2048,
+      "items": [
+        {
+          "id": "http://localhost:43110/images/exact-tiles/page/p1/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/images/exact-tiles/annotation/p0001-image",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "http://localhost:43110/images/exact-tiles/full/full/0/default.jpg",
+                "type": "Image",
+                "format": "image/jpeg",
+                "height": 2048,
+                "width": 2048,
+                "service": [
+                  {
+                    "id": "http://localhost:43110/images/exact-tiles/info.json",
+                    "profile": "level0",
+                    "type": "ImageService3"
+                  }
+                ]
+              },
+              "target": "http://localhost:43110/images/exact-tiles/canvas/p1"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:43110/page/p2/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/annotation/p0002-tag",
+              "type": "Annotation",
+              "motivation": "tagging",
+              "body": {
+                "type": "TextualBody",
+                "value": "This is an annotation",
+                "language": "en",
+                "format": "text/plain"
+              },
+              "target": "http://localhost:43110/canvas/p1#xywh=265,661,100,200"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

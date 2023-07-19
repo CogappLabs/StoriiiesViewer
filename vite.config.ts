@@ -21,4 +21,5 @@ export default defineConfig({
     port: 43110,
     strictPort: true,
   },
+  publicDir: resolve(__dirname, "cypress", "fixtures"),
 });
