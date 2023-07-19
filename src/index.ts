@@ -79,8 +79,8 @@ export default class StoriiiesViewer {
    */
   private insertInfoArea() {
     this.infoArea = document.createElement("div");
-    this.viewer?.element.insertAdjacentElement("afterend", this.infoArea);
-    this.infoArea.classList.add("info-area");
+    this.containerEl?.insertAdjacentElement("beforeend", this.infoArea);
+    this.infoArea.classList.add("storiiies-viewer__info-area");
     this.infoArea.innerText = this.label ?? "";
   }
 }
