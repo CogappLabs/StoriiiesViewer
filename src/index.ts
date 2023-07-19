@@ -28,6 +28,10 @@ export default class StoriiiesViewer {
 
     this.manifestUrl = config.manifestUrl;
 
+    if (!this.containerEl || !this.manifestUrl) {
+      throw new Error("Missing required config");
+    }
+
     this.initViewer().then(() => {
       this.insertInfoArea();
     });
