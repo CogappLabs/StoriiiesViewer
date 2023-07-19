@@ -52,12 +52,6 @@ export default class StoriiiesViewer {
       .getSequenceByIndex(0)
       .getCanvasByIndex(0).imageServiceIds[0];
 
-    // Temporary styles to allow viewer to show
-    if (this.containerEl) {
-      this.containerEl.style.height = "80vh";
-      this.containerEl.style.width = "80vw";
-    }
-
     this.viewer = OpenSeadragon({
       element: this.containerEl ?? undefined,
       tileSources: [this.infoJson],
@@ -72,7 +66,7 @@ export default class StoriiiesViewer {
     this.viewer.canvas.role = "application";
     this.viewer.element.insertAdjacentHTML(
       "afterbegin",
-      `<p style="display:none;" id="storiiies-viewer-${this.instanceId}-description">Drag with your mouse or the arrorw keys, and zoom with scroll or <kbd aria-label="plus">+</kbd> and <kbd aria-label="minus">-</kbd></p>`,
+      `<p class="storiiies-viewer__description" id="storiiies-viewer-${this.instanceId}-description">Drag with your mouse or the arrorw keys, and zoom with scroll or <kbd aria-label="plus">+</kbd> and <kbd aria-label="minus">-</kbd></p>`,
     );
     this.viewer.canvas.setAttribute(
       "aria-describedby",

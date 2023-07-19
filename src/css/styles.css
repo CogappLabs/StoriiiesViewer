@@ -1,4 +1,9 @@
-/* Placeholder file */
 .storiiies-viewer {
-  display: block;
+  /* Temporary styles to allow viewer to show */
+  width: 80vw;
+  height: 80vh;
+}
+
+.storiiies-viewer__description {
+  display: none;
 }
