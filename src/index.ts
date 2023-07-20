@@ -66,7 +66,7 @@ export default class StoriiiesViewer {
     this.viewer.canvas.role = "application";
     this.viewer.element.insertAdjacentHTML(
       "afterbegin",
-      `<p class="storiiies-viewer__description" id="storiiies-viewer-${this.instanceId}-description">Drag with your mouse or the arrorw keys, and zoom with scroll or <kbd aria-label="plus">+</kbd> and <kbd aria-label="minus">-</kbd></p>`,
+      `<p class="storiiies-viewer__description" id="storiiies-viewer-${this.instanceId}-description">Drag with your mouse or the arrow keys, and zoom with scroll or <kbd aria-label="plus">+</kbd> and <kbd aria-label="minus">-</kbd></p>`,
     );
     this.viewer.canvas.setAttribute(
       "aria-describedby",
