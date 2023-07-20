@@ -23,7 +23,12 @@
     "test": "run-p -r dev cypress",
     "test:gui": "run-p -r dev cypress:gui"
   },
+  "dependencies": {
+    "manifesto.js": "^4.2.17",
+    "openseadragon": "^4.1.0"
+  },
   "devDependencies": {
+    "@types/openseadragon": "^3.0.6",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "cypress": "^12.17.1",

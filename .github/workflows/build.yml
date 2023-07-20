@@ -57,7 +57,7 @@ jobs:
         env:
           PORT: 43110
         with:
-          config: "baseUrl=http://localhost:${{ env.PORT }}"
+          config: "baseUrl=http://localhost:${{ env.PORT }}/cypress/e2e/"
           start: "npx vite --port ${{ env.PORT }} --host"
           browser: chrome
           wait-on: "http://localhost:${{ env.PORT }}"

@@ -3,7 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="module" src="/src/demo.ts"></script>
+    <link rel="stylesheet" href="/src/css/styles.css" />
+    <script type="module">
+      import StoriiiesViewer from "/src/index.ts";
+      document.addEventListener("DOMContentLoaded", () => {
+        const container = document.querySelector("#viewer");
+
+        new StoriiiesViewer({
+          container,
+          manifestUrl:
+            "http://localhost:43110/manifests/standard-v3/manifest.json",
+        });
+      });
+    </script>
     <title>Demo</title>
   </head>
   <body>

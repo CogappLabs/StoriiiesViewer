@@ -16,9 +16,11 @@ export default defineConfig({
       name: "StoriiiesViewer",
       formats: ["es", "umd"],
     },
+    copyPublicDir: false,
   },
   server: {
     port: 43110,
     strictPort: true,
   },
+  publicDir: resolve(__dirname, "cypress", "fixtures"),
 });
