@@ -1,20 +1,23 @@
-import { loadManifest, Manifest } from "manifesto.js";
+import { loadManifest, Manifest, Canvas, AnnotationPage } from "manifesto.js";
 import OpenSeadragon from "openseadragon";
-interface StoriiiesViewerConfig {
+interface IStoriiiesViewerConfig {
   container: Element | HTMLElement | string | null;
   manifestUrl: string;
 }
 
 export default class StoriiiesViewer {
   private containerEl: HTMLElement | null;
-  private manifestUrl: string = "";
-  public infoJson: string = "";
-  public label: string | null = "";
+  private manifestUrl: string;
+  public manifest!: Manifest;
+  public label: string = "";
+  public canvases!: Canvas[];
+  public activeAnnotation: number = -1;
+  public annotationPages: AnnotationPage[] = [];
   public instanceId: number;
   public viewer!: OpenSeadragon.Viewer;
   public infoArea!: HTMLElement;
 
-  constructor(config: StoriiiesViewerConfig) {
+  constructor(config: IStoriiiesViewerConfig) {
     this.instanceId = document.querySelectorAll(".storiiies-viewer").length;
 
     // Normalise the config container
@@ -32,29 +35,39 @@ export default class StoriiiesViewer {
       throw new Error("Missing required config");
     }
 
-    this.initViewer().then(() => {
+    this.initManifest().then(() => {
+      this.initViewer();
       this.insertInfoArea();
     });
   }
 
   /**
-   * Initialize the viewer
+   * Load the manifest and extract the label, canvases and annotation pages
    */
-  private async initViewer() {
+  private async initManifest() {
     const rawManifest = await loadManifest(this.manifestUrl);
-    const manifest = new Manifest(rawManifest);
+    this.manifest = new Manifest(rawManifest);
 
     this.containerEl?.classList.add("storiiies-viewer");
 
-    this.label = manifest.getLabel().getValue();
+    this.label = this.manifest.getLabel().getValue() || "";
 
-    this.infoJson = manifest
-      .getSequenceByIndex(0)
-      .getCanvasByIndex(0).imageServiceIds[0];
+    // In lieu of a label, set the active annotation to 0 to show the first annotation
+    if (!this.label) {
+      this.activeAnnotation = 0;
+    }
 
+    this.canvases = this.manifest.getSequenceByIndex(0).getCanvases();
+    this.annotationPages = this.getAnnotationPages();
+  }
+
+  /**
+   * Initialize the viewer
+   */
+  private initViewer() {
     this.viewer = OpenSeadragon({
       element: this.containerEl ?? undefined,
-      tileSources: [this.infoJson],
+      tileSources: [this.canvases[0].imageServiceIds[0]],
       crossOriginPolicy: "Anonymous",
       showSequenceControl: false,
       showHomeControl: false,
@@ -82,5 +95,29 @@ export default class StoriiiesViewer {
     this.containerEl?.insertAdjacentElement("beforeend", this.infoArea);
     this.infoArea.classList.add("storiiies-viewer__info-area");
     this.infoArea.innerText = this.label ?? "";
+  }
+
+  /**
+   * Retrieves the annotationPages for the manifest
+   * (Temporary solution)
+   */
+  public getAnnotationPages(): Array<AnnotationPage> {
+    const annotationPages: Array<AnnotationPage> = [];
+
+    if (this.canvases.length) {
+      this.canvases.forEach((canvas) => {
+        const annotations: Array<unknown> | undefined =
+          canvas.getProperty("annotations");
+        if (annotations) {
+          annotationPages.push(
+            ...annotations.map((annotationPage) => {
+              return new AnnotationPage(annotationPage, this.manifest.options);
+            }),
+          );
+        }
+        return [];
+      });
+    }
+    return annotationPages;
   }
 }
