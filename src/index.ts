@@ -1,10 +1,4 @@
-import {
-  loadManifest,
-  Manifest,
-  Canvas,
-  AnnotationPage,
-  Annotation,
-} from "manifesto.js";
+import { loadManifest, Manifest, Canvas, AnnotationPage } from "manifesto.js";
 import OpenSeadragon from "openseadragon";
 interface IStoriiiesViewerConfig {
   container: Element | HTMLElement | string | null;
@@ -14,13 +8,13 @@ interface IStoriiiesViewerConfig {
 export default class StoriiiesViewer {
   private containerEl: HTMLElement | null;
   private manifestUrl: string;
+  private _activeAnnotationIndex: number = -1;
+  private _activeCanvasIndex: number = 0;
   public manifest!: Manifest;
   public label: string = "";
   public canvases!: Canvas[];
-  public activeCanvasIndex: number = 0;
   public annotationPages: AnnotationPage[] = [];
   public activeCanvasAnnotations: Array<{ body: { value: string } }> = [];
-  private _activeAnnotationIndex: number = -1;
   public instanceId: number;
   public viewer!: OpenSeadragon.Viewer;
   public infoArea!: HTMLElement;
@@ -96,11 +90,20 @@ export default class StoriiiesViewer {
     );
   }
 
+  /**
+   * Set the active annotation index and perform any necessary updates
+   */
   set activeAnnotationIndex(index: number) {
-    this._activeAnnotationIndex = index;
     const textEl = this.infoArea?.querySelector(
       ".storiiies-viewer__info-text",
     ) as HTMLElement;
+
+    const lowerBound = this.label ? -1 : 0;
+    const upperBound = this.activeCanvasAnnotations.length - 1;
+
+    if (index < lowerBound || index > upperBound) return;
+
+    this._activeAnnotationIndex = index;
 
     if (textEl) {
       if (this._activeAnnotationIndex >= 0) {
@@ -108,16 +111,6 @@ export default class StoriiiesViewer {
       } else {
         textEl.innerText = this.label;
       }
-    }
-  }
-
-  // TODO: Replace with setter
-  public setActiveAnnotation(index: number) {
-    const lowerBound = this.label ? -1 : 0;
-    const upperBound = this.activeCanvasAnnotations.length - 1;
-
-    if (index >= lowerBound && index <= upperBound) {
-      this.activeAnnotationIndex = index;
     }
   }
 
@@ -137,9 +130,9 @@ export default class StoriiiesViewer {
     [prevButton, nextButton].forEach((button) => {
       button.addEventListener("click", (e) => {
         if ((e.target as HTMLButtonElement).innerText === "Previous") {
-          this.setActiveAnnotation(this._activeAnnotationIndex - 1);
+          this.activeAnnotationIndex = this._activeAnnotationIndex - 1;
         } else {
-          this.setActiveAnnotation(this._activeAnnotationIndex + 1);
+          this.activeAnnotationIndex = this._activeAnnotationIndex + 1;
         }
       });
     });
@@ -159,6 +152,8 @@ export default class StoriiiesViewer {
   /**
    * Retrieves the annotationPages for the manifest
    * TODO: Annotations aren't constructed as Annotation type
+   * TODO: AnnotationBody isn't constructed as AnnotationBody type
+   * TODO: When refactoring this we might either need to define temporary types for the raw data or allow use of "any" types
    * (Temporary solution)
    */
   public getAnnotationPages(): Array<AnnotationPage> {
@@ -186,6 +181,6 @@ export default class StoriiiesViewer {
    */
   // TODO: Return Annotation type
   public getActiveCanvasAnnotations(): Array<{ body: { value: string } }> {
-    return this.annotationPages[this.activeCanvasIndex].__jsonld.items;
+    return this.annotationPages[this._activeCanvasIndex].__jsonld.items;
   }
 }
