@@ -1,4 +1,10 @@
-import { loadManifest, Manifest, Canvas, AnnotationPage } from "manifesto.js";
+import {
+  loadManifest,
+  Manifest,
+  Canvas,
+  AnnotationPage,
+  Annotation,
+} from "manifesto.js";
 import OpenSeadragon from "openseadragon";
 interface IStoriiiesViewerConfig {
   container: Element | HTMLElement | string | null;
@@ -11,8 +17,10 @@ export default class StoriiiesViewer {
   public manifest!: Manifest;
   public label: string = "";
   public canvases!: Canvas[];
-  public activeAnnotation: number = -1;
+  public activeCanvasIndex: number = 0;
   public annotationPages: AnnotationPage[] = [];
+  public activeCanvasAnnotations: Array<Annotation> = [];
+  public activeAnnotationIndex: number = -1;
   public instanceId: number;
   public viewer!: OpenSeadragon.Viewer;
   public infoArea!: HTMLElement;
@@ -54,11 +62,12 @@ export default class StoriiiesViewer {
 
     // In lieu of a label, set the active annotation to 0 to show the first annotation
     if (!this.label) {
-      this.activeAnnotation = 0;
+      this.activeAnnotationIndex = 0;
     }
 
     this.canvases = this.manifest.getSequenceByIndex(0).getCanvases();
     this.annotationPages = this.getAnnotationPages();
+    this.activeCanvasAnnotations = this.getActiveCanvasAnnotations();
   }
 
   /**
@@ -87,14 +96,45 @@ export default class StoriiiesViewer {
     );
   }
 
+  // TODO: Replace with setter
+  public setActiveAnnotation(index: number) {
+    const lowerBound = this.label ? -1 : 0;
+    const upperBound = this.activeCanvasAnnotations.length - 1;
+
+    if (index >= lowerBound && index <= upperBound) {
+      this.activeAnnotationIndex = index;
+    }
+  }
+
   /**
    * Create area for label, annotations and controls
    */
   private insertInfoArea() {
-    this.infoArea = document.createElement("div");
-    this.containerEl?.insertAdjacentElement("beforeend", this.infoArea);
-    this.infoArea.classList.add("storiiies-viewer__info-area");
-    this.infoArea.innerText = this.label ?? "";
+    const infoArea = document.createElement("div");
+    const prevButton = document.createElement("button");
+    prevButton.classList.add("storiiies-viewer__nav-button");
+    prevButton.innerText = "Previous";
+
+    const nextButton = prevButton.cloneNode() as HTMLButtonElement;
+    nextButton.innerText = "Next";
+
+    [prevButton, nextButton].forEach((button) => {
+      button.addEventListener("click", (e) => {
+        if ((e.target as HTMLButtonElement).innerText === "Previous") {
+          this.setActiveAnnotation(this.activeAnnotationIndex - 1);
+        } else {
+          this.setActiveAnnotation(this.activeAnnotationIndex + 1);
+        }
+      });
+    });
+
+    infoArea.insertAdjacentHTML("beforeend", `<p>${this.label}</p>`);
+    infoArea.append(prevButton, nextButton);
+
+    this.containerEl?.insertAdjacentElement("beforeend", infoArea);
+    infoArea.classList.add("storiiies-viewer__info-area");
+
+    this.infoArea = infoArea;
   }
 
   /**
@@ -119,5 +159,12 @@ export default class StoriiiesViewer {
       });
     }
     return annotationPages;
+  }
+
+  /**
+   * Get the annotations for the current canvas
+   */
+  public getActiveCanvasAnnotations(): Array<Annotation> {
+    return this.annotationPages[this.activeCanvasIndex].getItems();
   }
 }
