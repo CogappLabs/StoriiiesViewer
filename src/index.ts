@@ -19,8 +19,8 @@ export default class StoriiiesViewer {
   public canvases!: Canvas[];
   public activeCanvasIndex: number = 0;
   public annotationPages: AnnotationPage[] = [];
-  public activeCanvasAnnotations: Array<Annotation> = [];
-  public activeAnnotationIndex: number = -1;
+  public activeCanvasAnnotations: Array<{ body: { value: string } }> = [];
+  private _activeAnnotationIndex: number = -1;
   public instanceId: number;
   public viewer!: OpenSeadragon.Viewer;
   public infoArea!: HTMLElement;
@@ -96,6 +96,21 @@ export default class StoriiiesViewer {
     );
   }
 
+  set activeAnnotationIndex(index: number) {
+    this._activeAnnotationIndex = index;
+    const textEl = this.infoArea?.querySelector(
+      ".storiiies-viewer__info-text",
+    ) as HTMLElement;
+
+    if (textEl) {
+      if (this._activeAnnotationIndex >= 0) {
+        textEl.innerText = this.activeCanvasAnnotations[index]["body"]["value"];
+      } else {
+        textEl.innerText = this.label;
+      }
+    }
+  }
+
   // TODO: Replace with setter
   public setActiveAnnotation(index: number) {
     const lowerBound = this.label ? -1 : 0;
@@ -115,20 +130,24 @@ export default class StoriiiesViewer {
     prevButton.classList.add("storiiies-viewer__nav-button");
     prevButton.innerText = "Previous";
 
+    // TODO: At least re-look at how I'm doing this
     const nextButton = prevButton.cloneNode() as HTMLButtonElement;
     nextButton.innerText = "Next";
 
     [prevButton, nextButton].forEach((button) => {
       button.addEventListener("click", (e) => {
         if ((e.target as HTMLButtonElement).innerText === "Previous") {
-          this.setActiveAnnotation(this.activeAnnotationIndex - 1);
+          this.setActiveAnnotation(this._activeAnnotationIndex - 1);
         } else {
-          this.setActiveAnnotation(this.activeAnnotationIndex + 1);
+          this.setActiveAnnotation(this._activeAnnotationIndex + 1);
         }
       });
     });
 
-    infoArea.insertAdjacentHTML("beforeend", `<p>${this.label}</p>`);
+    infoArea.insertAdjacentHTML(
+      "beforeend",
+      `<p class="storiiies-viewer__info-text">${this.label}</p>`,
+    );
     infoArea.append(prevButton, nextButton);
 
     this.containerEl?.insertAdjacentElement("beforeend", infoArea);
@@ -139,6 +158,7 @@ export default class StoriiiesViewer {
 
   /**
    * Retrieves the annotationPages for the manifest
+   * TODO: Annotations aren't constructed as Annotation type
    * (Temporary solution)
    */
   public getAnnotationPages(): Array<AnnotationPage> {
@@ -164,7 +184,8 @@ export default class StoriiiesViewer {
   /**
    * Get the annotations for the current canvas
    */
-  public getActiveCanvasAnnotations(): Array<Annotation> {
-    return this.annotationPages[this.activeCanvasIndex].getItems();
+  // TODO: Return Annotation type
+  public getActiveCanvasAnnotations(): Array<{ body: { value: string } }> {
+    return this.annotationPages[this.activeCanvasIndex].__jsonld.items;
   }
 }
