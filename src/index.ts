@@ -211,4 +211,19 @@ export default class StoriiiesViewer {
   public getActiveCanvasAnnotations(): Array<{ body: { value: string } }> {
     return this.annotationPages[this._activeCanvasIndex].__jsonld.items;
   }
+
+  /**
+   * Get the region from the URL
+   */
+  public getRegion(url?: string): OpenSeadragon.Rect | null {
+    const regex = /#xywh=(\d+),(\d+),(\d+),(\d+)/;
+    const match = url?.match(regex);
+
+    if (match) {
+      const [, x, y, w, h] = match.map(Number);
+      return this.viewer.viewport.imageToViewportRectangle(x, y, w, h);
+    }
+
+    return null;
+  }
 }
