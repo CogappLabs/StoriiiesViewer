@@ -5,8 +5,13 @@ interface IStoriiiesViewerConfig {
   manifestUrl: string;
 }
 
+type ControlButtons = {
+  prev: HTMLButtonElement;
+  next: HTMLButtonElement;
+};
+
 export default class StoriiiesViewer {
-  private containerEl: HTMLElement | null;
+  private containerElement: HTMLElement | null;
   private manifestUrl: string;
   private _activeAnnotationIndex: number = -1;
   private _activeCanvasIndex: number = 0;
@@ -17,25 +22,29 @@ export default class StoriiiesViewer {
   public activeCanvasAnnotations: Array<{ body: { value: string } }> = [];
   public instanceId: number;
   public viewer!: OpenSeadragon.Viewer;
-  public infoArea!: HTMLElement;
+  public infoAreaElement!: HTMLElement;
+  public infoTextElement!: HTMLElement;
+  public controlButtonElements!: ControlButtons;
 
   constructor(config: IStoriiiesViewerConfig) {
     this.instanceId = document.querySelectorAll(".storiiies-viewer").length;
 
     // Normalise the config container
     if (typeof config.container === "string") {
-      this.containerEl = document.querySelector(config.container);
+      this.containerElement = document.querySelector(config.container);
     } else {
       // Minor wrinkle around if the container is an Element or HTMLElement
       // It should be safe to cast it to HTMLElement
-      this.containerEl = config.container as HTMLElement;
+      this.containerElement = config.container as HTMLElement;
     }
 
     this.manifestUrl = config.manifestUrl;
 
-    if (!this.containerEl || !this.manifestUrl) {
+    if (!this.containerElement || !this.manifestUrl) {
       throw new Error("Missing required config");
     }
+
+    this.containerElement?.classList.add("storiiies-viewer");
 
     this.initManifest().then(() => {
       this.initViewer();
@@ -49,8 +58,6 @@ export default class StoriiiesViewer {
   private async initManifest() {
     const rawManifest = await loadManifest(this.manifestUrl);
     this.manifest = new Manifest(rawManifest);
-
-    this.containerEl?.classList.add("storiiies-viewer");
 
     this.label = this.manifest.getLabel().getValue() || "";
 
@@ -69,8 +76,8 @@ export default class StoriiiesViewer {
    */
   private initViewer() {
     this.viewer = OpenSeadragon({
-      element: this.containerEl ?? undefined,
-      tileSources: [this.canvases[0].imageServiceIds[0]],
+      element: this.containerElement ?? undefined,
+      tileSources: [this.canvases[this._activeCanvasIndex].imageServiceIds[0]],
       crossOriginPolicy: "Anonymous",
       showSequenceControl: false,
       showHomeControl: false,
@@ -94,10 +101,6 @@ export default class StoriiiesViewer {
    * Set the active annotation index and perform any necessary updates
    */
   set activeAnnotationIndex(index: number) {
-    const textEl = this.infoArea?.querySelector(
-      ".storiiies-viewer__info-text",
-    ) as HTMLElement;
-
     const lowerBound = this.label ? -1 : 0;
     const upperBound = this.activeCanvasAnnotations.length - 1;
 
@@ -105,11 +108,12 @@ export default class StoriiiesViewer {
 
     this._activeAnnotationIndex = index;
 
-    if (textEl) {
+    if (this.infoTextElement) {
       if (this._activeAnnotationIndex >= 0) {
-        textEl.innerText = this.activeCanvasAnnotations[index]["body"]["value"];
+        this.infoTextElement.innerText =
+          this.activeCanvasAnnotations[index]["body"]["value"];
       } else {
-        textEl.innerText = this.label;
+        this.infoTextElement.innerText = this.label;
       }
     }
   }
@@ -118,16 +122,17 @@ export default class StoriiiesViewer {
    * Create area for label, annotations and controls
    */
   private insertInfoArea() {
-    const infoArea = document.createElement("div");
-    const prevButton = document.createElement("button");
-    prevButton.classList.add("storiiies-viewer__nav-button");
-    prevButton.innerText = "Previous";
+    const infoAreaEl = document.createElement("div");
+    const prevButtonEl = document.createElement("button");
+    const infoTextEl = document.createElement("p");
+    prevButtonEl.classList.add("storiiies-viewer__nav-button");
+    prevButtonEl.innerText = "Previous";
 
     // TODO: At least re-look at how I'm doing this
-    const nextButton = prevButton.cloneNode() as HTMLButtonElement;
-    nextButton.innerText = "Next";
+    const nextButtonEl = prevButtonEl.cloneNode() as HTMLButtonElement;
+    nextButtonEl.innerText = "Next";
 
-    [prevButton, nextButton].forEach((button) => {
+    [prevButtonEl, nextButtonEl].forEach((button) => {
       button.addEventListener("click", (e) => {
         if ((e.target as HTMLButtonElement).innerText === "Previous") {
           this.activeAnnotationIndex = this._activeAnnotationIndex - 1;
@@ -137,16 +142,21 @@ export default class StoriiiesViewer {
       });
     });
 
-    infoArea.insertAdjacentHTML(
-      "beforeend",
-      `<p class="storiiies-viewer__info-text">${this.label}</p>`,
-    );
-    infoArea.append(prevButton, nextButton);
+    infoTextEl.classList.add("storiiies-viewer__info-text");
+    infoTextEl.innerText = this.label;
+    infoAreaEl.insertAdjacentElement("beforeend", infoTextEl);
 
-    this.containerEl?.insertAdjacentElement("beforeend", infoArea);
-    infoArea.classList.add("storiiies-viewer__info-area");
+    infoAreaEl.append(prevButtonEl, nextButtonEl);
 
-    this.infoArea = infoArea;
+    this.containerElement?.insertAdjacentElement("beforeend", infoAreaEl);
+    infoAreaEl.classList.add("storiiies-viewer__info-area");
+
+    this.infoAreaElement = infoAreaEl;
+    this.infoTextElement = infoTextEl;
+    this.controlButtonElements = {
+      prev: prevButtonEl,
+      next: nextButtonEl,
+    };
   }
 
   /**
