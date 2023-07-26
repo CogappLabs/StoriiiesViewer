@@ -43,12 +43,13 @@ export default class StoriiiesViewer {
   private _activeAnnotationIndex: number = -1;
   private _activeCanvasIndex: number = 0;
   private annotationIndexFloor: number = -1;
+  private prefersReducedMotion!: boolean;
+  private instanceId: number;
   public manifest!: Manifest;
   public label: string = "";
   public canvases!: Canvas[];
   public annotationPages: AnnotationPage[] = [];
   public activeCanvasAnnotations: Array<Annotation> = [];
-  public instanceId: number;
   public viewer!: OpenSeadragon.Viewer;
   public infoAreaElement!: HTMLElement;
   public infoTextElement!: HTMLElement;
@@ -56,6 +57,10 @@ export default class StoriiiesViewer {
 
   constructor(config: IStoriiiesViewerConfig) {
     this.instanceId = document.querySelectorAll(".storiiies-viewer").length;
+
+    this.prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     // Normalise the config container
     if (typeof config.container === "string") {
@@ -135,7 +140,7 @@ export default class StoriiiesViewer {
       this.label &&
       this.activeAnnotationIndex === this.annotationIndexFloor
     ) {
-      this.viewer.viewport.goHome();
+      this.viewer.viewport.goHome(this.prefersReducedMotion);
       return;
     }
 
@@ -146,9 +151,12 @@ export default class StoriiiesViewer {
     const region = this.getRegion(target);
 
     if (region) {
-      this.viewer.viewport.fitBoundsWithConstraints(region);
+      this.viewer.viewport.fitBoundsWithConstraints(
+        region,
+        this.prefersReducedMotion,
+      );
     } else {
-      this.viewer.viewport.goHome();
+      this.viewer.viewport.goHome(this.prefersReducedMotion);
     }
   }
 
