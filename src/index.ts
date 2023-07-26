@@ -48,7 +48,7 @@ export default class StoriiiesViewer {
 
     this.initManifest().then(() => {
       this.initViewer();
-      this.insertInfoArea();
+      this.insertInfoAndControls();
     });
   }
 
@@ -101,13 +101,30 @@ export default class StoriiiesViewer {
    * Set the active annotation index and perform any necessary updates
    */
   set activeAnnotationIndex(index: number) {
+    // Lower bound can only be -1 if there is a label
     const lowerBound = this.label ? -1 : 0;
     const upperBound = this.activeCanvasAnnotations.length - 1;
 
+    // Ignore out of bounds values
     if (index < lowerBound || index > upperBound) return;
 
     this._activeAnnotationIndex = index;
 
+    // Reset button states
+    this.controlButtonElements.prev.disabled = false;
+    this.controlButtonElements.next.disabled = false;
+
+    // Disable buttons
+    switch (index) {
+      case lowerBound:
+        this.controlButtonElements.prev.disabled = true;
+        break;
+      case upperBound:
+        this.controlButtonElements.next.disabled = true;
+        break;
+    }
+
+    // Info text to be label or annotation
     if (this.infoTextElement) {
       if (this._activeAnnotationIndex >= 0) {
         this.infoTextElement.innerText =
@@ -121,16 +138,17 @@ export default class StoriiiesViewer {
   /**
    * Create area for label, annotations and controls
    */
-  private insertInfoArea() {
+  private insertInfoAndControls() {
     const infoAreaEl = document.createElement("div");
     const prevButtonEl = document.createElement("button");
     const infoTextEl = document.createElement("p");
     prevButtonEl.classList.add("storiiies-viewer__nav-button");
     prevButtonEl.innerText = "Previous";
+    prevButtonEl.disabled = true;
 
-    // TODO: At least re-look at how I'm doing this
     const nextButtonEl = prevButtonEl.cloneNode() as HTMLButtonElement;
     nextButtonEl.innerText = "Next";
+    nextButtonEl.disabled = false;
 
     [prevButtonEl, nextButtonEl].forEach((button) => {
       button.addEventListener("click", (e) => {
