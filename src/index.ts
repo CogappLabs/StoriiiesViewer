@@ -42,6 +42,7 @@ export default class StoriiiesViewer {
   private manifestUrl: string;
   private _activeAnnotationIndex: number = -1;
   private _activeCanvasIndex: number = 0;
+  private annotationIndexFloor: number = -1;
   public manifest!: Manifest;
   public label: string = "";
   public canvases!: Canvas[];
@@ -91,6 +92,7 @@ export default class StoriiiesViewer {
     // In lieu of a label, set the active annotation to 0 to show the first annotation
     if (!this.label) {
       this.activeAnnotationIndex = 0;
+      this.annotationIndexFloor = 0;
     }
 
     this.canvases = this.manifest.getSequenceByIndex(0).getCanvases();
@@ -104,7 +106,7 @@ export default class StoriiiesViewer {
   private initViewer() {
     this.viewer = OpenSeadragon({
       element: this.containerElement ?? undefined,
-      tileSources: [this.canvases[this._activeCanvasIndex].imageServiceIds[0]],
+      tileSources: [this.canvases[this.activeCanvasIndex].imageServiceIds[0]],
       crossOriginPolicy: "Anonymous",
       showSequenceControl: false,
       showHomeControl: false,
@@ -124,15 +126,22 @@ export default class StoriiiesViewer {
     );
   }
 
+  /**
+   * Update the viewer
+   */
   private updateViewer() {
-    if (this._activeAnnotationIndex === -1) {
+    // Show whole image when showing the label
+    if (
+      this.label &&
+      this.activeAnnotationIndex === this.annotationIndexFloor
+    ) {
       this.viewer.viewport.goHome();
       return;
     }
 
     const target =
       this.getActiveCanvasAnnotations()[
-        this._activeAnnotationIndex
+        this.activeAnnotationIndex
       ].getTarget() || "";
     const region = this.getRegion(target);
 
@@ -144,11 +153,33 @@ export default class StoriiiesViewer {
   }
 
   /**
+   * Get the active canvas index
+   */
+  get activeCanvasIndex(): number {
+    return this._activeCanvasIndex;
+  }
+
+  /**
+   * Set the active canvas index and perform any necessary updates
+   */
+  set activeCanvasIndex(index: number) {
+    this._activeCanvasIndex = index;
+    this.activeAnnotationIndex = this.annotationIndexFloor;
+  }
+
+  /**
+   * Get the active annotation index
+   */
+  get activeAnnotationIndex(): number {
+    return this._activeAnnotationIndex;
+  }
+
+  /**
    * Set the active annotation index and perform any necessary updates
    */
   set activeAnnotationIndex(index: number) {
     // Lower bound can only be -1 if there is a label
-    const lowerBound = this.label ? -1 : 0;
+    const lowerBound = this.annotationIndexFloor;
     const upperBound = this.activeCanvasAnnotations.length - 1;
 
     // Ignore out of bounds values
@@ -172,7 +203,8 @@ export default class StoriiiesViewer {
 
     // Info text to be label or annotation
     if (this.infoTextElement) {
-      if (this._activeAnnotationIndex >= 0) {
+      if (this.activeAnnotationIndex >= 0) {
+        // Have to use getProperty here as there is no getValue() method
         this.infoTextElement.innerText = this.activeCanvasAnnotations[index]
           .getBody()[0]
           .getProperty("value");
@@ -202,9 +234,9 @@ export default class StoriiiesViewer {
     [prevButtonEl, nextButtonEl].forEach((button) => {
       button.addEventListener("click", (e) => {
         if ((e.target as HTMLButtonElement).innerText === "Previous") {
-          this.activeAnnotationIndex = this._activeAnnotationIndex - 1;
+          this.activeAnnotationIndex = this.activeAnnotationIndex - 1;
         } else {
-          this.activeAnnotationIndex = this._activeAnnotationIndex + 1;
+          this.activeAnnotationIndex = this.activeAnnotationIndex + 1;
         }
       });
     });
@@ -267,7 +299,7 @@ export default class StoriiiesViewer {
    * Get the annotations for the current canvas
    */
   public getActiveCanvasAnnotations(): Array<Annotation> {
-    return this.annotationPages[this._activeCanvasIndex].getItems();
+    return this.annotationPages[this.activeCanvasIndex].getItems();
   }
 
   /**
