@@ -1,4 +1,10 @@
-import { loadManifest, Manifest, Canvas, AnnotationPage } from "manifesto.js";
+import {
+  loadManifest,
+  Manifest,
+  Canvas,
+  AnnotationPage,
+  Annotation,
+} from "manifesto.js";
 import OpenSeadragon from "openseadragon";
 interface IStoriiiesViewerConfig {
   container: Element | HTMLElement | string | null;
@@ -10,6 +16,27 @@ type ControlButtons = {
   next: HTMLButtonElement;
 };
 
+type RawAnnotationPage = {
+  id: string;
+  type: string;
+  items: Array<RawAnnotation>;
+};
+
+type RawAnnotation = {
+  id: string;
+  type: string;
+  motivation: string;
+  body: RawAnnotationBody;
+  target: string;
+};
+
+type RawAnnotationBody = {
+  type: string;
+  value: string;
+  language: string;
+  format: string;
+};
+
 export default class StoriiiesViewer {
   private containerElement: HTMLElement | null;
   private manifestUrl: string;
@@ -19,7 +46,7 @@ export default class StoriiiesViewer {
   public label: string = "";
   public canvases!: Canvas[];
   public annotationPages: AnnotationPage[] = [];
-  public activeCanvasAnnotations: Array<{ body: { value: string } }> = [];
+  public activeCanvasAnnotations: Array<Annotation> = [];
   public instanceId: number;
   public viewer!: OpenSeadragon.Viewer;
   public infoAreaElement!: HTMLElement;
@@ -104,7 +131,9 @@ export default class StoriiiesViewer {
     }
 
     const target =
-      this.getActiveCanvasAnnotations()[this._activeAnnotationIndex].target;
+      this.getActiveCanvasAnnotations()[
+        this._activeAnnotationIndex
+      ].getTarget() || "";
     const region = this.getRegion(target);
 
     if (region) {
@@ -144,8 +173,9 @@ export default class StoriiiesViewer {
     // Info text to be label or annotation
     if (this.infoTextElement) {
       if (this._activeAnnotationIndex >= 0) {
-        this.infoTextElement.innerText =
-          this.activeCanvasAnnotations[index]["body"]["value"];
+        this.infoTextElement.innerText = this.activeCanvasAnnotations[index]
+          .getBody()[0]
+          .getProperty("value");
       } else {
         this.infoTextElement.innerText = this.label;
       }
@@ -198,9 +228,6 @@ export default class StoriiiesViewer {
 
   /**
    * Retrieves the annotationPages for the manifest
-   * TODO: Annotations aren't constructed as Annotation type
-   * TODO: AnnotationBody isn't constructed as AnnotationBody type
-   * TODO: When refactoring this we might either need to define temporary types for the raw data or allow use of "any" types
    * (Temporary solution)
    */
   public getAnnotationPages(): Array<AnnotationPage> {
@@ -208,15 +235,28 @@ export default class StoriiiesViewer {
 
     if (this.canvases.length) {
       this.canvases.forEach((canvas) => {
-        const annotations: Array<unknown> | undefined =
-          canvas.getProperty("annotations");
-        if (annotations) {
-          annotationPages.push(
-            ...annotations.map((annotationPage) => {
-              return new AnnotationPage(annotationPage, this.manifest.options);
-            }),
-          );
-        }
+        // "getProperty" ejects and results in raw JSON
+        // We need to instantiate each level with the appropriate constructor
+        const rawAnnotationPages: Array<RawAnnotationPage> =
+          canvas.getProperty("annotations") || [];
+
+        annotationPages.push(
+          ...rawAnnotationPages.map((rawAnnotationPage) => {
+            const rawAnnotations: Array<RawAnnotation> | undefined =
+              rawAnnotationPage.items;
+
+            return new AnnotationPage(
+              {
+                ...rawAnnotationPage,
+                items: rawAnnotations.map((rawAnnotation) => {
+                  return new Annotation(rawAnnotation, this.manifest.options);
+                }),
+                type: rawAnnotationPage.type,
+              },
+              this.manifest.options,
+            );
+          }),
+        );
         return [];
       });
     }
@@ -226,12 +266,8 @@ export default class StoriiiesViewer {
   /**
    * Get the annotations for the current canvas
    */
-  // TODO: Return Annotation type
-  public getActiveCanvasAnnotations(): Array<{
-    body: { value: string };
-    target: string;
-  }> {
-    return this.annotationPages[this._activeCanvasIndex].__jsonld.items;
+  public getActiveCanvasAnnotations(): Array<Annotation> {
+    return this.annotationPages[this._activeCanvasIndex].getItems();
   }
 
   /**
