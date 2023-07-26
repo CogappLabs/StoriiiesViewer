@@ -97,6 +97,23 @@ export default class StoriiiesViewer {
     );
   }
 
+  private updateViewer() {
+    if (this._activeAnnotationIndex === -1) {
+      this.viewer.viewport.goHome();
+      return;
+    }
+
+    const target =
+      this.getActiveCanvasAnnotations()[this._activeAnnotationIndex].target;
+    const region = this.getRegion(target);
+
+    if (region) {
+      this.viewer.viewport.fitBoundsWithConstraints(region);
+    } else {
+      this.viewer.viewport.goHome();
+    }
+  }
+
   /**
    * Set the active annotation index and perform any necessary updates
    */
@@ -133,6 +150,8 @@ export default class StoriiiesViewer {
         this.infoTextElement.innerText = this.label;
       }
     }
+
+    this.updateViewer();
   }
 
   /**
@@ -208,7 +227,10 @@ export default class StoriiiesViewer {
    * Get the annotations for the current canvas
    */
   // TODO: Return Annotation type
-  public getActiveCanvasAnnotations(): Array<{ body: { value: string } }> {
+  public getActiveCanvasAnnotations(): Array<{
+    body: { value: string };
+    target: string;
+  }> {
     return this.annotationPages[this._activeCanvasIndex].__jsonld.items;
   }
 
