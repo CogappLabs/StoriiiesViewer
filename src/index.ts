@@ -129,6 +129,13 @@ export default class StoriiiesViewer {
       "aria-describedby",
       `storiiies-viewer-${this.instanceId}-description`,
     );
+
+    // After the image has loaded
+    this.viewer.addHandler("open", () => {
+      if (this.containerElement) {
+        this.containerElement.dataset.loaded = "true";
+      }
+    });
   }
 
   /**
@@ -236,8 +243,10 @@ export default class StoriiiesViewer {
     prevButtonEl.disabled = true;
 
     const nextButtonEl = prevButtonEl.cloneNode() as HTMLButtonElement;
+    prevButtonEl.classList.add("storiiies-viewer__nav-button--previous");
     nextButtonEl.innerText = "Next";
     nextButtonEl.disabled = false;
+    nextButtonEl.classList.add("storiiies-viewer__nav-button--next");
 
     [prevButtonEl, nextButtonEl].forEach((button) => {
       button.addEventListener("click", (e) => {
