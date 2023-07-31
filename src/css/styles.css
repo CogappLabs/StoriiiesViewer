@@ -7,3 +7,7 @@
 .storiiies-viewer__description {
   display: none;
 }
+
+.storiiies-viewer__info-area--hidden {
+  display: none;
+}
