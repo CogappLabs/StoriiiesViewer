@@ -1,5 +1,6 @@
 // Use "WindowWithStoriiiesViewer" type with cy.window() to access
 // the storiiiesViewerInstance property on the window object
+import { contains } from "cypress/types/jquery";
 import StoriiiesViewer from "../../src";
 import {
   getExpectedCentre,
@@ -96,5 +97,20 @@ describe("Annotations", () => {
           });
       });
     });
+  });
+
+  it("should toggle annotation text and controls, and update button text", () => {
+    cy.get(".storiiies-viewer__info-toggle")
+      .contains("Hide annotations")
+      .should("have.attr", "aria-expanded", "true");
+
+    cy.get(".storiiies-viewer__info-area").should("not.have.attr", "inert");
+
+    cy.get(".storiiies-viewer__info-toggle")
+      .click()
+      .contains("Show annotations")
+      .should("have.attr", "aria-expanded", "false");
+
+    cy.get(".storiiies-viewer__info-area").should("have.attr", "inert");
   });
 });
