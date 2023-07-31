@@ -1,0 +1,66 @@
+{
+  "@context": "http://iiif.io/api/presentation/2/context.json",
+  "@id": "https://localhost:43110/manifests/standard-v2/manifest.json",
+  "@type": "sc:Manifest",
+  "label": {
+    "@value": "Test v2 manifest",
+    "@language": "en"
+  },
+  "metadata": [
+    {
+      "label": "author",
+      "value": "Jon White"
+    }
+  ],
+  "description": {
+    "@value": "A sample description",
+    "@language": "en"
+  },
+  "viewingHint": "paged",
+  "viewingDirection": "left-to-right",
+  "attribution": "All rights reserved.",
+  "sequences": [
+    {
+      "@type": "sc:Sequence",
+      "@context": "http://iiif.io/api/presentation/2/context.json",
+      "canvases": [
+        {
+          "@id": "http://localhost:43110/images/tractor/canvas/c0",
+          "label": {
+            "@value": "Canvas label",
+            "@language": "en"
+          },
+          "@context": "http://iiif.io/api/presentation/2/context.json",
+          "@type": "sc:Canvas",
+          "width": 4031,
+          "height": 3023,
+          "images": [
+            {
+              "resource": {
+                "@id": "http://localhost:43110/images/tractor/full/full/0/default.jpg",
+                "@type": "dctypes:Image",
+                "format": "image/jpeg",
+                "width": 4031,
+                "height": 3023,
+                "service": {
+                  "@context": "http://iiif.io/api/image/3/context.json",
+                  "profile": "http://iiif.io/api/image/3/level0.json",
+                  "@id": "http://localhost:43110/images/tractor/info.json"
+                }
+              },
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "on": "http://localhost:43110/images/tractor/canvas/c0"
+            }
+          ],
+          "otherContent": [
+            {
+              "@id": "http://localhost:43110/annotations/standard-v2/list.json",
+              "@type": "sc:AnnotationList"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

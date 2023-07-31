@@ -1,32 +1,41 @@
 {
-  "tiles" : [ {
-    "scaleFactors" : [ 32, 16, 8, 4, 2, 1 ],
-    "width" : 1024,
-    "height" : 1024
-  } ],
-  "protocol" : "http://iiif.io/api/image",
-  "sizes" : [ {
-    "width" : 126,
-    "height" : 95
-  }, {
-    "width" : 252,
-    "height" : 189
-  }, {
-    "width" : 504,
-    "height" : 378
-  }, {
-    "width" : 1008,
-    "height" : 756
-  }, {
-    "width" : 2016,
-    "height" : 1512
-  }, {
-    "width" : 4031,
-    "height" : 3023
-  } ],
-  "profile" : "http://iiif.io/api/image/2/level0.json",
-  "width" : 4031,
-  "@id" : "http://localhost:8887/iiif/tractor",
-  "@context" : "http://iiif.io/api/image/2/context.json",
-  "height" : 3023
+  "tiles": [
+    {
+      "scaleFactors": [32, 16, 8, 4, 2, 1],
+      "width": 1024,
+      "height": 1024
+    }
+  ],
+  "protocol": "http://iiif.io/api/image",
+  "sizes": [
+    {
+      "width": 126,
+      "height": 95
+    },
+    {
+      "width": 252,
+      "height": 189
+    },
+    {
+      "width": 504,
+      "height": 378
+    },
+    {
+      "width": 1008,
+      "height": 756
+    },
+    {
+      "width": 2016,
+      "height": 1512
+    },
+    {
+      "width": 4031,
+      "height": 3023
+    }
+  ],
+  "profile": "http://iiif.io/api/image/2/level0.json",
+  "width": 4031,
+  "@id": "http://localhost:43110/images/tractor",
+  "@context": "http://iiif.io/api/image/2/context.json",
+  "height": 3023
 }

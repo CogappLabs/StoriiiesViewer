@@ -1,0 +1,40 @@
+{
+  "@context": "http://iiif.io/api/presentation/2/context.json",
+  "@id": "http://localhost:43110/annotation/standard-v2/list.json",
+  "@type": "sc:AnnotationList",
+  "resources": [
+    {
+      "@type": "oa:Annotation",
+      "@id": "456b724b273541b4a90303b82b9084bb",
+      "motivation": "sc:painting",
+      "resource": {
+        "@type": "cnt:ContentAsText",
+        "format": "text/plain",
+        "chars": "Annotation 1"
+      },
+      "on": "http://localhost:43110/images/tractor/canvas/c0/#xywh=0,0,100,200"
+    },
+    {
+      "@type": "oa:Annotation",
+      "@id": "fb71a8fe693e43198462083770213b95",
+      "motivation": "sc:painting",
+      "resource": {
+        "@type": "cnt:ContentAsText",
+        "format": "text/plain",
+        "chars": "Annotation 2"
+      },
+      "on": "http://localhost:43110/images/tractor/canvas/c0/#xywh=100,200,100,200"
+    },
+    {
+      "@type": "oa:Annotation",
+      "@id": "8d4b542f2bea4587b392803665559310",
+      "motivation": "sc:painting",
+      "resource": {
+        "@type": "cnt:ContentAsText",
+        "format": "text/plain",
+        "chars": "Annotation 3"
+      },
+      "on": "http://localhost:43110/images/tractor/canvas/c0/#xywh=200,300,100,200"
+    }
+  ]
+}
