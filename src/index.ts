@@ -125,11 +125,11 @@ export default class StoriiiesViewer {
     this.viewer.canvas.role = "application";
     this.viewer.element.insertAdjacentHTML(
       "afterbegin",
-      `<p class="storiiies-viewer__description" id="storiiies-viewer-${this.instanceId}-description">Drag with your mouse or the arrow keys, and zoom with scroll or <kbd aria-label="plus">+</kbd> and <kbd aria-label="minus">-</kbd></p>`,
+      `<p class="storiiies-viewer__description" id="storiiies-viewer-${this.instanceId}__description">Drag with your mouse or the arrow keys, and zoom with scroll or <kbd aria-label="plus">+</kbd> and <kbd aria-label="minus">-</kbd></p>`,
     );
     this.viewer.canvas.setAttribute(
       "aria-describedby",
-      `storiiies-viewer-${this.instanceId}-description`,
+      `storiiies-viewer-${this.instanceId}__description`,
     );
 
     // After the image has loaded
@@ -264,10 +264,12 @@ export default class StoriiiesViewer {
     const infoToggleEl = document.createElement("button");
 
     // Navigation buttons
+    prevButtonEl.id = `storiiies-viewer-${this.instanceId}__nav-button--previous`;
     prevButtonEl.classList.add("storiiies-viewer__nav-button");
     prevButtonEl.innerText = "Previous";
 
     const nextButtonEl = prevButtonEl.cloneNode() as HTMLButtonElement;
+    nextButtonEl.id = `storiiies-viewer-${this.instanceId}__nav-button--next`;
     prevButtonEl.classList.add("storiiies-viewer__nav-button--previous");
     nextButtonEl.innerText = "Next";
     nextButtonEl.classList.add("storiiies-viewer__nav-button--next");
@@ -283,12 +285,14 @@ export default class StoriiiesViewer {
     });
 
     // Text element
+    infoTextEl.id = `storiiies-viewer-${this.instanceId}__info-text`;
     infoTextEl.classList.add("storiiies-viewer__info-text");
     infoTextEl.innerText = this.label;
     infoAreaEl.insertAdjacentElement("beforeend", infoTextEl);
     infoAreaEl.append(prevButtonEl, nextButtonEl);
 
     // Toggle button
+    infoToggleEl.id = `storiiies-viewer-${this.instanceId}__info-toggle`;
     infoToggleEl.classList.add("storiiies-viewer__info-toggle");
     infoToggleEl.setAttribute(
       "aria-controls",

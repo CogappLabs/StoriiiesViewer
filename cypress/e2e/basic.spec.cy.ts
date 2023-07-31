@@ -1,6 +1,5 @@
 // Use "WindowWithStoriiiesViewer" type with cy.window() to access
 // the storiiiesViewerInstance property on the window object
-import { contains } from "cypress/types/jquery";
 import StoriiiesViewer from "../../src";
 import {
   getExpectedCentre,
@@ -18,7 +17,7 @@ describe("Basic rendering", () => {
   });
 
   it("Should render an Openseadragon viewer", () => {
-    cy.get(".openseadragon-canvas");
+    cy.get("#viewer[data-loaded='true']");
   });
 
   it("Should initially display the label from the manifest", () => {
@@ -32,14 +31,14 @@ describe("Annotations", () => {
   });
 
   it("should be able to navigate between annotations, and disable buttons where necessary", () => {
-    cy.get(".storiiies-viewer__nav-button--previous").should("be.disabled");
-    cy.get(".storiiies-viewer__nav-button--next")
+    cy.get("#storiiies-viewer-0__nav-button--previous").should("be.disabled");
+    cy.get("#storiiies-viewer-0__nav-button--next")
       .should("not.be.disabled")
       .click()
       .click()
       .should("be.disabled");
 
-    cy.get(".storiiies-viewer__nav-button--previous")
+    cy.get("#storiiies-viewer-0__nav-button--previous")
       .should("not.be.disabled")
       .click()
       .click()
@@ -48,15 +47,15 @@ describe("Annotations", () => {
 
   it("should display the correct annotation text", () => {
     cy.contains("Test image");
-    cy.get(".storiiies-viewer__nav-button--next").click();
+    cy.get("#storiiies-viewer-0__nav-button--next").click();
     cy.contains("This is an annotation");
-    cy.get(".storiiies-viewer__nav-button--next").click();
+    cy.get("#storiiies-viewer-0__nav-button--next").click();
     cy.contains("This is another annotation");
   });
 
   it("should display the correct region in OpenSeadragon", () => {
     cy.window().then((window: WindowWithStoriiiesViewer) => {
-      cy.get('.storiiies-viewer[data-loaded="true"]').then(() => {
+      cy.get('#viewer[data-loaded="true"]').then(() => {
         if (!window.storiiiesViewerInstance) return;
 
         const { storiiiesViewerInstance } = window;
@@ -75,7 +74,7 @@ describe("Annotations", () => {
         assertWithinAcceptableRange(expectedCentre.y, actualCentre.y);
 
         // First annotation: 265,661,100,200
-        cy.get(".storiiies-viewer__nav-button--next")
+        cy.get("#storiiies-viewer-0__nav-button--next")
           .click()
           .then(() => {
             expectedCentre = getExpectedCentre("265,661,100,200");
@@ -86,7 +85,7 @@ describe("Annotations", () => {
           });
 
         // Second annotation: 333,242,200,120"
-        cy.get(".storiiies-viewer__nav-button--next")
+        cy.get("#storiiies-viewer-0__nav-button--next")
           .click()
           .then(() => {
             expectedCentre = getExpectedCentre("333,242,200,120");
@@ -100,17 +99,17 @@ describe("Annotations", () => {
   });
 
   it("should toggle annotation text and controls, and update button text", () => {
-    cy.get(".storiiies-viewer__info-toggle")
+    cy.get("#storiiies-viewer-0__info-toggle")
       .contains("Hide annotations")
       .should("have.attr", "aria-expanded", "true");
 
-    cy.get(".storiiies-viewer__info-area").should("not.have.attr", "inert");
+    cy.get("#storiiies-viewer-0__info-area").should("not.have.attr", "inert");
 
-    cy.get(".storiiies-viewer__info-toggle")
+    cy.get("#storiiies-viewer-0__info-toggle")
       .click()
       .contains("Show annotations")
       .should("have.attr", "aria-expanded", "false");
 
-    cy.get(".storiiies-viewer__info-area").should("have.attr", "inert");
+    cy.get("#storiiies-viewer-0__info-area").should("have.attr", "inert");
   });
 });
