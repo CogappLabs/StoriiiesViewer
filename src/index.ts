@@ -42,6 +42,7 @@ export default class StoriiiesViewer {
   private manifestUrl: string;
   private _activeAnnotationIndex: number = -1;
   private _activeCanvasIndex: number = 0;
+  private _showInfoArea: boolean = true;
   private annotationIndexFloor: number = -1;
   private prefersReducedMotion!: boolean;
   private instanceId: number;
@@ -54,6 +55,7 @@ export default class StoriiiesViewer {
   public infoAreaElement!: HTMLElement;
   public infoTextElement!: HTMLElement;
   public controlButtonElements!: ControlButtons;
+  public infoToggleElement!: HTMLElement;
 
   constructor(config: IStoriiiesViewerConfig) {
     this.instanceId = document.querySelectorAll(".storiiies-viewer").length;
@@ -123,11 +125,11 @@ export default class StoriiiesViewer {
     this.viewer.canvas.role = "application";
     this.viewer.element.insertAdjacentHTML(
       "afterbegin",
-      `<p class="storiiies-viewer__description" id="storiiies-viewer-${this.instanceId}-description">Drag with your mouse or the arrow keys, and zoom with scroll or <kbd aria-label="plus">+</kbd> and <kbd aria-label="minus">-</kbd></p>`,
+      `<p class="storiiies-viewer__description" id="storiiies-viewer-${this.instanceId}__description">Drag with your mouse or the arrow keys, and zoom with scroll or <kbd aria-label="plus">+</kbd> and <kbd aria-label="minus">-</kbd></p>`,
     );
     this.viewer.canvas.setAttribute(
       "aria-describedby",
-      `storiiies-viewer-${this.instanceId}-description`,
+      `storiiies-viewer-${this.instanceId}__description`,
     );
 
     // After the image has loaded
@@ -232,20 +234,44 @@ export default class StoriiiesViewer {
   }
 
   /**
+   * Get the showInfoArea value
+   */
+  get showInfoArea(): boolean {
+    return this._showInfoArea;
+  }
+
+  /**
+   * Set the showInfoArea value and perform any necessary updates
+   */
+  set showInfoArea(value: boolean) {
+    this._showInfoArea = value;
+    this.infoToggleElement.innerText = `${value ? "Hide" : "Show"} annotations`;
+    this.infoToggleElement.ariaExpanded = `${value}`;
+    this.infoAreaElement.inert = !value;
+    this.infoAreaElement.classList.toggle(
+      "storiiies-viewer__info-area--hidden",
+      !value,
+    );
+  }
+
+  /**
    * Create area for label, annotations and controls
    */
   private insertInfoAndControls() {
     const infoAreaEl = document.createElement("div");
     const prevButtonEl = document.createElement("button");
     const infoTextEl = document.createElement("p");
+    const infoToggleEl = document.createElement("button");
+
+    // Navigation buttons
+    prevButtonEl.id = `storiiies-viewer-${this.instanceId}__nav-button--previous`;
     prevButtonEl.classList.add("storiiies-viewer__nav-button");
     prevButtonEl.innerText = "Previous";
-    prevButtonEl.disabled = true;
 
     const nextButtonEl = prevButtonEl.cloneNode() as HTMLButtonElement;
+    nextButtonEl.id = `storiiies-viewer-${this.instanceId}__nav-button--next`;
     prevButtonEl.classList.add("storiiies-viewer__nav-button--previous");
     nextButtonEl.innerText = "Next";
-    nextButtonEl.disabled = false;
     nextButtonEl.classList.add("storiiies-viewer__nav-button--next");
 
     [prevButtonEl, nextButtonEl].forEach((button) => {
@@ -258,21 +284,42 @@ export default class StoriiiesViewer {
       });
     });
 
+    // Text element
+    infoTextEl.id = `storiiies-viewer-${this.instanceId}__info-text`;
     infoTextEl.classList.add("storiiies-viewer__info-text");
     infoTextEl.innerText = this.label;
     infoAreaEl.insertAdjacentElement("beforeend", infoTextEl);
-
     infoAreaEl.append(prevButtonEl, nextButtonEl);
 
+    // Toggle button
+    infoToggleEl.id = `storiiies-viewer-${this.instanceId}__info-toggle`;
+    infoToggleEl.classList.add("storiiies-viewer__info-toggle");
+    infoToggleEl.setAttribute(
+      "aria-controls",
+      `storiiies-viewer-${this.instanceId}__info-area`,
+    );
+    infoToggleEl.addEventListener("click", () => {
+      this.showInfoArea = !this.showInfoArea;
+    });
+
+    // Info area container
+    infoAreaEl.id = `storiiies-viewer-${this.instanceId}__info-area`;
     this.containerElement?.insertAdjacentElement("beforeend", infoAreaEl);
+    infoAreaEl.insertAdjacentElement("afterend", infoToggleEl);
     infoAreaEl.classList.add("storiiies-viewer__info-area");
 
+    // Register elements
     this.infoAreaElement = infoAreaEl;
     this.infoTextElement = infoTextEl;
     this.controlButtonElements = {
       prev: prevButtonEl,
       next: nextButtonEl,
     };
+    this.infoToggleElement = infoToggleEl;
+
+    // Initialise values, let the setters handle the rest
+    this.showInfoArea = true;
+    this.activeAnnotationIndex = this.annotationIndexFloor;
   }
 
   /**
