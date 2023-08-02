@@ -1,13 +1,101 @@
 .storiiies-viewer {
-  /* Temporary styles to allow viewer to show */
-  width: 80vw;
-  height: 80vh;
+  --storiiies-viewer-outer-spacing: 16px;
+  --storiiies-viewer-row-gap: 8px;
+  --storiiies-viewer-col-gap: 16px;
+  --storiiies-viewer-outline: 2px solid chartreuse;
+  --storiiies-viewer-bg: #fff;
+  --storiiies-viewer-fg: #000;
+  --storiiies-viewer-button-bg: var(--storiiies-viewer-bg);
+  --storiiies-viewer-button-fg: var(--storiiies-viewer-fg);
+  --storiiies-viewer-font-family: sans-serif;
+  --storiiies-viewer-font-size: 16px;
+
+  position: relative;
+  container: storiies-viewer / size;
+  inline-size: 100dvw;
+  aspect-ratio: 16 / 9;
+  font-family: var(--storiiies-viewer-font-family);
+}
+
+/* Reset — apart from OSD */
+.storiiies-viewer > *,
+.storiiies-viewer__info-area > * {
+  all: initial;
+  box-sizing: border-box;
 }
 
 .storiiies-viewer__description {
   display: none;
 }
 
+.storiiies-viewer__icon-button {
+  display: block;
+  min-inline-size: 44px;
+  color: var(--storiiies-viewer-button-fg);
+  cursor: pointer;
+  background: var(--storiiies-viewer-button-bg);
+  min-block-size: 44px;
+}
+
+.storiiies-viewer__icon-button:focus-visible {
+  outline: var(--storiiies-viewer-outline);
+}
+
+.storiiies-viewer__icon-button:disabled {
+  opacity: 0.7;
+}
+
+.storiiies-viewer__button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.storiiies-viewer__info-toggle {
+  position: absolute;
+  inset-block-start: calc(var(--storiiies-viewer-outer-spacing) * 2);
+  inset-inline-start: calc(var(--storiiies-viewer-outer-spacing) * 2);
+  z-index: 1;
+}
+
+.storiiies-viewer__info-area {
+  position: absolute;
+  inset-block-start: var(--storiiies-viewer-outer-spacing);
+  inset-inline-start: var(--storiiies-viewer-outer-spacing);
+  display: grid;
+  grid-template-columns: repeat(3, 44px) repeat(
+      auto-fit,
+      minmax(44px, max-content)
+    );
+  gap: var(--storiiies-viewer-col-gap) var(--storiiies-viewer-row-gap);
+  inline-size: max(
+    420px,
+    calc(42cqi - var(--storiiies-viewer-outer-spacing) * 2)
+  );
+  padding: var(--storiiies-viewer-outer-spacing);
+  color: var(--storiiies-viewer-fg);
+  background: var(--storiiies-viewer-bg);
+}
+
 .storiiies-viewer__info-area--hidden {
   display: none;
+}
+
+.storiiies-viewer__previous {
+  grid-column: -3 / -2;
+  rotate: 180deg;
+}
+
+.storiiies-viewer__next {
+  grid-column: -2 / -1;
+}
+
+.storiiies-viewer__info-text {
+  grid-column: 1 / -1;
+  overflow: auto;
+  font-family: var(--storiiies-viewer-font-family);
+  color: var(--storiiies-viewer-fg);
+  max-block-size: calc(
+    75cqb - var(--storiiies-viewer-outer-spacing) * 4 - 44px
+  );
 }

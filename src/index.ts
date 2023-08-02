@@ -116,8 +116,12 @@ export default class StoriiiesViewer {
    * Initialize the viewer
    */
   private initViewer() {
+    const osdContainer = document.createElement("div");
+    osdContainer.id = `storiiies-viewer-${this.instanceId}__osd-container`;
+    osdContainer.classList.add("storiiies-viewer__osd-container");
+    this.containerElement?.insertAdjacentElement("afterbegin", osdContainer);
     this.viewer = OpenSeadragon({
-      element: this.containerElement ?? undefined,
+      element: osdContainer,
       tileSources: [this.canvases[this.activeCanvasIndex].imageServiceIds[0]],
       crossOriginPolicy: "Anonymous",
       showSequenceControl: false,
@@ -309,12 +313,15 @@ export default class StoriiiesViewer {
     infoTextEl.id = `storiiies-viewer-${this.instanceId}__info-text`;
     infoTextEl.classList.add("storiiies-viewer__info-text");
     infoTextEl.innerText = this.label;
-    infoAreaEl.insertAdjacentElement("beforeend", infoTextEl);
     infoAreaEl.append(prevButtonEl, nextButtonEl);
+    infoAreaEl.insertAdjacentElement("beforeend", infoTextEl);
 
     // Toggle button
     infoToggleEl.id = `storiiies-viewer-${this.instanceId}__info-toggle`;
-    infoToggleEl.classList.add("storiiies-viewer__info-toggle");
+    infoToggleEl.classList.add(
+      "storiiies-viewer__icon-button",
+      "storiiies-viewer__info-toggle",
+    );
     infoToggleEl.setAttribute(
       "aria-controls",
       `storiiies-viewer-${this.instanceId}__info-area`,
@@ -326,7 +333,7 @@ export default class StoriiiesViewer {
     // Info area container
     infoAreaEl.id = `storiiies-viewer-${this.instanceId}__info-area`;
     this.containerElement?.insertAdjacentElement("beforeend", infoAreaEl);
-    infoAreaEl.insertAdjacentElement("afterend", infoToggleEl);
+    infoAreaEl.insertAdjacentElement("beforebegin", infoToggleEl);
     infoAreaEl.classList.add("storiiies-viewer__info-area");
 
     // Register elements
