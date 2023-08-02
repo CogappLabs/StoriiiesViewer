@@ -6,9 +6,9 @@ import {
   Annotation,
 } from "manifesto.js";
 
-import arrow from "./images/arrow.svg?raw";
-import eye from "./images/eye.svg?raw";
-import hide from "./images/hide.svg?raw";
+import arrowIcon from "./images/arrow.svg?raw";
+import showIcon from "./images/eye.svg?raw";
+import hideIcon from "./images/hide.svg?raw";
 
 import OpenSeadragon from "openseadragon";
 interface IStoriiiesViewerConfig {
@@ -141,9 +141,6 @@ export default class StoriiiesViewer {
     this.viewer.addHandler("open", () => {
       if (this.containerElement) {
         this.containerElement.dataset.loaded = "true";
-        this.viewer.element.insertAdjacentHTML('afterend', arrow);
-        this.viewer.element.insertAdjacentHTML('afterend', eye);
-        this.viewer.element.insertAdjacentHTML('afterend', hide);
       }
     });
   }
@@ -253,7 +250,12 @@ export default class StoriiiesViewer {
    */
   set showInfoArea(value: boolean) {
     this._showInfoArea = value;
-    this.infoToggleElement.innerText = `${value ? "Hide" : "Show"} annotations`;
+    this.infoToggleElement.ariaLabel = `${value ? "Hide" : "Show"} annotations`;
+    this.infoToggleElement.innerHTML = `
+      <span class="storiiies-viewer__button-icon" inert>
+        ${value ? hideIcon : showIcon}
+      </span>
+    `;
     this.infoToggleElement.ariaExpanded = `${value}`;
     this.infoAreaElement.inert = !value;
     this.infoAreaElement.classList.toggle(
@@ -272,19 +274,30 @@ export default class StoriiiesViewer {
     const infoToggleEl = document.createElement("button");
 
     // Navigation buttons
-    prevButtonEl.id = `storiiies-viewer-${this.instanceId}__nav-button--previous`;
-    prevButtonEl.classList.add("storiiies-viewer__nav-button");
-    prevButtonEl.innerText = "Previous";
+    prevButtonEl.id = `storiiies-viewer-${this.instanceId}__previous`;
+    prevButtonEl.classList.add("storiiies-viewer__icon-button");
+    prevButtonEl.ariaLabel = "Previous";
+    prevButtonEl.innerHTML = `
+      <span class="storiiies-viewer__button-icon" inert>
+        ${arrowIcon}
+      </span>
+    `;
 
     const nextButtonEl = prevButtonEl.cloneNode() as HTMLButtonElement;
-    nextButtonEl.id = `storiiies-viewer-${this.instanceId}__nav-button--next`;
-    prevButtonEl.classList.add("storiiies-viewer__nav-button--previous");
-    nextButtonEl.innerText = "Next";
-    nextButtonEl.classList.add("storiiies-viewer__nav-button--next");
+    nextButtonEl.id = `storiiies-viewer-${this.instanceId}__next`;
+    nextButtonEl.ariaLabel = "Next";
+    nextButtonEl.innerHTML = `
+      <span class="storiiies-viewer__button-icon" inert>
+        ${arrowIcon}
+      </span>
+    `;
+
+    prevButtonEl.classList.add("storiiies-viewer__previous");
+    nextButtonEl.classList.add("storiiies-viewer__next");
 
     [prevButtonEl, nextButtonEl].forEach((button) => {
       button.addEventListener("click", (e) => {
-        if ((e.target as HTMLButtonElement).innerText === "Previous") {
+        if ((e.target as HTMLButtonElement).ariaLabel === "Previous") {
           this.activeAnnotationIndex = this.activeAnnotationIndex - 1;
         } else {
           this.activeAnnotationIndex = this.activeAnnotationIndex + 1;
