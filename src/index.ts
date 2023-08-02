@@ -5,6 +5,11 @@ import {
   AnnotationPage,
   Annotation,
 } from "manifesto.js";
+
+import arrow from "./images/arrow.svg?raw";
+import eye from "./images/eye.svg?raw";
+import hide from "./images/hide.svg?raw";
+
 import OpenSeadragon from "openseadragon";
 interface IStoriiiesViewerConfig {
   container: Element | HTMLElement | string | null;
@@ -136,6 +141,9 @@ export default class StoriiiesViewer {
     this.viewer.addHandler("open", () => {
       if (this.containerElement) {
         this.containerElement.dataset.loaded = "true";
+        this.viewer.element.insertAdjacentHTML('afterend', arrow);
+        this.viewer.element.insertAdjacentHTML('afterend', eye);
+        this.viewer.element.insertAdjacentHTML('afterend', hide);
       }
     });
   }
