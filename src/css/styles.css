@@ -1,5 +1,6 @@
 /**
 * # StoriiiesViewer
+* TODO: Address gap below after hide on mobile
 **/
 
 /**
@@ -23,9 +24,9 @@
   --storiiies-viewer-scroll-size: 8px;
 
   position: relative;
-  container: storiies-viewer / size;
-  inline-size: 100dvi;
-  aspect-ratio: 16 / 9;
+  container: storiiies-viewer / size;
+  inline-size: 100%;
+  block-size: min(640px, 100dvb);
   font-family: var(--storiiies-viewer-font-family);
 }
 
@@ -34,6 +35,7 @@
 .storiiies-viewer__info-area > * {
   all: initial;
   box-sizing: border-box;
+  display: block;
 }
 
 .storiiies-viewer__description {
@@ -41,17 +43,25 @@
 }
 
 /*
+* ## OSD
+*/
+.storiiies-viewer__osd-container {
+  inline-size: 100cqi;
+  block-size: 50cqb;
+}
+
+/*
 * ## Buttons
 */
 .storiiies-viewer__icon-button {
   display: block;
-  min-inline-size: 44px;
+  inline-size: 44px;
   color: var(--storiiies-viewer-button-fg);
   cursor: pointer;
   background: var(--storiiies-viewer-button-bg);
-  min-block-size: 44px;
+  block-size: 44px;
   border-radius: 50%;
-  transition: 100ms;
+  transition: color 100ms, background 100ms;
 }
 
 .storiiies-viewer__icon-button:focus-visible {
@@ -76,28 +86,21 @@
 
 .storiiies-viewer__info-toggle {
   position: absolute;
-  inset-block-start: calc(var(--storiiies-viewer-outer-spacing) * 2);
-  inset-inline-start: calc(var(--storiiies-viewer-outer-spacing) * 2);
+  inset-block-end: calc(50cqb + var(--storiiies-viewer-outer-spacing));
+  inset-inline-start: calc(var(--storiiies-viewer-outer-spacing));
   z-index: 1;
 }
 
-/**
-* ## Info area
-*/
+
 .storiiies-viewer__info-area {
-  position: absolute;
-  inset-block-start: var(--storiiies-viewer-outer-spacing);
-  inset-inline-start: var(--storiiies-viewer-outer-spacing);
   display: grid;
+  block-size: 50cqb;
+  grid-template-rows: 44px 1fr;
   grid-template-columns: repeat(3, 44px) repeat(
       auto-fit,
       minmax(44px, max-content)
     );
   gap: var(--storiiies-viewer-col-gap) var(--storiiies-viewer-row-gap);
-  inline-size: max(
-    420px,
-    calc(42cqi - var(--storiiies-viewer-outer-spacing) * 2)
-  );
   padding: var(--storiiies-viewer-outer-spacing);
   color: var(--storiiies-viewer-fg);
   background: var(--storiiies-viewer-bg);
@@ -110,9 +113,7 @@
   translate: 0 88px;
 }
 
-/**
-* ### Pagination
-*/
+
 .storiiies-viewer__previous {
   grid-column: -3 / -2;
   rotate: 180deg;
@@ -122,9 +123,7 @@
   grid-column: -2 / -1;
 }
 
-/**
-* ### Text area
-*/
+
 .storiiies-viewer__info-text {
   grid-column: 1 / -1;
   padding-inline-end: 8px;
@@ -155,9 +154,7 @@
     hsl(0deg 0% 0% / 50%);
 }
 
-/**
-* ## Media queries
-*/
+
 @media (prefers-reduced-motion: no-preference) {
   .storiiies-viewer__info-area,
   .storiiies-viewer__info-area--hidden {
@@ -167,6 +164,32 @@
   }
 }
 
-/**
-* ## Container queries
-*/
+
+
+@container storiiies-viewer (min-inline-size: 640px) {
+  .storiiies-viewer__osd-container {
+    inline-size: 100cqi;
+    block-size: 100cqb;
+  }
+
+  .storiiies-viewer__info-toggle {
+    position: absolute;
+    inset-block-start: calc(var(--storiiies-viewer-outer-spacing) * 2);
+    inset-block-end: auto;
+    inset-inline-start: calc(var(--storiiies-viewer-outer-spacing) * 2);
+    z-index: 1;
+  }
+
+
+  .storiiies-viewer__info-area {
+    position: absolute;
+    inset-block-start: var(--storiiies-viewer-outer-spacing);
+    inset-inline-start: var(--storiiies-viewer-outer-spacing);
+    inline-size: max(
+      420px,
+      calc(42cqi - var(--storiiies-viewer-outer-spacing) * 2)
+    );
+    block-size: auto;
+  }
+}
+}
