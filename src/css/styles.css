@@ -6,19 +6,21 @@
 * ## General styles
 */
 .storiiies-viewer {
+  --storiiies-viewer-container-bg: #111;
   --storiiies-viewer-outer-spacing: 16px;
   --storiiies-viewer-row-gap: 8px;
   --storiiies-viewer-col-gap: 16px;
   --storiiies-viewer-accent: #2a4e7d;
-  --storiiies-viewer-hover-bg: var(--storiiies-viewer-accent);
+  --storiiies-viewer-hover-bg: #111;
   --storiiies-viewer-hover-fg: #fff;
   --storiiies-viewer-outline: 2px solid var(--storiiies-viewer-accent);
   --storiiies-viewer-bg: #fff;
-  --storiiies-viewer-fg: #000;
+  --storiiies-viewer-fg: #111;
   --storiiies-viewer-button-bg: var(--storiiies-viewer-bg);
   --storiiies-viewer-button-fg: var(--storiiies-viewer-fg);
   --storiiies-viewer-font-family: sans-serif;
   --storiiies-viewer-font-size: 16px;
+  --storiiies-viewer-line-height: 1.2;
   --storiiies-viewer-transition-speed: 400ms;
   --storiiies-viewer-scroll-size: 8px;
 
@@ -27,6 +29,7 @@
   inline-size: 100%;
   block-size: min(640px, 100dvb);
   font-family: var(--storiiies-viewer-font-family);
+  background: var(--storiiies-viewer-container-bg);
 }
 
 /* Reset — apart from OSD */
@@ -118,7 +121,7 @@
 
 .storiiies-viewer__info-area--hidden {
   opacity: 0;
-  translate: 0 88px;
+  translate: -88px 0;
 }
 
 /*
@@ -141,6 +144,8 @@
   padding-inline-end: 8px;
   overflow: auto;
   font-family: var(--storiiies-viewer-font-family);
+  font-size: var(--storiiies-viewer-font-size);
+  line-height: var(--storiiies-viewer-line-height);
   color: var(--storiiies-viewer-fg);
   max-block-size: calc(
     75cqb - var(--storiiies-viewer-outer-spacing) * 4 - 44px
@@ -213,5 +218,34 @@
       calc(42cqi - var(--storiiies-viewer-outer-spacing) * 2)
     );
     block-size: auto;
+    box-shadow: 0 0 2px hsl(0deg 0% 12% / 42%);
+  }
+}
+
+/*
+* ### Fallback - safe to remove depending on browser support
+*/
+@supports not (container: storiiies-viewer) {
+  .storiiies-viewer__osd-container {
+    inline-size: 100%;
+    block-size: 50%;
+
+    .storiiies-viewer--info-hidden & {
+      block-size: 100%;
+    }
+  }
+
+  .storiiies-viewer__toggle {
+    inset-block-end: calc(50% + var(--storiiies-viewer-outer-spacing));
+  }
+
+  .storiiies-viewer__info-area {
+    block-size: 50%;
+  }
+
+  .storiiies-viewer__info-text {
+    max-block-size: calc(
+      100% - var(--storiiies-viewer-outer-spacing) * 2 - 44px
+    );
   }
 }
