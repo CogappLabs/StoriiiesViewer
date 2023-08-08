@@ -104,10 +104,7 @@
   display: grid;
   block-size: 50cqb;
   grid-template-rows: 44px 1fr;
-  grid-template-columns: repeat(3, 44px) repeat(
-      auto-fit,
-      minmax(44px, max-content)
-    );
+  grid-template-columns: 1fr repeat(2, 44px);
   gap: var(--storiiies-viewer-col-gap) var(--storiiies-viewer-row-gap);
   padding: var(--storiiies-viewer-outer-spacing);
   color: var(--storiiies-viewer-fg);
