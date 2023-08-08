@@ -1,6 +1,5 @@
 /**
 * # StoriiiesViewer
-* TODO: Address gap below after hide on mobile
 **/
 
 /**
@@ -50,6 +49,10 @@
   block-size: 50cqb;
 }
 
+.storiiies-viewer--info-hidden .storiiies-viewer__osd-container {
+  block-size: 100cqb;
+}
+
 /*
 * ## Buttons
 */
@@ -61,7 +64,9 @@
   background: var(--storiiies-viewer-button-bg);
   block-size: 44px;
   border-radius: 50%;
-  transition: color 100ms, background 100ms;
+  transition:
+    color 100ms,
+    background 100ms;
 }
 
 .storiiies-viewer__icon-button:focus-visible {
@@ -91,6 +96,9 @@
   z-index: 1;
 }
 
+.storiiies-viewer--info-hidden .storiiies-viewer__info-toggle {
+  inset-block-end: var(--storiiies-viewer-outer-spacing);
+}
 
 .storiiies-viewer__info-area {
   display: grid;
@@ -113,7 +121,6 @@
   translate: 0 88px;
 }
 
-
 .storiiies-viewer__previous {
   grid-column: -3 / -2;
   rotate: 180deg;
@@ -122,7 +129,6 @@
 .storiiies-viewer__next {
   grid-column: -2 / -1;
 }
-
 
 .storiiies-viewer__info-text {
   grid-column: 1 / -1;
@@ -154,7 +160,6 @@
     hsl(0deg 0% 0% / 50%);
 }
 
-
 @media (prefers-reduced-motion: no-preference) {
   .storiiies-viewer__info-area,
   .storiiies-viewer__info-area--hidden {
@@ -162,9 +167,16 @@
       opacity var(--storiiies-viewer-transition-speed) ease-in-out,
       translate var(--storiiies-viewer-transition-speed) ease-in-out;
   }
+
+  .storiiies-viewer__osd-container {
+    transition: block-size var(--storiiies-viewer-transition-speed) ease-in-out;
+  }
+
+  .storiiies-viewer__info-toggle {
+    transition: inset-block-end var(--storiiies-viewer-transition-speed)
+      ease-in-out;
+  }
 }
-
-
 
 @container storiiies-viewer (min-inline-size: 640px) {
   .storiiies-viewer__osd-container {
@@ -180,7 +192,6 @@
     z-index: 1;
   }
 
-
   .storiiies-viewer__info-area {
     position: absolute;
     inset-block-start: var(--storiiies-viewer-outer-spacing);
@@ -191,5 +202,4 @@
     );
     block-size: auto;
   }
-}
 }

@@ -254,6 +254,10 @@ export default class StoriiiesViewer {
    */
   set showInfoArea(value: boolean) {
     this._showInfoArea = value;
+    this.containerElement?.classList.toggle(
+      "storiiies-viewer--info-hidden",
+      !value,
+    );
     this.infoToggleElement.ariaLabel = `${value ? "Hide" : "Show"} annotations`;
     this.infoToggleElement.innerHTML = `
       <span class="storiiies-viewer__button-icon" inert>
