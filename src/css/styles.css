@@ -121,7 +121,7 @@
 
 .storiiies-viewer__info-area--hidden {
   opacity: 0;
-  translate: -88px 0;
+  translate: 0 88px;
 }
 
 /*
@@ -219,6 +219,10 @@
     );
     block-size: auto;
     box-shadow: 0 0 2px hsl(0deg 0% 12% / 42%);
+  }
+
+  .storiiies-viewer__info-area--hidden {
+    translate: -88px 0;
   }
 }
 
