@@ -21,7 +21,9 @@ describe("Basic rendering", () => {
   });
 
   it("Should initially display the label from the manifest", () => {
-    cy.contains("Test image");
+    cy.contains(
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum elit id metus blandit, vel egestas enim sagittis. Integer at sem sit amet nulla dictum sagittis a ut enim. Sed dignissim commodo sapien ut vestibulum. Aenean sed iaculis metus, vel varius massa. Nullam placerat tempus pharetra. Vestibulum maximus elit ut eros sollicitudin, viverra aliquet metus condimentum. Proin sed pellentesque nibh. Pellentesque suscipit tempus risus, condimentum semper sem ultrices quis. Suspendisse blandit viverra ex in sollicitudin. Fusce aliquet tincidunt leo ut venenatis. Quisque eu sem hendrerit, pellentesque nibh et, imperdiet mi. Mauris arcu eros, consequat sit amet sapien accumsan, pellentesque malesuada justo.",
+    );
   });
 });
 
@@ -31,14 +33,14 @@ describe("Annotations", () => {
   });
 
   it("should be able to navigate between annotations, and disable buttons where necessary", () => {
-    cy.get("#storiiies-viewer-0__nav-button--previous").should("be.disabled");
-    cy.get("#storiiies-viewer-0__nav-button--next")
+    cy.get("#storiiies-viewer-0__previous").should("be.disabled");
+    cy.get("#storiiies-viewer-0__next")
       .should("not.be.disabled")
       .click()
       .click()
       .should("be.disabled");
 
-    cy.get("#storiiies-viewer-0__nav-button--previous")
+    cy.get("#storiiies-viewer-0__previous")
       .should("not.be.disabled")
       .click()
       .click()
@@ -46,11 +48,17 @@ describe("Annotations", () => {
   });
 
   it("should display the correct annotation text", () => {
-    cy.contains("Test image");
-    cy.get("#storiiies-viewer-0__nav-button--next").click();
-    cy.contains("This is an annotation");
-    cy.get("#storiiies-viewer-0__nav-button--next").click();
-    cy.contains("This is another annotation");
+    cy.contains(
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum elit id metus blandit, vel egestas enim sagittis. Integer at sem sit amet nulla dictum sagittis a ut enim. Sed dignissim commodo sapien ut vestibulum. Aenean sed iaculis metus, vel varius massa. Nullam placerat tempus pharetra. Vestibulum maximus elit ut eros sollicitudin, viverra aliquet metus condimentum. Proin sed pellentesque nibh. Pellentesque suscipit tempus risus, condimentum semper sem ultrices quis. Suspendisse blandit viverra ex in sollicitudin. Fusce aliquet tincidunt leo ut venenatis. Quisque eu sem hendrerit, pellentesque nibh et, imperdiet mi. Mauris arcu eros, consequat sit amet sapien accumsan, pellentesque malesuada justo.",
+    );
+    cy.get("#storiiies-viewer-0__next").click();
+    cy.contains(
+      "Nullam sit amet egestas metus. Sed dictum mattis erat feugiat gravida",
+    );
+    cy.get("#storiiies-viewer-0__next").click();
+    cy.contains(
+      "Suspendisse lacinia enim lorem, sit amet interdum odio dignissim et. Curabitur ultricies felis non sagittis commodo. Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui consectetur consectetur. Suspendisse non nisi turpis.",
+    );
   });
 
   it("should display the correct region in OpenSeadragon", () => {
@@ -74,7 +82,7 @@ describe("Annotations", () => {
         assertWithinAcceptableRange(expectedCentre.y, actualCentre.y);
 
         // First annotation: 265,661,100,200
-        cy.get("#storiiies-viewer-0__nav-button--next")
+        cy.get("#storiiies-viewer-0__next")
           .click()
           .then(() => {
             expectedCentre = getExpectedCentre("265,661,100,200");
@@ -85,7 +93,7 @@ describe("Annotations", () => {
           });
 
         // Second annotation: 333,242,200,120"
-        cy.get("#storiiies-viewer-0__nav-button--next")
+        cy.get("#storiiies-viewer-0__next")
           .click()
           .then(() => {
             expectedCentre = getExpectedCentre("333,242,200,120");
@@ -100,14 +108,14 @@ describe("Annotations", () => {
 
   it("should toggle annotation text and controls, and update button text", () => {
     cy.get("#storiiies-viewer-0__info-toggle")
-      .contains("Hide annotations")
+      .should("have.attr", "aria-label", "Hide annotations")
       .should("have.attr", "aria-expanded", "true");
 
     cy.get("#storiiies-viewer-0__info-area").should("not.have.attr", "inert");
 
     cy.get("#storiiies-viewer-0__info-toggle")
       .click()
-      .contains("Show annotations")
+      .should("have.attr", "aria-label", "Show annotations")
       .should("have.attr", "aria-expanded", "false");
 
     cy.get("#storiiies-viewer-0__info-area").should("have.attr", "inert");
