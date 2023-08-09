@@ -7,7 +7,7 @@
     "noImplicitAny": true,
     "strict": true,
     "target": "es2020",
-    "types": ["cypress", "node"],
+    "types": ["cypress", "node", "vite/client"],
     "allowSyntheticDefaultImports": true
   },
   "include": ["**/*.ts"],

@@ -5,6 +5,11 @@ import {
   AnnotationPage,
   Annotation,
 } from "manifesto.js";
+
+import arrowIcon from "./images/arrow.svg?raw";
+import showIcon from "./images/eye.svg?raw";
+import hideIcon from "./images/hide.svg?raw";
+
 import OpenSeadragon from "openseadragon";
 interface IStoriiiesViewerConfig {
   container: Element | HTMLElement | string | null;
@@ -111,8 +116,12 @@ export default class StoriiiesViewer {
    * Initialize the viewer
    */
   private initViewer() {
+    const osdContainer = document.createElement("div");
+    osdContainer.id = `storiiies-viewer-${this.instanceId}__osd-container`;
+    osdContainer.classList.add("storiiies-viewer__osd-container");
+    this.containerElement?.insertAdjacentElement("afterbegin", osdContainer);
     this.viewer = OpenSeadragon({
-      element: this.containerElement ?? undefined,
+      element: osdContainer,
       tileSources: [this.canvases[this.activeCanvasIndex].imageServiceIds[0]],
       crossOriginPolicy: "Anonymous",
       showSequenceControl: false,
@@ -245,7 +254,16 @@ export default class StoriiiesViewer {
    */
   set showInfoArea(value: boolean) {
     this._showInfoArea = value;
-    this.infoToggleElement.innerText = `${value ? "Hide" : "Show"} annotations`;
+    this.containerElement?.classList.toggle(
+      "storiiies-viewer--info-hidden",
+      !value,
+    );
+    this.infoToggleElement.ariaLabel = `${value ? "Hide" : "Show"} annotations`;
+    this.infoToggleElement.innerHTML = `
+      <span class="storiiies-viewer__button-icon" inert>
+        ${value ? hideIcon : showIcon}
+      </span>
+    `;
     this.infoToggleElement.ariaExpanded = `${value}`;
     this.infoAreaElement.inert = !value;
     this.infoAreaElement.classList.toggle(
@@ -264,19 +282,30 @@ export default class StoriiiesViewer {
     const infoToggleEl = document.createElement("button");
 
     // Navigation buttons
-    prevButtonEl.id = `storiiies-viewer-${this.instanceId}__nav-button--previous`;
-    prevButtonEl.classList.add("storiiies-viewer__nav-button");
-    prevButtonEl.innerText = "Previous";
+    prevButtonEl.id = `storiiies-viewer-${this.instanceId}__previous`;
+    prevButtonEl.classList.add("storiiies-viewer__icon-button");
+    prevButtonEl.ariaLabel = "Previous";
+    prevButtonEl.innerHTML = `
+      <span class="storiiies-viewer__button-icon" inert>
+        ${arrowIcon}
+      </span>
+    `;
 
     const nextButtonEl = prevButtonEl.cloneNode() as HTMLButtonElement;
-    nextButtonEl.id = `storiiies-viewer-${this.instanceId}__nav-button--next`;
-    prevButtonEl.classList.add("storiiies-viewer__nav-button--previous");
-    nextButtonEl.innerText = "Next";
-    nextButtonEl.classList.add("storiiies-viewer__nav-button--next");
+    nextButtonEl.id = `storiiies-viewer-${this.instanceId}__next`;
+    nextButtonEl.ariaLabel = "Next";
+    nextButtonEl.innerHTML = `
+      <span class="storiiies-viewer__button-icon" inert>
+        ${arrowIcon}
+      </span>
+    `;
+
+    prevButtonEl.classList.add("storiiies-viewer__previous");
+    nextButtonEl.classList.add("storiiies-viewer__next");
 
     [prevButtonEl, nextButtonEl].forEach((button) => {
       button.addEventListener("click", (e) => {
-        if ((e.target as HTMLButtonElement).innerText === "Previous") {
+        if ((e.target as HTMLButtonElement).ariaLabel === "Previous") {
           this.activeAnnotationIndex = this.activeAnnotationIndex - 1;
         } else {
           this.activeAnnotationIndex = this.activeAnnotationIndex + 1;
@@ -288,12 +317,15 @@ export default class StoriiiesViewer {
     infoTextEl.id = `storiiies-viewer-${this.instanceId}__info-text`;
     infoTextEl.classList.add("storiiies-viewer__info-text");
     infoTextEl.innerText = this.label;
-    infoAreaEl.insertAdjacentElement("beforeend", infoTextEl);
     infoAreaEl.append(prevButtonEl, nextButtonEl);
+    infoAreaEl.insertAdjacentElement("beforeend", infoTextEl);
 
     // Toggle button
     infoToggleEl.id = `storiiies-viewer-${this.instanceId}__info-toggle`;
-    infoToggleEl.classList.add("storiiies-viewer__info-toggle");
+    infoToggleEl.classList.add(
+      "storiiies-viewer__icon-button",
+      "storiiies-viewer__info-toggle",
+    );
     infoToggleEl.setAttribute(
       "aria-controls",
       `storiiies-viewer-${this.instanceId}__info-area`,
@@ -305,7 +337,7 @@ export default class StoriiiesViewer {
     // Info area container
     infoAreaEl.id = `storiiies-viewer-${this.instanceId}__info-area`;
     this.containerElement?.insertAdjacentElement("beforeend", infoAreaEl);
-    infoAreaEl.insertAdjacentElement("afterend", infoToggleEl);
+    infoAreaEl.insertAdjacentElement("beforebegin", infoToggleEl);
     infoAreaEl.classList.add("storiiies-viewer__info-area");
 
     // Register elements

@@ -1,13 +1,256 @@
+/**
+* # StoriiiesViewer
+**/
+
+/**
+* ## General styles
+*/
 .storiiies-viewer {
-  /* Temporary styles to allow viewer to show */
-  width: 80vw;
-  height: 80vh;
+  --storiiies-viewer-container-bg: #111;
+  --storiiies-viewer-outer-spacing: 16px;
+  --storiiies-viewer-row-gap: 8px;
+  --storiiies-viewer-col-gap: 16px;
+  --storiiies-viewer-accent: #2a4e7d;
+  --storiiies-viewer-hover-bg: #111;
+  --storiiies-viewer-hover-fg: #fff;
+  --storiiies-viewer-outline: 2px solid var(--storiiies-viewer-accent);
+  --storiiies-viewer-bg: #fff;
+  --storiiies-viewer-fg: #111;
+  --storiiies-viewer-button-bg: var(--storiiies-viewer-bg);
+  --storiiies-viewer-button-fg: var(--storiiies-viewer-fg);
+  --storiiies-viewer-font-family: sans-serif;
+  --storiiies-viewer-font-size: 16px;
+  --storiiies-viewer-line-height: 1.2;
+  --storiiies-viewer-transition-speed: 400ms;
+  --storiiies-viewer-scroll-size: 8px;
+
+  position: relative;
+  inline-size: 100%;
+  overflow: hidden;
+  font-family: var(--storiiies-viewer-font-family);
+  background: var(--storiiies-viewer-container-bg);
+  container: storiiies-viewer / size;
+  block-size: min(640px, 100dvb);
+}
+
+/* Reset — apart from OSD */
+.storiiies-viewer > *,
+.storiiies-viewer__info-area > * {
+  all: initial;
+  box-sizing: border-box;
+  display: block;
 }
 
 .storiiies-viewer__description {
   display: none;
 }
 
+/*
+* ## OSD
+*/
+.storiiies-viewer__osd-container {
+  inline-size: 100cqi;
+  block-size: 50cqb;
+
+  .storiiies-viewer--info-hidden & {
+    block-size: 100cqb;
+  }
+}
+
+/*
+* ## Buttons
+*/
+.storiiies-viewer__icon-button {
+  display: block;
+  inline-size: 44px;
+  color: var(--storiiies-viewer-button-fg);
+  cursor: pointer;
+  background: var(--storiiies-viewer-button-bg);
+  block-size: 44px;
+  border-radius: 50%;
+  transition:
+    color 100ms,
+    background 100ms;
+}
+
+.storiiies-viewer__icon-button:focus-visible {
+  outline: var(--storiiies-viewer-outline);
+}
+
+.storiiies-viewer__icon-button:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+
+.storiiies-viewer__icon-button:hover:not(:disabled) {
+  color: var(--storiiies-viewer-hover-fg);
+  background: var(--storiiies-viewer-hover-bg);
+}
+
+.storiiies-viewer__button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.storiiies-viewer__info-toggle {
+  position: absolute;
+  inset-block-end: calc(50cqb + var(--storiiies-viewer-outer-spacing));
+  inset-inline-start: calc(var(--storiiies-viewer-outer-spacing));
+  z-index: 1;
+}
+
+.storiiies-viewer--info-hidden .storiiies-viewer__info-toggle {
+  inset-block-end: var(--storiiies-viewer-outer-spacing);
+}
+
+/*
+* ## Info area
+*/
+.storiiies-viewer__info-area {
+  display: grid;
+  block-size: 50cqb;
+  grid-template-rows: 44px 1fr;
+  grid-template-columns: 1fr repeat(2, 44px);
+  gap: var(--storiiies-viewer-col-gap) var(--storiiies-viewer-row-gap);
+  padding: var(--storiiies-viewer-outer-spacing);
+  color: var(--storiiies-viewer-fg);
+  background: var(--storiiies-viewer-bg);
+  opacity: 1;
+  translate: 0 0;
+}
+
 .storiiies-viewer__info-area--hidden {
-  display: none;
+  opacity: 0;
+  translate: 0 88px;
+}
+
+/*
+* ## Pagination
+*/
+.storiiies-viewer__previous {
+  grid-column: -3 / -2;
+  rotate: 180deg;
+}
+
+.storiiies-viewer__next {
+  grid-column: -2 / -1;
+}
+
+/*
+* ## Annotation text
+*/
+.storiiies-viewer__info-text {
+  grid-column: 1 / -1;
+  padding-inline-end: 8px;
+  overflow: auto;
+  font-family: var(--storiiies-viewer-font-family);
+  font-size: var(--storiiies-viewer-font-size);
+  line-height: var(--storiiies-viewer-line-height);
+  color: var(--storiiies-viewer-fg);
+  max-block-size: calc(
+    75cqb - var(--storiiies-viewer-outer-spacing) * 4 - 44px
+  );
+  scrollbar-gutter: stable;
+}
+
+.storiiies-viewer__info-text::-webkit-scrollbar {
+  inline-size: var(--storiiies-viewer-scroll-size);
+  block-size: var(--storiiies-viewer-scroll-size);
+}
+
+.storiiies-viewer__info-text::-webkit-scrollbar-track {
+  border-radius: var(--storiiies-viewer-scroll-size);
+  box-shadow: inset 0 0 var(--storiiies-viewer-scroll-size)
+    hsl(0deg 0% 0% / 30%);
+}
+
+.storiiies-viewer__info-text::-webkit-scrollbar-thumb {
+  background: hsl(0deg 255 255 / 30%);
+  border-radius: var(--storiiies-viewer-scroll-size);
+  box-shadow: inset 0 0 calc(var(--storiiies-viewer-scroll-size) * 2)
+    hsl(0deg 0% 0% / 50%);
+}
+
+/*
+* ## Media queries
+*/
+@media (prefers-reduced-motion: no-preference) {
+  .storiiies-viewer__info-area,
+  .storiiies-viewer__info-area--hidden {
+    transition:
+      opacity var(--storiiies-viewer-transition-speed) ease-in-out,
+      translate var(--storiiies-viewer-transition-speed) ease-in-out;
+  }
+
+  .storiiies-viewer__osd-container {
+    transition: block-size var(--storiiies-viewer-transition-speed) ease-in-out;
+  }
+
+  .storiiies-viewer__info-toggle {
+    transition: inset-block-end var(--storiiies-viewer-transition-speed)
+      ease-in-out;
+  }
+}
+
+/*
+* ## Container queries
+*/
+@container storiiies-viewer (min-inline-size: 640px) {
+  .storiiies-viewer__osd-container {
+    inline-size: 100cqi;
+    block-size: 100cqb;
+  }
+
+  .storiiies-viewer__info-toggle {
+    position: absolute;
+    inset-block-start: calc(var(--storiiies-viewer-outer-spacing) * 2);
+    inset-block-end: auto;
+    inset-inline-start: calc(var(--storiiies-viewer-outer-spacing) * 2);
+    z-index: 1;
+  }
+
+  .storiiies-viewer__info-area {
+    position: absolute;
+    inset-block-start: var(--storiiies-viewer-outer-spacing);
+    inset-inline-start: var(--storiiies-viewer-outer-spacing);
+    inline-size: max(
+      420px,
+      calc(42cqi - var(--storiiies-viewer-outer-spacing) * 2)
+    );
+    block-size: auto;
+    box-shadow: 0 0 2px hsl(0deg 0% 12% / 42%);
+  }
+
+  .storiiies-viewer__info-area--hidden {
+    translate: -88px 0;
+  }
+}
+
+/*
+* ### Fallback - safe to remove depending on browser support
+*/
+@supports not (container: storiiies-viewer) {
+  .storiiies-viewer__osd-container {
+    inline-size: 100%;
+    block-size: 50%;
+  }
+
+  .storiiies-viewer--info-hidden .storiiies-viewer__osd-container {
+    block-size: 100%;
+  }
+
+  .storiiies-viewer__toggle {
+    inset-block-end: calc(50% + var(--storiiies-viewer-outer-spacing));
+  }
+
+  .storiiies-viewer__info-area {
+    block-size: 50%;
+  }
+
+  .storiiies-viewer__info-text {
+    max-block-size: calc(
+      100% - var(--storiiies-viewer-outer-spacing) * 2 - 44px
+    );
+  }
 }
