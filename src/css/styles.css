@@ -25,11 +25,12 @@
   --storiiies-viewer-scroll-size: 8px;
 
   position: relative;
-  container: storiiies-viewer / size;
   inline-size: 100%;
-  block-size: min(640px, 100dvb);
+  overflow: hidden;
   font-family: var(--storiiies-viewer-font-family);
   background: var(--storiiies-viewer-container-bg);
+  container: storiiies-viewer / size;
+  block-size: min(640px, 100dvb);
 }
 
 /* Reset — apart from OSD */
