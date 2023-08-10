@@ -92,8 +92,9 @@ export default class StoriiiesViewer {
 
     this.manifestUrl = config.manifestUrl;
 
+    // Throw if the required config is missing and halt instantiation
     if (!this.containerElement || !this.manifestUrl) {
-      throw new Error("Missing required config");
+      this.logger("100", true);
     }
 
     // TODO: Remove — Debug code
@@ -109,7 +110,10 @@ export default class StoriiiesViewer {
     });
   }
 
-  private logger(code: string) {
+  /**
+   * Log a message to the console, or throw an exception
+   */
+  private logger(code: string, throwException: boolean = false) {
     const [level, message] = this.statusCodes[code];
     const currentStatus = this.containerElement?.dataset.status;
 
@@ -117,6 +121,11 @@ export default class StoriiiesViewer {
     if (this.containerElement) {
       this.containerElement.dataset.status =
         currentStatus?.concat(`,${code}`) || code;
+    }
+
+    // In the case that execution should halt, throw an exception
+    if (throwException) {
+      throw new Error(`Storiiies Viewer: ${message}`);
     }
 
     console[level](`Storiiies Viewer: ${message}`);
