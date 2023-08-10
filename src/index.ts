@@ -147,14 +147,13 @@ export default class StoriiiesViewer {
     });
 
     this.manifest = new Manifest(rawManifest);
+    this.canvases = this.manifest.getSequenceByIndex(0)?.getCanvases();
 
-    // A manifest with no "items" aka "sequences" at the top level is invalid
+    // A valid manifest must have at least one canvas
     // Assume "not a manifest" and throw an error
-    if (!this.manifest.items.length) {
+    if (!this.canvases.length) {
       this.logger("bad-manifest", true);
     }
-
-    this.canvases = this.manifest.getSequenceByIndex(0).getCanvases();
 
     // Warn about unsupported manifest versions
     if (
