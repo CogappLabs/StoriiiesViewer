@@ -61,7 +61,7 @@ export default class StoriiiesViewer {
     "bad-manifest": ["error", "Could not parse the manifest"],
     "bad-container": ["error", "Container element not found"],
     "unkn-manifest": ["warn", "Manifest version not supported"],
-    "unkn-annoPages": ["warn", "External annotationPages not supported"],
+    "no-ext-anno": ["warn", "External annotationPages are not supported"],
     "no-label": [
       "warn",
       "Manifest doesn't contain a label. This is required by the IIIF Presentation API",
@@ -434,9 +434,15 @@ export default class StoriiiesViewer {
           canvas.getProperty("annotations") || [];
 
         annotationPages.push(
-          ...rawAnnotationPages.map((rawAnnotationPage) => {
+          ...rawAnnotationPages.flatMap((rawAnnotationPage) => {
             const rawAnnotations: Array<RawAnnotation> | undefined =
               rawAnnotationPage.items;
+
+            // Remove page if annotations aren't embedded
+            if (!rawAnnotations) {
+              this.logger("no-ext-anno");
+              return [];
+            }
 
             return new AnnotationPage(
               {
