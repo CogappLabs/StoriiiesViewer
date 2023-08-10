@@ -12,7 +12,7 @@ import hideIcon from "./images/hide.svg?raw";
 
 import OpenSeadragon from "openseadragon";
 interface IStoriiiesViewerConfig {
-  container: Element | HTMLElement | string | null;
+  container: HTMLElement | string | null;
   manifestUrl: string;
 }
 
@@ -92,9 +92,12 @@ export default class StoriiiesViewer {
     if (typeof config.container === "string") {
       this.containerElement = document.querySelector(config.container);
     } else {
-      // Minor wrinkle around if the container is an Element or HTMLElement
-      // It should be safe to cast it to HTMLElement
-      this.containerElement = config.container as HTMLElement;
+      this.containerElement = config.container;
+    }
+
+    // Throw if the container element can't be found
+    if (this.containerElement === null) {
+      this.logger("bad-container", true);
     }
 
     this.manifestUrl = config.manifestUrl;
