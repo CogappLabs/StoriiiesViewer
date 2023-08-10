@@ -60,16 +60,15 @@ export default class StoriiiesViewer {
     "manifest-err": ["error", "Encountered a problem loading the manifest"],
     "bad-manifest": ["error", "Could not parse the manifest"],
     "bad-container": ["error", "Container element not found"],
-    "unkn-manifest": ["warn", "Manifest version not supported"],
-    "no-ext-anno": ["warn", "External annotationPages are not supported"],
-    "no-label": [
-      "warn",
-      "Manifest doesn't contain a label. This is required by the IIIF Presentation API",
-    ],
     "unkn-version": [
       "warn",
       "Unsupported IIIF Presentation API version detected",
     ],
+    "no-label": [
+      "warn",
+      "Manifest doesn't contain a label. This is required by the IIIF Presentation API",
+    ],
+    "no-ext-anno": ["warn", "External annotationPages are not supported"],
   };
   public manifest!: Manifest;
   public label: string = "";
