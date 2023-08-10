@@ -56,12 +56,20 @@ export default class StoriiiesViewer {
   private prefersReducedMotion!: boolean;
   private instanceId: number;
   private statusCodes: statusCodes = {
-    "100": ["error", "Missing required config"],
-    "101": ["error", "Could not load manifest"],
-    "102": ["error", "Could not parse manifest"],
-    "103": ["error", "Container element not found"],
-    "104": ["warn", "Manifest version not supported"],
-    "105": ["warn", "External annotationPages not supported"],
+    "bad-config": ["error", "Missing required config"],
+    "manifest-err": ["error", "Encountered a problem loading the manifest"],
+    "bad-manifest": ["error", "Could not parse the manifest"],
+    "bad-container": ["error", "Container element not found"],
+    "unkn-manifest": ["warn", "Manifest version not supported"],
+    "unkn-annoPages": ["warn", "External annotationPages not supported"],
+    "no-label": [
+      "warn",
+      "Manifest doesn't contain a label. This is required by the IIIF Presentation API",
+    ],
+    "unkn-version": [
+      "warn",
+      "Unsupported IIIF Presentation API version detected",
+    ],
   };
   public manifest!: Manifest;
   public label: string = "";
@@ -94,7 +102,7 @@ export default class StoriiiesViewer {
 
     // Throw if the required config is missing and halt instantiation
     if (!this.containerElement || !this.manifestUrl) {
-      this.logger("100", true);
+      this.logger("bad-config", true);
     }
 
     // TODO: Remove — Debug code
@@ -102,9 +110,9 @@ export default class StoriiiesViewer {
       this.logger(code);
     }
 
-    this.containerElement?.classList.add("storiiies-viewer");
-
     this.initManifest().then(() => {
+      // Should only get styles if manifest can load
+      this.containerElement?.classList.add("storiiies-viewer");
       this.initViewer();
       this.insertInfoAndControls();
     });
@@ -112,8 +120,9 @@ export default class StoriiiesViewer {
 
   /**
    * Log a message to the console, or throw an exception
+   * TODO: Update to remove duplicates
    */
-  private logger(code: string, throwException: boolean = false) {
+  private logger(code: string, withException: boolean = false) {
     const [level, message] = this.statusCodes[code];
     const currentStatus = this.containerElement?.dataset.status;
 
@@ -123,8 +132,7 @@ export default class StoriiiesViewer {
         currentStatus?.concat(`,${code}`) || code;
     }
 
-    // In the case that execution should halt, throw an exception
-    if (throwException) {
+    if (withException) {
       throw new Error(`Storiiies Viewer: ${message}`);
     }
 
@@ -135,8 +143,26 @@ export default class StoriiiesViewer {
    * Load the manifest and extract the label, canvases and annotation pages
    */
   private async initManifest() {
-    const rawManifest = await loadManifest(this.manifestUrl);
+    const rawManifest = await loadManifest(this.manifestUrl).catch(() => {
+      this.logger("manifest-err", true);
+    });
+
     this.manifest = new Manifest(rawManifest);
+
+    // A manifest with no "items" aka "sequences" at the top level is invalid
+    // Assume "not a manifest" and throw an error
+    if (!this.manifest.items.length) {
+      this.logger("bad-manifest", true);
+    }
+
+    this.canvases = this.manifest.getSequenceByIndex(0).getCanvases();
+
+    // Warn about unsupported manifest versions
+    if (
+      this.manifest.context !== "http://iiif.io/api/presentation/3/context.json"
+    ) {
+      this.logger("unkn-version");
+    }
 
     this.label = this.manifest.getLabel().getValue() || "";
 
@@ -144,9 +170,11 @@ export default class StoriiiesViewer {
     if (!this.label) {
       this.activeAnnotationIndex = 0;
       this.annotationIndexFloor = 0;
+
+      // But should also warn that this is invalid
+      this.logger("no-label");
     }
 
-    this.canvases = this.manifest.getSequenceByIndex(0).getCanvases();
     this.annotationPages = this.getAnnotationPages();
     this.activeCanvasAnnotations = this.getActiveCanvasAnnotations();
   }
@@ -257,13 +285,11 @@ export default class StoriiiesViewer {
     this.controlButtonElements.next.disabled = false;
 
     // Disable buttons
-    switch (index) {
-      case lowerBound:
-        this.controlButtonElements.prev.disabled = true;
-        break;
-      case upperBound:
-        this.controlButtonElements.next.disabled = true;
-        break;
+    if (index === lowerBound) {
+      this.controlButtonElements.prev.disabled = true;
+    }
+    if (index === upperBound) {
+      this.controlButtonElements.next.disabled = true;
     }
 
     // Info text to be label or annotation
@@ -434,7 +460,8 @@ export default class StoriiiesViewer {
    * Get the annotations for the current canvas
    */
   public getActiveCanvasAnnotations(): Array<Annotation> {
-    return this.annotationPages[this.activeCanvasIndex].getItems();
+    // The current canvas might not have any annotations
+    return this.annotationPages[this.activeCanvasIndex]?.getItems() || [];
   }
 
   /**
