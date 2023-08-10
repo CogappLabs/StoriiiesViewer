@@ -21,6 +21,10 @@ type ControlButtons = {
   next: HTMLButtonElement;
 };
 
+type statusCodes = {
+  [key: string]: ["warn" | "error", string];
+};
+
 type RawAnnotationPage = {
   id: string;
   type: string;
@@ -51,6 +55,14 @@ export default class StoriiiesViewer {
   private annotationIndexFloor: number = -1;
   private prefersReducedMotion!: boolean;
   private instanceId: number;
+  private statusCodes: statusCodes = {
+    "100": ["error", "Missing required config"],
+    "101": ["error", "Could not load manifest"],
+    "102": ["error", "Could not parse manifest"],
+    "103": ["error", "Container element not found"],
+    "104": ["warn", "Manifest version not supported"],
+    "105": ["warn", "External annotationPages not supported"],
+  };
   public manifest!: Manifest;
   public label: string = "";
   public canvases!: Canvas[];
@@ -84,12 +96,30 @@ export default class StoriiiesViewer {
       throw new Error("Missing required config");
     }
 
+    // TODO: Remove — Debug code
+    for (const code of Object.keys(this.statusCodes)) {
+      this.logger(code);
+    }
+
     this.containerElement?.classList.add("storiiies-viewer");
 
     this.initManifest().then(() => {
       this.initViewer();
       this.insertInfoAndControls();
     });
+  }
+
+  private logger(code: string) {
+    const [level, message] = this.statusCodes[code];
+    const currentStatus = this.containerElement?.dataset.status;
+
+    // Primarily for use in the test suites
+    if (this.containerElement) {
+      this.containerElement.dataset.status =
+        currentStatus?.concat(`,${code}`) || code;
+    }
+
+    console[level](`Storiiies Viewer: ${message}`);
   }
 
   /**
