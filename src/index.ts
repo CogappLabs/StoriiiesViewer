@@ -12,7 +12,7 @@ import hideIcon from "./images/hide.svg?raw";
 
 import OpenSeadragon from "openseadragon";
 interface IStoriiiesViewerConfig {
-  container: HTMLElement | string | null;
+  container: HTMLElement | Element | string | null;
   manifestUrl: string;
 }
 
@@ -47,7 +47,7 @@ type RawAnnotationBody = {
 };
 
 export default class StoriiiesViewer {
-  private containerElement: HTMLElement | null;
+  private containerElement: HTMLElement | null = null;
   private manifestUrl: string;
   private _activeAnnotationIndex: number = -1;
   private _activeCanvasIndex: number = 0;
@@ -91,11 +91,13 @@ export default class StoriiiesViewer {
     // Normalise the config container
     if (typeof config.container === "string") {
       this.containerElement = document.querySelector(config.container);
-    } else {
+      // Allow non-HTMLElements to be fall through as null
+      // (e.g. SVG is instanceof Element, but not HTMLElement)
+    } else if (config.container instanceof HTMLElement) {
       this.containerElement = config.container;
     }
 
-    // Throw if the container element can't be found
+    // Throw if the container element can't be found (or it's not an HTMLElement)
     if (this.containerElement === null) {
       this.logger("bad-container", true);
     }
