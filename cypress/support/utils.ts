@@ -26,6 +26,7 @@ export function assertWithinAcceptableRange(
 // Use "WindowWithStoriiiesViewer" type with cy.window() to access
 // the storiiiesViewerInstance property on the window object
 export type WindowWithStoriiiesViewer = Cypress.AUTWindow & {
+  StoriiiesViewer?: typeof StoriiiesViewer;
   storiiiesViewerInstance?: StoriiiesViewer;
 };
 

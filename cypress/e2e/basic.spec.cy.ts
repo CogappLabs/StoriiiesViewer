@@ -7,12 +7,25 @@ import {
   WindowWithStoriiiesViewer,
 } from "../support/utils";
 
+function setup(screenSize: ScreenSize) {
+  cy.visit("/index.html").then((window: WindowWithStoriiiesViewer) => {
+    cy.document().then((document) => {
+      cy.viewport(screenSize.width, screenSize.height);
+      const container = document.querySelector("#viewer");
+      if (window.StoriiiesViewer) {
+        window.storiiiesViewerInstance = new window.StoriiiesViewer({
+          container,
+          manifestUrl:
+            "http://localhost:43110/manifests/standard-v3/manifest.json",
+        });
+      }
+    });
+  });
+}
+
 function rendering(screenSize: ScreenSize) {
   describe(`Basic rendering (${screenSize.label})`, () => {
-    beforeEach(() => {
-      cy.viewport(screenSize.width, screenSize.height);
-      cy.visit("/basic.html");
-    });
+    beforeEach(() => setup(screenSize));
 
     it("Should render an Openseadragon viewer", () => {
       cy.get("#viewer[data-loaded='true']");
@@ -28,10 +41,7 @@ function rendering(screenSize: ScreenSize) {
 
 function annotations(screenSize: ScreenSize) {
   describe(`Annotations (${screenSize.label})`, () => {
-    beforeEach(() => {
-      cy.viewport(screenSize.width, screenSize.height);
-      cy.visit("/basic.html");
-    });
+    beforeEach(() => setup(screenSize));
 
     it("should be able to navigate between annotations, and disable buttons where necessary", () => {
       cy.get("#storiiies-viewer-0__previous").should("be.disabled");
