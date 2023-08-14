@@ -109,11 +109,6 @@ export default class StoriiiesViewer {
       this.logger("bad-config", true);
     }
 
-    // TODO: Remove — Debug code
-    for (const code of Object.keys(this.statusCodes)) {
-      this.logger(code);
-    }
-
     this.initManifest().then(() => {
       // Should only get styles if manifest can load
       this.containerElement?.classList.add("storiiies-viewer");
@@ -156,7 +151,7 @@ export default class StoriiiesViewer {
 
     // A valid manifest must have at least one canvas
     // Assume "not a manifest" and throw an error
-    if (!this.canvases.length) {
+    if (!this?.canvases?.length) {
       this.logger("bad-manifest", true);
     }
 
