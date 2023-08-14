@@ -118,18 +118,19 @@ function annotations(screenSize: ScreenSize) {
     });
 
     it("should toggle annotation text and controls, and update button text", () => {
-      cy.get("#storiiies-viewer-0__info-toggle")
-        .should("have.attr", "aria-label", "Hide annotations")
-        .should("have.attr", "aria-expanded", "true");
-
       cy.get("#storiiies-viewer-0__info-area").should("not.have.attr", "inert");
-
       cy.get("#storiiies-viewer-0__info-toggle")
-        .click()
-        .should("have.attr", "aria-label", "Show annotations")
-        .should("have.attr", "aria-expanded", "false");
+        .then((el) => {
+          expect(el.get(0).ariaLabel).to.equal("Hide annotations");
+          expect(el.get(0).ariaExpanded).to.equal("true");
+        })
+        .click();
+      cy.get("#storiiies-viewer-0__info-toggle").then((el) => {
+        expect(el.get(0).ariaLabel).to.equal("Show annotations");
+        expect(el.get(0).ariaExpanded).to.equal("false");
+      });
 
-      cy.get("#storiiies-viewer-0__info-area").should("have.attr", "inert");
+      cy.get("#storiiies-viewer-0__info-area[inert]");
     });
   });
 }
