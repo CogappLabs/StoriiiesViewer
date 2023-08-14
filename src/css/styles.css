@@ -51,10 +51,10 @@
 .storiiies-viewer__osd-container {
   inline-size: 100cqi;
   block-size: 50cqb;
+}
 
-  .storiiies-viewer--info-hidden & {
-    block-size: 100cqb;
-  }
+.storiiies-viewer--info-hidden .storiiies-viewer__osd-container {
+  block-size: 100cqb;
 }
 
 /*
