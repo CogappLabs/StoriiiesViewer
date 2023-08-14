@@ -341,7 +341,6 @@ export default class StoriiiesViewer {
   private insertInfoAndControls() {
     const infoAreaEl = document.createElement("div");
     const prevButtonEl = document.createElement("button");
-    const infoTextEl = document.createElement("div");
     const infoToggleEl = document.createElement("button");
 
     // Navigation buttons
@@ -386,6 +385,9 @@ export default class StoriiiesViewer {
       </div>
     `,
     );
+    const infoTextEl = infoAreaEl.querySelector(
+      ".storiiies-viewer__info-text",
+    ) as HTMLElement;
 
     // Toggle button
     infoToggleEl.id = `storiiies-viewer-${this.instanceId}__info-toggle`;
