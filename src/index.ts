@@ -119,16 +119,15 @@ export default class StoriiiesViewer {
 
   /**
    * Log a message to the console, or throw an exception
-   * TODO: Update to remove duplicates
    */
   private logger(code: string, withException: boolean = false) {
     const [level, message] = this.statusCodes[code];
-    const currentStatus = this.containerElement?.dataset.status;
+    const statuses = new Set(this.containerElement?.dataset.status?.split(","));
 
     // Primarily for use in the test suites
     if (this.containerElement) {
-      this.containerElement.dataset.status =
-        currentStatus?.concat(`,${code}`) || code;
+      statuses.add(code);
+      this.containerElement.dataset.status = [...statuses].join(",");
     }
 
     if (withException) {
