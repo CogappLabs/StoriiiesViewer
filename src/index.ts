@@ -55,6 +55,7 @@ export default class StoriiiesViewer {
   private annotationIndexFloor: number = -1;
   private prefersReducedMotion!: boolean;
   private instanceId: number;
+  static instanceCounter: number = 0;
   private statusCodes: statusCodes = {
     "bad-config": ["error", "Missing required config"],
     "manifest-err": ["error", "Encountered a problem loading the manifest"],
@@ -82,7 +83,7 @@ export default class StoriiiesViewer {
   public infoToggleElement!: HTMLElement;
 
   constructor(config: IStoriiiesViewerConfig) {
-    this.instanceId = document.querySelectorAll(".storiiies-viewer").length;
+    this.instanceId = StoriiiesViewer.instanceCounter++;
 
     this.prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
