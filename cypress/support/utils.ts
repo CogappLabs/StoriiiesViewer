@@ -1,6 +1,13 @@
 import StoriiiesViewer from "../../src";
 import OpenSeadragon from "openseadragon";
 
+declare global {
+  interface Window {
+    StoriiiesViewer: typeof StoriiiesViewer;
+    storiiiesViewerInstance: StoriiiesViewer;
+  }
+}
+
 export function getExpectedCentre(region: string) {
   const [x, y, width, height] = region.split(",").map(Number);
   return new OpenSeadragon.Point(x + width / 2, y + height / 2);
@@ -22,13 +29,6 @@ export function assertWithinAcceptableRange(
     actual + acceptableRange,
   );
 }
-
-// Use "WindowWithStoriiiesViewer" type with cy.window() to access
-// the storiiiesViewerInstance property on the window object
-export type WindowWithStoriiiesViewer = Cypress.AUTWindow & {
-  StoriiiesViewer?: typeof StoriiiesViewer;
-  storiiiesViewerInstance?: StoriiiesViewer;
-};
 
 export type ScreenSize = {
   label: string;

@@ -4,11 +4,10 @@ import {
   assertWithinAcceptableRange,
   ScreenSize,
   screenSizes,
-  WindowWithStoriiiesViewer,
 } from "../support/utils";
 
-function setup(screenSize: ScreenSize) {
-  cy.visit("/").then((window: WindowWithStoriiiesViewer) => {
+function setupViewer(screenSize: ScreenSize) {
+  cy.visit("/").then((window) => {
     cy.document().then((document) => {
       cy.viewport(screenSize.width, screenSize.height);
       const container = document.querySelector("#viewer");
@@ -25,7 +24,7 @@ function setup(screenSize: ScreenSize) {
 
 function rendering(screenSize: ScreenSize) {
   describe(`Basic rendering (${screenSize.label})`, () => {
-    beforeEach(() => setup(screenSize));
+    beforeEach(() => setupViewer(screenSize));
 
     it("Should render an Openseadragon viewer", () => {
       cy.get("#viewer[data-loaded='true']");
@@ -41,7 +40,7 @@ function rendering(screenSize: ScreenSize) {
 
 function annotations(screenSize: ScreenSize) {
   describe(`Annotations (${screenSize.label})`, () => {
-    beforeEach(() => setup(screenSize));
+    beforeEach(() => setupViewer(screenSize));
 
     it("should be able to navigate between annotations, and disable buttons where necessary", () => {
       cy.get("#storiiies-viewer-0__previous").should("be.disabled");

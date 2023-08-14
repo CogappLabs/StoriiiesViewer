@@ -1,10 +1,8 @@
-import { WindowWithStoriiiesViewer } from "../support/utils";
-
-function setup(
+function setupViewer(
   containerSelector: string = "#viewer",
   manifestUrl: string = "http://localhost:43110/manifests/standard-v3/manifest.json",
 ) {
-  cy.visit("/").then((window: WindowWithStoriiiesViewer) => {
+  cy.visit("/").then((window) => {
     cy.document().then((document) => {
       const options = {
         container:
@@ -48,7 +46,7 @@ describe("Errors", () => {
       statusCode: 404,
     }).as("404");
 
-    setup();
+    setupViewer();
 
     cy.wait("@404");
 
@@ -69,7 +67,7 @@ describe("Errors", () => {
       statusCode: 500,
     }).as("500");
 
-    setup();
+    setupViewer();
 
     cy.wait("@500");
 
@@ -91,7 +89,7 @@ describe("Errors", () => {
       fixture: "/manifests/not-a-manifest/manifest.json",
     }).as("not-a-manifest");
 
-    setup();
+    setupViewer();
 
     cy.wait("@not-a-manifest");
 
@@ -110,20 +108,20 @@ describe("Errors", () => {
   it("Should error if the provided container doesn't exist", () => {
     // Need to use Cypress.on("fail") here because the error is thrown in the constructor(?)
     allowFail = "Storiiies Viewer: Container element not found";
-    setup("#not-a-real-container");
+    setupViewer("#not-a-real-container");
   });
 
   it("Should error if the provided no container is provided", () => {
     // Need to use Cypress.on("fail") here because the error is thrown in the constructor(?)
     // N.B. This one won't get to the bad config error because it will fail on not finding the container first
     allowFail = "Storiiies Viewer: Container element not found";
-    setup("");
+    setupViewer("");
   });
 
   it("Should error if the provided no manifest is provided", () => {
     // Need to use Cypress.on("fail") here because the error is thrown in the constructor(?)
     allowFail = "Storiiies Viewer: Missing required config";
-    setup("#viewer", "");
+    setupViewer("#viewer", "");
   });
 });
 
@@ -133,7 +131,7 @@ describe("Warnings", () => {
       fixture: "/manifests/standard-v2/manifest.json",
     }).as("v2-manifest");
 
-    setup();
+    setupViewer();
 
     cy.wait("@v2-manifest");
 
@@ -147,7 +145,7 @@ describe("Warnings", () => {
       fixture: "/manifests/no-label-v3/manifest.json",
     }).as("no-label-manifest");
 
-    setup();
+    setupViewer();
 
     cy.wait("@no-label-manifest");
 
@@ -161,7 +159,7 @@ describe("Warnings", () => {
       fixture: "/manifests/external-annotation-pages-v3/manifest.json",
     }).as("external-anno-pages-manifest");
 
-    setup();
+    setupViewer();
 
     cy.wait("@external-anno-pages-manifest");
 

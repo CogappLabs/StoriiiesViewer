@@ -1,7 +1,5 @@
-import { WindowWithStoriiiesViewer } from "../support/utils";
-
-function setup() {
-  cy.visit("/multi-viewer.html").then((window: WindowWithStoriiiesViewer) => {
+function setupViewers() {
+  cy.visit("/multi-viewer.html").then((window) => {
     cy.document().then((document) => {
       const containers = document.querySelectorAll(".viewer");
 
@@ -19,7 +17,7 @@ function setup() {
 
 function rendering() {
   describe(`Basic rendering`, () => {
-    beforeEach(() => setup());
+    beforeEach(() => setupViewers());
 
     it("Should render multiple Openseadragon viewers", () => {
       cy.get("[data-loaded='true']").should("have.length", 3);
@@ -29,7 +27,7 @@ function rendering() {
 
 function annotations() {
   describe(`Annotations`, () => {
-    beforeEach(() => setup());
+    beforeEach(() => setupViewers());
 
     it("should be able to navigate between annotations, and disable buttons where necessary", () => {
       for (let i = 0; i <= 2; i++) {
