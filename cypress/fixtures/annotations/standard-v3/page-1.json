@@ -1,0 +1,31 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://localhost:43110/annotations/standard-v3/page-1.json",
+  "type": "AnnotationPage",
+  "items": [
+    {
+      "id": "http://localhost:43110/annotations/standard-v3/page-1/annotation/1",
+      "type": "Annotation",
+      "motivation": "commenting",
+      "body": {
+        "type": "TextualBody",
+        "value": "Nullam sit amet egestas metus. Sed dictum mattis erat feugiat gravida",
+        "language": "en",
+        "format": "text/plain"
+      },
+      "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=265,661,100,200"
+    },
+    {
+      "id": "http://localhost:43110/annotations/standard-v3/page-1/annotation/2",
+      "type": "Annotation",
+      "motivation": "commenting",
+      "body": {
+        "type": "TextualBody",
+        "value": "Suspendisse lacinia enim lorem, sit amet interdum odio dignissim et. Curabitur ultricies felis non sagittis commodo. Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui consectetur consectetur. Suspendisse non nisi turpis.",
+        "language": "en",
+        "format": "text/plain"
+      },
+      "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=333,242,200,120"
+    }
+  ]
+}
