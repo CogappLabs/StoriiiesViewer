@@ -340,7 +340,7 @@ export default class StoriiiesViewer {
   private insertInfoAndControls() {
     const infoAreaEl = document.createElement("div");
     const prevButtonEl = document.createElement("button");
-    const infoTextEl = document.createElement("p");
+    const infoTextEl = document.createElement("div");
     const infoToggleEl = document.createElement("button");
 
     // Navigation buttons
@@ -374,13 +374,17 @@ export default class StoriiiesViewer {
         }
       });
     });
+    infoAreaEl.append(prevButtonEl, nextButtonEl);
 
     // Text element
-    infoTextEl.id = `storiiies-viewer-${this.instanceId}__info-text`;
-    infoTextEl.classList.add("storiiies-viewer__info-text");
-    infoTextEl.innerText = this.label;
-    infoAreaEl.append(prevButtonEl, nextButtonEl);
-    infoAreaEl.insertAdjacentElement("beforeend", infoTextEl);
+    infoAreaEl.insertAdjacentHTML(
+      "beforeend",
+      `
+      <div id="storiiies-viewer-${this.instanceId}__info-text" class="storiiies-viewer__info-text" tabindex="0">
+        ${this.label}
+      </div>
+    `,
+    );
 
     // Toggle button
     infoToggleEl.id = `storiiies-viewer-${this.instanceId}__info-toggle`;
