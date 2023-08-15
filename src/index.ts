@@ -5,6 +5,7 @@ import {
   AnnotationPage,
   Annotation,
 } from "manifesto.js";
+import DOMPurify from "dompurify";
 
 import arrowIcon from "./images/arrow.svg?raw";
 import showIcon from "./images/eye.svg?raw";
@@ -294,11 +295,13 @@ export default class StoriiiesViewer {
     if (this.infoTextElement) {
       if (this.activeAnnotationIndex >= 0) {
         // Have to use getProperty here as there is no getValue() method
-        this.infoTextElement.innerText = this.activeCanvasAnnotations[index]
-          .getBody()[0]
-          .getProperty("value");
+        this.infoTextElement.innerHTML = StoriiiesViewer.sanitiseHTML(
+          this.activeCanvasAnnotations[index].getBody()[0].getProperty("value"),
+        );
       } else {
-        this.infoTextElement.innerText = this.label;
+        this.infoTextElement.innerHTML = StoriiiesViewer.sanitiseHTML(
+          this.label,
+        );
       }
     }
 
@@ -487,5 +490,14 @@ export default class StoriiiesViewer {
     }
 
     return null;
+  }
+
+  /**
+   * Takes a string of potentially unsafe HTML and returns a sanitised string
+   */
+  static sanitiseHTML(dirty: string): string {
+    return DOMPurify.sanitize(dirty, {
+      ALLOWED_TAGS: ["a", "br", "em", "p", "small", "span", "strong"],
+    });
   }
 }
