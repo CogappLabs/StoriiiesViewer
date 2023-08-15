@@ -24,10 +24,12 @@
     "test:gui": "run-p -r dev cypress:gui"
   },
   "dependencies": {
+    "dompurify": "^3.0.5",
     "manifesto.js": "^4.2.17",
     "openseadragon": "^4.1.0"
   },
   "devDependencies": {
+    "@types/dompurify": "^3.0.2",
     "@types/openseadragon": "^3.0.6",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
