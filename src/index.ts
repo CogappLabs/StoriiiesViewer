@@ -5,6 +5,7 @@ import {
   AnnotationPage,
   Annotation,
 } from "manifesto.js";
+import { sanitiseHTML } from "./utils";
 import DOMPurify from "dompurify";
 import OpenSeadragon from "openseadragon";
 
