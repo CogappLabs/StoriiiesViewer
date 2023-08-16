@@ -1,4 +1,12 @@
+import StoriiiesViewer from "../../src";
 import OpenSeadragon from "openseadragon";
+
+declare global {
+  interface Window {
+    StoriiiesViewer: typeof StoriiiesViewer;
+    storiiiesViewerInstance: StoriiiesViewer;
+  }
+}
 
 export function getExpectedCentre(region: string) {
   const [x, y, width, height] = region.split(",").map(Number);
@@ -21,3 +29,14 @@ export function assertWithinAcceptableRange(
     actual + acceptableRange,
   );
 }
+
+export type ScreenSize = {
+  label: string;
+  width: number;
+  height: number;
+};
+
+export const screenSizes: Array<ScreenSize> = [
+  { label: "Mobile", width: 320, height: 480 },
+  { label: "Desktop", width: 1920, height: 1080 },
+];

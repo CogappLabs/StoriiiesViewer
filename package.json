@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "vite build",
-    "cypress": "cypress run",
+    "cypress": "cypress run -b chrome",
     "cypress:gui": "cypress open",
     "dev": "vite",
     "lint": "run-p lint:* prettier",

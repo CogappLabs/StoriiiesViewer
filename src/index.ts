@@ -12,13 +12,17 @@ import hideIcon from "./images/hide.svg?raw";
 
 import OpenSeadragon from "openseadragon";
 interface IStoriiiesViewerConfig {
-  container: Element | HTMLElement | string | null;
+  container: HTMLElement | Element | string | null;
   manifestUrl: string;
 }
 
 type ControlButtons = {
   prev: HTMLButtonElement;
   next: HTMLButtonElement;
+};
+
+type statusCodes = {
+  [key: string]: ["warn" | "error", string];
 };
 
 type RawAnnotationPage = {
@@ -43,7 +47,7 @@ type RawAnnotationBody = {
 };
 
 export default class StoriiiesViewer {
-  private containerElement: HTMLElement | null;
+  private containerElement: HTMLElement | null = null;
   private manifestUrl: string;
   private _activeAnnotationIndex: number = -1;
   private _activeCanvasIndex: number = 0;
@@ -51,6 +55,22 @@ export default class StoriiiesViewer {
   private annotationIndexFloor: number = -1;
   private prefersReducedMotion!: boolean;
   private instanceId: number;
+  static instanceCounter: number = 0;
+  private statusCodes: statusCodes = {
+    "bad-config": ["error", "Missing required config"],
+    "manifest-err": ["error", "Encountered a problem loading the manifest"],
+    "bad-manifest": ["error", "Could not parse the manifest"],
+    "bad-container": ["error", "Container element not found"],
+    "unkn-version": [
+      "warn",
+      "Unsupported IIIF Presentation API version detected",
+    ],
+    "no-label": [
+      "warn",
+      "Manifest doesn't contain a label. This is required by the IIIF Presentation API",
+    ],
+    "no-ext-anno": ["warn", "External annotationPages are not supported"],
+  };
   public manifest!: Manifest;
   public label: string = "";
   public canvases!: Canvas[];
@@ -63,7 +83,7 @@ export default class StoriiiesViewer {
   public infoToggleElement!: HTMLElement;
 
   constructor(config: IStoriiiesViewerConfig) {
-    this.instanceId = document.querySelectorAll(".storiiies-viewer").length;
+    this.instanceId = StoriiiesViewer.instanceCounter++;
 
     this.prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -72,32 +92,75 @@ export default class StoriiiesViewer {
     // Normalise the config container
     if (typeof config.container === "string") {
       this.containerElement = document.querySelector(config.container);
-    } else {
-      // Minor wrinkle around if the container is an Element or HTMLElement
-      // It should be safe to cast it to HTMLElement
-      this.containerElement = config.container as HTMLElement;
+      // Allow non-HTMLElements to be fall through as null
+      // (e.g. SVG is instanceof Element, but not HTMLElement)
+    } else if (config.container instanceof HTMLElement) {
+      this.containerElement = config.container;
+    }
+
+    // Throw if the container element can't be found (or it's not an HTMLElement)
+    if (this.containerElement === null) {
+      this.logger("bad-container", true);
     }
 
     this.manifestUrl = config.manifestUrl;
 
+    // Throw if the required config is missing and halt instantiation
     if (!this.containerElement || !this.manifestUrl) {
-      throw new Error("Missing required config");
+      this.logger("bad-config", true);
     }
 
-    this.containerElement?.classList.add("storiiies-viewer");
-
     this.initManifest().then(() => {
+      // Should only get styles if manifest can load
+      this.containerElement?.classList.add("storiiies-viewer");
       this.initViewer();
       this.insertInfoAndControls();
     });
   }
 
   /**
+   * Log a message to the console, or throw an exception
+   */
+  private logger(code: string, withException: boolean = false) {
+    const [level, message] = this.statusCodes[code];
+    const statuses = new Set(this.containerElement?.dataset.status?.split(","));
+
+    // Primarily for use in the test suites
+    if (this.containerElement) {
+      statuses.add(code);
+      this.containerElement.dataset.status = [...statuses].join(",");
+    }
+
+    if (withException) {
+      throw new Error(`Storiiies Viewer: ${message}`);
+    }
+
+    console[level](`Storiiies Viewer: ${message}`);
+  }
+
+  /**
    * Load the manifest and extract the label, canvases and annotation pages
    */
   private async initManifest() {
-    const rawManifest = await loadManifest(this.manifestUrl);
+    const rawManifest = await loadManifest(this.manifestUrl).catch(() => {
+      this.logger("manifest-err", true);
+    });
+
     this.manifest = new Manifest(rawManifest);
+    this.canvases = this.manifest.getSequenceByIndex(0)?.getCanvases();
+
+    // A valid manifest must have at least one canvas
+    // Assume "not a manifest" and throw an error
+    if (!this?.canvases?.length) {
+      this.logger("bad-manifest", true);
+    }
+
+    // Warn about unsupported manifest versions
+    if (
+      this.manifest.context !== "http://iiif.io/api/presentation/3/context.json"
+    ) {
+      this.logger("unkn-version");
+    }
 
     this.label = this.manifest.getLabel().getValue() || "";
 
@@ -105,9 +168,11 @@ export default class StoriiiesViewer {
     if (!this.label) {
       this.activeAnnotationIndex = 0;
       this.annotationIndexFloor = 0;
+
+      // But should also warn that this is invalid
+      this.logger("no-label");
     }
 
-    this.canvases = this.manifest.getSequenceByIndex(0).getCanvases();
     this.annotationPages = this.getAnnotationPages();
     this.activeCanvasAnnotations = this.getActiveCanvasAnnotations();
   }
@@ -218,13 +283,11 @@ export default class StoriiiesViewer {
     this.controlButtonElements.next.disabled = false;
 
     // Disable buttons
-    switch (index) {
-      case lowerBound:
-        this.controlButtonElements.prev.disabled = true;
-        break;
-      case upperBound:
-        this.controlButtonElements.next.disabled = true;
-        break;
+    if (index === lowerBound) {
+      this.controlButtonElements.prev.disabled = true;
+    }
+    if (index === upperBound) {
+      this.controlButtonElements.next.disabled = true;
     }
 
     // Info text to be label or annotation
@@ -278,7 +341,6 @@ export default class StoriiiesViewer {
   private insertInfoAndControls() {
     const infoAreaEl = document.createElement("div");
     const prevButtonEl = document.createElement("button");
-    const infoTextEl = document.createElement("p");
     const infoToggleEl = document.createElement("button");
 
     // Navigation buttons
@@ -312,13 +374,20 @@ export default class StoriiiesViewer {
         }
       });
     });
+    infoAreaEl.append(prevButtonEl, nextButtonEl);
 
     // Text element
-    infoTextEl.id = `storiiies-viewer-${this.instanceId}__info-text`;
-    infoTextEl.classList.add("storiiies-viewer__info-text");
-    infoTextEl.innerText = this.label;
-    infoAreaEl.append(prevButtonEl, nextButtonEl);
-    infoAreaEl.insertAdjacentElement("beforeend", infoTextEl);
+    infoAreaEl.insertAdjacentHTML(
+      "beforeend",
+      `
+      <div id="storiiies-viewer-${this.instanceId}__info-text" class="storiiies-viewer__info-text" tabindex="0">
+        ${this.label}
+      </div>
+    `,
+    );
+    const infoTextEl = infoAreaEl.querySelector(
+      ".storiiies-viewer__info-text",
+    ) as HTMLElement;
 
     // Toggle button
     infoToggleEl.id = `storiiies-viewer-${this.instanceId}__info-toggle`;
@@ -369,9 +438,15 @@ export default class StoriiiesViewer {
           canvas.getProperty("annotations") || [];
 
         annotationPages.push(
-          ...rawAnnotationPages.map((rawAnnotationPage) => {
+          ...rawAnnotationPages.flatMap((rawAnnotationPage) => {
             const rawAnnotations: Array<RawAnnotation> | undefined =
               rawAnnotationPage.items;
+
+            // Remove page if annotations aren't embedded
+            if (!rawAnnotations) {
+              this.logger("no-ext-anno");
+              return [];
+            }
 
             return new AnnotationPage(
               {
@@ -395,7 +470,8 @@ export default class StoriiiesViewer {
    * Get the annotations for the current canvas
    */
   public getActiveCanvasAnnotations(): Array<Annotation> {
-    return this.annotationPages[this.activeCanvasIndex].getItems();
+    // The current canvas might not have any annotations
+    return this.annotationPages[this.activeCanvasIndex]?.getItems() || [];
   }
 
   /**

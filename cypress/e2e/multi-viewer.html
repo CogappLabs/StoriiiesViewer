@@ -6,19 +6,13 @@
     <link rel="stylesheet" href="/src/css/styles.css" />
     <script type="module">
       import StoriiiesViewer from "/src/index.ts";
-      document.addEventListener("DOMContentLoaded", () => {
-        const container = document.querySelector("#viewer");
-
-        window.storiiiesViewerInstance = new StoriiiesViewer({
-          container,
-          manifestUrl:
-            "http://localhost:43110/manifests/standard-v3/manifest.json",
-        });
-      });
+      window.StoriiiesViewer = StoriiiesViewer;
     </script>
     <title>Basic viewer</title>
   </head>
   <body>
-    <div id="viewer"></div>
+    <div class="viewer"></div>
+    <div class="viewer"></div>
+    <div class="viewer"></div>
   </body>
 </html>
