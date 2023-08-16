@@ -498,6 +498,7 @@ export default class StoriiiesViewer {
   static sanitiseHTML(dirty: string): string {
     return DOMPurify.sanitize(dirty, {
       ALLOWED_TAGS: ["a", "br", "em", "p", "small", "span", "strong"],
+      ALLOWED_ATTR: ["href"],
     });
   }
 }
