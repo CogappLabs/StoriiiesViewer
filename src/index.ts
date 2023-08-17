@@ -5,15 +5,16 @@ import {
   AnnotationPage,
   Annotation,
 } from "manifesto.js";
-import { sanitiseHTML } from "./utils";
 import DOMPurify from "dompurify";
 import OpenSeadragon from "openseadragon";
+
+import { sanitiseHTML } from "./utils";
 
 import arrowIcon from "./images/arrow.svg?raw";
 import showIcon from "./images/eye.svg?raw";
 import hideIcon from "./images/hide.svg?raw";
 
-interface IStoriiiesViewerConfig {
+export interface IStoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
   manifestUrl: string;
 }
