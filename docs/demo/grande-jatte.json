@@ -1,0 +1,201 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte.json",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "A Sunday on La Grande Jatte — 1884"
+    ]
+  },
+  "metadata": [
+    {
+      "label": "Author",
+      "value": "Tristan Roddis"
+    },
+    {
+      "label": "Provider",
+      "value": "Cogapp"
+    }
+  ],
+  "items": [
+    {
+      "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/canvases/1",
+      "type": "Canvas",
+      "height": 2048,
+      "width": 2048,
+      "label": {
+        "en": [
+          "A Sunday on La Grande Jatte — 1884"
+        ]
+      },
+      "requiredStatement": {
+        "label": {
+          "en": [
+            "Attribution"
+          ]
+        },
+        "value": {
+          "en": [
+            "CC0 Public Domain image hosted by the Art Institute of Chicago"
+          ]
+        }
+      },
+      "items": [
+        {
+          "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/pages/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/annotations/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "https://www.artic.edu/iiif/2/2d484387-2509-5e8e-2c43-22f9981972eb/full/full/0/default.jpg",
+                "type": "Image",
+                "format": "image/jpeg",
+                "height": 6237,
+                "width": 9310,
+                "service": [
+                  {
+                    "id": "https://www.artic.edu/iiif/2/2d484387-2509-5e8e-2c43-22f9981972eb/info.json",
+                    "profile": "level2",
+                    "type": "ImageService2"
+                  }
+                ]
+              },
+              "target": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/canvases/1"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/page-1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/page-1/annotation/1",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "<div>In his most famous painting, <em>A Sunday Afternoon on the Island of La Grande Jatte</em>, Seurat invites us to consider a scene on an island park in the Seine river.</div>",
+                "language": "en",
+                "format": "text/html"
+              },
+              "target": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/canvases/1#xywh=346,597,8800,4812"
+            },
+            {
+              "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/page-1/annotation/2",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "<div>It features activities on the river</div>",
+                "language": "en",
+                "format": "text/html"
+              },
+              "target": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/canvases/1#xywh=6,994,4400,2406"
+            },
+            {
+              "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/page-1/annotation/3",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "<div>Groups of people in the sun in the middle distance</div>",
+                "language": "en",
+                "format": "text/html"
+              },
+              "target": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/canvases/1#xywh=1367,847,6336,3465"
+            },
+            {
+              "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/page-1/annotation/4",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "<div>And others in the shade in the foreground</div>",
+                "language": "en",
+                "format": "text/html"
+              },
+              "target": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/canvases/1#xywh=132,3204,4562,2495"
+            },
+            {
+              "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/page-1/annotation/5",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "<div>The painting is one of the first examples of Pointillism - using small dots of different colours to build up an image.</div>",
+                "language": "en",
+                "format": "text/html"
+              },
+              "target": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/canvases/1#xywh=4431,4277,1455,795"
+            },
+            {
+              "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/page-1/annotation/6",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "<div>As well as this novel technique, which launched the Neo-Impressionism movement, the painting contains numerous enigmatic details such as this monkey...</div>",
+                "language": "en",
+                "format": "text/html"
+              },
+              "target": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/canvases/1#xywh=5825,4485,2251,1231"
+            },
+            {
+              "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/page-1/annotation/7",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "<div>... a man playing the trumpet (who was replaced by Cletus Spuckler drinking a bottle of beer in The Simpsons S26 E3)...</div>",
+                "language": "en",
+                "format": "text/html"
+              },
+              "target": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/canvases/1#xywh=2532,1034,1559,976"
+            },
+            {
+              "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/page-1/annotation/8",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "<div>... this little girl who stared back in the movie <em>Ferris Bueller's Day Off</em>...</div>",
+                "language": "en",
+                "format": "text/html"
+              },
+              "target": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/canvases/1#xywh=3183,2203,2200,1377"
+            },
+            {
+              "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/page-1/annotation/9",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "<div>... and a mysterious triangular shape.</div>",
+                "language": "en",
+                "format": "text/html"
+              },
+              "target": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/canvases/1#xywh=8188,3130,1559,853"
+            },
+            {
+              "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/page-1/annotation/10",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "<div>To find out more about this fascinating painting, see the following:<br><br>\n<a href=\"https://www.artic.edu/artworks/27992/a-sunday-on-la-grande-jatte-1884\">Catalogue record at AIC</a><br>\n<a href=\"https://en.wikipedia.org/wiki/A_Sunday_Afternoon_on_the_Island_of_La_Grande_Jatte\">Wikipedia entry</a><br>\n<a href=\"https://news.artnet.com/art-world/three-things-seurats-a-sunday-on-la-grande-jatte-2127114\">Article from Artnet</a></div>",
+                "language": "en",
+                "format": "text/html"
+              },
+              "target": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/canvases/1#xywh=-1123,-215,12672,6930"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
