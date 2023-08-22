@@ -5,15 +5,16 @@ import {
   AnnotationPage,
   Annotation,
 } from "manifesto.js";
-import { sanitiseHTML } from "./utils";
 import DOMPurify from "dompurify";
 import OpenSeadragon from "openseadragon";
+
+import { sanitiseHTML } from "./utils";
 
 import arrowIcon from "./images/arrow.svg?raw";
 import showIcon from "./images/eye.svg?raw";
 import hideIcon from "./images/hide.svg?raw";
 
-interface IStoriiiesViewerConfig {
+export interface IStoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
   manifestUrl: string;
 }
@@ -49,16 +50,12 @@ type RawAnnotationBody = {
 };
 
 export default class StoriiiesViewer {
-  private containerElement: HTMLElement | null = null;
-  private manifestUrl: string;
-  private _activeAnnotationIndex: number = -1;
-  private _activeCanvasIndex: number = 0;
-  private _showInfoArea: boolean = true;
-  private annotationIndexFloor: number = -1;
-  private prefersReducedMotion!: boolean;
-  private instanceId: number;
-  static instanceCounter: number = 0;
-  private statusCodes: statusCodes = {
+  #_activeAnnotationIndex: number = -1;
+  #_activeCanvasIndex: number = 0;
+  #_showInfoArea: boolean = true;
+  #annotationIndexFloor: number = -1;
+  #prefersReducedMotion!: boolean;
+  #statusCodes: statusCodes = {
     "bad-config": ["error", "Missing required config"],
     "manifest-err": ["error", "Encountered a problem loading the manifest"],
     "bad-manifest": ["error", "Could not parse the manifest"],
@@ -73,6 +70,10 @@ export default class StoriiiesViewer {
     ],
     "no-ext-anno": ["warn", "External annotationPages are not supported"],
   };
+  static #instanceCounter: number = 0;
+  public containerElement: HTMLElement | null = null;
+  public manifestUrl: string;
+  public instanceId: number;
   public manifest!: Manifest;
   public label: string = "";
   public canvases!: Canvas[];
@@ -89,9 +90,9 @@ export default class StoriiiesViewer {
   public infoToggleElement!: HTMLElement;
 
   constructor(config: IStoriiiesViewerConfig) {
-    this.instanceId = StoriiiesViewer.instanceCounter++;
+    this.instanceId = StoriiiesViewer.#instanceCounter++;
 
-    this.prefersReducedMotion = window.matchMedia(
+    this.#prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
@@ -106,29 +107,29 @@ export default class StoriiiesViewer {
 
     // Throw if the container element can't be found (or it's not an HTMLElement)
     if (this.containerElement === null) {
-      this.logger("bad-container", true);
+      this.#logger("bad-container", true);
     }
 
     this.manifestUrl = config.manifestUrl;
 
     // Throw if the required config is missing and halt instantiation
     if (!this.containerElement || !this.manifestUrl) {
-      this.logger("bad-config", true);
+      this.#logger("bad-config", true);
     }
 
-    this.initManifest().then(() => {
+    this.#initManifest().then(() => {
       // Should only get styles if manifest can load
       this.containerElement?.classList.add("storiiies-viewer");
-      this.initViewer();
-      this.insertInfoAndControls();
+      this.#initViewer();
+      this.#insertInfoAndControls();
     });
   }
 
   /**
    * Log a message to the console, or throw an exception
    */
-  private logger(code: string, withException: boolean = false) {
-    const [level, message] = this.statusCodes[code];
+  #logger(code: string, withException: boolean = false) {
+    const [level, message] = this.#statusCodes[code];
     const statuses = new Set(this.containerElement?.dataset.status?.split(","));
 
     // Primarily for use in the test suites
@@ -147,9 +148,9 @@ export default class StoriiiesViewer {
   /**
    * Load the manifest and extract the label, canvases and annotation pages
    */
-  private async initManifest() {
+  async #initManifest() {
     const rawManifest = await loadManifest(this.manifestUrl).catch(() => {
-      this.logger("manifest-err", true);
+      this.#logger("manifest-err", true);
     });
 
     this.manifest = new Manifest(rawManifest);
@@ -158,14 +159,14 @@ export default class StoriiiesViewer {
     // A valid manifest must have at least one canvas
     // Assume "not a manifest" and throw an error
     if (!this?.canvases?.length) {
-      this.logger("bad-manifest", true);
+      this.#logger("bad-manifest", true);
     }
 
     // Warn about unsupported manifest versions
     if (
       this.manifest.context !== "http://iiif.io/api/presentation/3/context.json"
     ) {
-      this.logger("unkn-version");
+      this.#logger("unkn-version");
     }
 
     this.label = this.manifest.getLabel().getValue() || "";
@@ -173,20 +174,20 @@ export default class StoriiiesViewer {
     // In lieu of a label, set the active annotation to 0 to show the first annotation
     if (!this.label) {
       this.activeAnnotationIndex = 0;
-      this.annotationIndexFloor = 0;
+      this.#annotationIndexFloor = 0;
 
       // But should also warn that this is invalid
-      this.logger("no-label");
+      this.#logger("no-label");
     }
 
-    this.annotationPages = this.getAnnotationPages();
-    this.activeCanvasAnnotations = this.getActiveCanvasAnnotations();
+    this.annotationPages = this.#getAnnotationPages();
+    this.activeCanvasAnnotations = this.#getActiveCanvasAnnotations();
   }
 
   /**
    * Initialize the viewer
    */
-  private initViewer() {
+  #initViewer() {
     const osdContainer = document.createElement("div");
     osdContainer.id = `storiiies-viewer-${this.instanceId}__osd-container`;
     osdContainer.classList.add("storiiies-viewer__osd-container");
@@ -223,29 +224,29 @@ export default class StoriiiesViewer {
   /**
    * Update the viewer
    */
-  private updateViewer() {
+  #updateViewer() {
     // Show whole image when showing the label
     if (
       this.label &&
-      this.activeAnnotationIndex === this.annotationIndexFloor
+      this.activeAnnotationIndex === this.#annotationIndexFloor
     ) {
-      this.viewer.viewport.goHome(this.prefersReducedMotion);
+      this.viewer.viewport.goHome(this.#prefersReducedMotion);
       return;
     }
 
     const target =
-      this.getActiveCanvasAnnotations()[
+      this.#getActiveCanvasAnnotations()[
         this.activeAnnotationIndex
       ].getTarget() || "";
-    const region = this.getRegion(target);
+    const region = this.#getRegion(target);
 
     if (region) {
       this.viewer.viewport.fitBoundsWithConstraints(
         region,
-        this.prefersReducedMotion,
+        this.#prefersReducedMotion,
       );
     } else {
-      this.viewer.viewport.goHome(this.prefersReducedMotion);
+      this.viewer.viewport.goHome(this.#prefersReducedMotion);
     }
   }
 
@@ -253,22 +254,22 @@ export default class StoriiiesViewer {
    * Get the active canvas index
    */
   get activeCanvasIndex(): number {
-    return this._activeCanvasIndex;
+    return this.#_activeCanvasIndex;
   }
 
   /**
    * Set the active canvas index and perform any necessary updates
    */
   set activeCanvasIndex(index: number) {
-    this._activeCanvasIndex = index;
-    this.activeAnnotationIndex = this.annotationIndexFloor;
+    this.#_activeCanvasIndex = index;
+    this.activeAnnotationIndex = this.#annotationIndexFloor;
   }
 
   /**
    * Get the active annotation index
    */
   get activeAnnotationIndex(): number {
-    return this._activeAnnotationIndex;
+    return this.#_activeAnnotationIndex;
   }
 
   /**
@@ -276,13 +277,13 @@ export default class StoriiiesViewer {
    */
   set activeAnnotationIndex(index: number) {
     // Lower bound can only be -1 if there is a label
-    const lowerBound = this.annotationIndexFloor;
+    const lowerBound = this.#annotationIndexFloor;
     const upperBound = this.activeCanvasAnnotations.length - 1;
 
     // Ignore out of bounds values
     if (index < lowerBound || index > upperBound) return;
 
-    this._activeAnnotationIndex = index;
+    this.#_activeAnnotationIndex = index;
 
     // Reset button states
     this.controlButtonElements.prev.disabled = false;
@@ -312,21 +313,21 @@ export default class StoriiiesViewer {
       }
     }
 
-    this.updateViewer();
+    this.#updateViewer();
   }
 
   /**
    * Get the showInfoArea value
    */
   get showInfoArea(): boolean {
-    return this._showInfoArea;
+    return this.#_showInfoArea;
   }
 
   /**
    * Set the showInfoArea value and perform any necessary updates
    */
   set showInfoArea(value: boolean) {
-    this._showInfoArea = value;
+    this.#_showInfoArea = value;
     this.containerElement?.classList.toggle(
       "storiiies-viewer--info-hidden",
       !value,
@@ -348,7 +349,7 @@ export default class StoriiiesViewer {
   /**
    * Create area for label, annotations and controls
    */
-  private insertInfoAndControls() {
+  #insertInfoAndControls() {
     const infoAreaEl = document.createElement("div");
     const prevButtonEl = document.createElement("button");
     const infoToggleEl = document.createElement("button");
@@ -430,14 +431,14 @@ export default class StoriiiesViewer {
 
     // Initialise values, let the setters handle the rest
     this.showInfoArea = true;
-    this.activeAnnotationIndex = this.annotationIndexFloor;
+    this.activeAnnotationIndex = this.#annotationIndexFloor;
   }
 
   /**
    * Retrieves the annotationPages for the manifest
    * (Temporary solution)
    */
-  public getAnnotationPages(): Array<AnnotationPage> {
+  #getAnnotationPages(): Array<AnnotationPage> {
     const annotationPages: Array<AnnotationPage> = [];
 
     if (this.canvases.length) {
@@ -454,7 +455,7 @@ export default class StoriiiesViewer {
 
             // Remove page if annotations aren't embedded
             if (!rawAnnotations) {
-              this.logger("no-ext-anno");
+              this.#logger("no-ext-anno");
               return [];
             }
 
@@ -479,7 +480,7 @@ export default class StoriiiesViewer {
   /**
    * Get the annotations for the current canvas
    */
-  public getActiveCanvasAnnotations(): Array<Annotation> {
+  #getActiveCanvasAnnotations(): Array<Annotation> {
     // The current canvas might not have any annotations
     return this.annotationPages[this.activeCanvasIndex]?.getItems() || [];
   }
@@ -487,7 +488,7 @@ export default class StoriiiesViewer {
   /**
    * Get the region from the URL as a Rect relative to the viewport of this instance's viewer
    */
-  public getRegion(url?: string): OpenSeadragon.Rect | null {
+  #getRegion(url?: string): OpenSeadragon.Rect | null {
     const regex = /#xywh=(\d+),(\d+),(\d+),(\d+)/;
     const match = url?.match(regex);
 
