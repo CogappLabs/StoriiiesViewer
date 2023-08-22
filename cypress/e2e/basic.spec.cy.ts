@@ -33,7 +33,7 @@ function rendering(screenSize: ScreenSize) {
     it("Should initially display the label from the manifest", () => {
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `<p><strong>Lorem ipsum dolor</strong> sit amet, <em>consectetur adipiscing elit</em>.</p><p>Nam rutrum elit id metus blandit, vel egestas enim sagittis. Integer at sem sit amet nulla dictum sagittis a ut enim.<br><br> Sed dignissim <a href="https://google.com">commodo sapien</a> ut vestibulum. Aenean sed iaculis metus, vel varius massa. Nullam placerat tempus pharetra. Vestibulum maximus elit ut eros sollicitudin, viverra aliquet metus condimentum. Proin sed pellentesque nibh. Pellentesque suscipit tempus risus, condimentum semper sem ultrices quis. Suspendisse blandit viverra ex in sollicitudin. Fusce aliquet tincidunt leo ut venenatis. Quisque eu sem hendrerit, pellentesque nibh et, imperdiet mi. Mauris arcu eros, consequat sit amet sapien accumsan, pellentesque malesuada justo.</p>`,
+        `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum elit id metus blandit, vel egestas enim sagittis. Integer at sem sit amet nulla dictum sagittis a ut enim.<br><br>Sed dignissim commodo sapien ut vestibulum. Aenean sed iaculis metus, vel varius massa. Nullam placerat tempus pharetra. Vestibulum maximus elit ut eros sollicitudin, viverra aliquet metus condimentum. Proin sed pellentesque nibh. Pellentesque suscipit tempus risus, condimentum semper sem ultrices quis. Suspendisse blandit viverra ex in sollicitudin. Fusce aliquet tincidunt leo ut venenatis. Quisque eu sem hendrerit, pellentesque nibh et, imperdiet mi. Mauris arcu eros, consequat sit amet sapien accumsan, pellentesque malesuada justo.`,
       );
     });
   });
@@ -61,7 +61,7 @@ function annotations(screenSize: ScreenSize) {
     it("should display the correct annotation text and be sanitised", () => {
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `<p><strong>Lorem ipsum dolor</strong> sit amet, <em>consectetur adipiscing elit</em>.</p><p>Nam rutrum elit id metus blandit, vel egestas enim sagittis. Integer at sem sit amet nulla dictum sagittis a ut enim.<br><br> Sed dignissim <a href="https://google.com">commodo sapien</a> ut vestibulum. Aenean sed iaculis metus, vel varius massa. Nullam placerat tempus pharetra. Vestibulum maximus elit ut eros sollicitudin, viverra aliquet metus condimentum. Proin sed pellentesque nibh. Pellentesque suscipit tempus risus, condimentum semper sem ultrices quis. Suspendisse blandit viverra ex in sollicitudin. Fusce aliquet tincidunt leo ut venenatis. Quisque eu sem hendrerit, pellentesque nibh et, imperdiet mi. Mauris arcu eros, consequat sit amet sapien accumsan, pellentesque malesuada justo.</p>`,
+        `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum elit id metus blandit, vel egestas enim sagittis. Integer at sem sit amet nulla dictum sagittis a ut enim.<br><br>Sed dignissim commodo sapien ut vestibulum. Aenean sed iaculis metus, vel varius massa. Nullam placerat tempus pharetra. Vestibulum maximus elit ut eros sollicitudin, viverra aliquet metus condimentum. Proin sed pellentesque nibh. Pellentesque suscipit tempus risus, condimentum semper sem ultrices quis. Suspendisse blandit viverra ex in sollicitudin. Fusce aliquet tincidunt leo ut venenatis. Quisque eu sem hendrerit, pellentesque nibh et, imperdiet mi. Mauris arcu eros, consequat sit amet sapien accumsan, pellentesque malesuada justo.`,
       );
       cy.get("#storiiies-viewer-0__next").click();
 
@@ -72,11 +72,9 @@ function annotations(screenSize: ScreenSize) {
       cy.get("#storiiies-viewer-0__next").click();
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `Suspendisse lacinia enim lorem, sit amet interdum odio dignissim et. Curabitur ultricies felis non sagittis commodo. Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui consectetur consectetur. Suspendisse non nisi turpis.`,
+        `<p><strong>Suspendisse lacinia enim lorem</strong>, sit amet interdum odio dignissim et. Curabitur ultricies felis non sagittis commodo.</p><p>Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui <a href="https://www.google.com">consectetur consectetur</a>. Suspendisse non nisi turpis.</p>`,
       );
     });
-
-    it("should display sanitised annotation text", () => {});
 
     it("should display the correct region in OpenSeadragon", () => {
       cy.window().then((window) => {
