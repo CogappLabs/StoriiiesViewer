@@ -311,18 +311,32 @@ export default class StoriiiesViewer {
 
     // Info text to be label or annotation
     if (this.infoTextElement) {
+      let value = this.label;
+      // Default to plain text (which will be implicity true for the label)
+      let format = "text/plain";
+
+      // The index will only be 0 or greater for annotations
       if (this.activeAnnotationIndex >= 0) {
         // Have to use getProperty here as there is no getValue() method
-        this.infoTextElement.innerHTML = sanitiseHTML(
-          this.activeCanvasAnnotations[index].getBody()[0].getProperty("value"),
-          this.DOMPurifyConfig,
-        );
-      } else {
-        this.infoTextElement.innerHTML = sanitiseHTML(
-          this.label,
-          this.DOMPurifyConfig,
-        );
+        value = this.activeCanvasAnnotations[index]
+          .getBody()[0]
+          .getProperty("value");
+        format =
+          this.activeCanvasAnnotations[index].getBody()[0].getFormat() ||
+          "text/plain";
       }
+
+      // Replace newlines with break tags for plain text
+      if (format === "text/plain") {
+        value = value.replace(/(?:\r\n|\r|\n)/g, "<br/>");
+      }
+
+      // Despite a label having HTML being invalid, we'll still sanitise it
+      // as we need to use innerHTML to display any <br>'s converted from newlines
+      this.infoTextElement.innerHTML = sanitiseHTML(
+        value,
+        this.DOMPurifyConfig,
+      );
     }
 
     this.#updateViewer();
