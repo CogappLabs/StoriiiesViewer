@@ -76,8 +76,6 @@ function annotations(screenSize: ScreenSize) {
       );
     });
 
-    it("should display sanitised annotation text", () => {});
-
     it("should display the correct region in OpenSeadragon", () => {
       cy.window().then((window) => {
         cy.get('#viewer[data-loaded="true"]').then(() => {
