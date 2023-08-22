@@ -83,7 +83,19 @@ export default class StoriiiesViewer {
   public infoAreaElement!: HTMLElement;
   public infoTextElement!: HTMLElement;
   public DOMPurifyConfig: DOMPurify.Config = {
-    ALLOWED_TAGS: ["a", "br", "em", "p", "small", "span", "strong"],
+    ALLOWED_TAGS: [
+      "a",
+      "b",
+      "br",
+      "em",
+      "i",
+      "p",
+      "small",
+      "span",
+      "strong",
+      "sub",
+      "sup",
+    ],
     ALLOWED_ATTR: ["href"],
   };
   public controlButtonElements!: ControlButtons;
