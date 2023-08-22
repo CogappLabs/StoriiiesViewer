@@ -5,12 +5,14 @@ import {
   AnnotationPage,
   Annotation,
 } from "manifesto.js";
+import { sanitiseHTML } from "./utils";
+import DOMPurify from "dompurify";
+import OpenSeadragon from "openseadragon";
 
 import arrowIcon from "./images/arrow.svg?raw";
 import showIcon from "./images/eye.svg?raw";
 import hideIcon from "./images/hide.svg?raw";
 
-import OpenSeadragon from "openseadragon";
 interface IStoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
   manifestUrl: string;
@@ -79,6 +81,10 @@ export default class StoriiiesViewer {
   public viewer!: OpenSeadragon.Viewer;
   public infoAreaElement!: HTMLElement;
   public infoTextElement!: HTMLElement;
+  public DOMPurifyConfig: DOMPurify.Config = {
+    ALLOWED_TAGS: ["a", "br", "em", "p", "small", "span", "strong"],
+    ALLOWED_ATTR: ["href"],
+  };
   public controlButtonElements!: ControlButtons;
   public infoToggleElement!: HTMLElement;
 
@@ -294,11 +300,15 @@ export default class StoriiiesViewer {
     if (this.infoTextElement) {
       if (this.activeAnnotationIndex >= 0) {
         // Have to use getProperty here as there is no getValue() method
-        this.infoTextElement.innerText = this.activeCanvasAnnotations[index]
-          .getBody()[0]
-          .getProperty("value");
+        this.infoTextElement.innerHTML = sanitiseHTML(
+          this.activeCanvasAnnotations[index].getBody()[0].getProperty("value"),
+          this.DOMPurifyConfig,
+        );
       } else {
-        this.infoTextElement.innerText = this.label;
+        this.infoTextElement.innerHTML = sanitiseHTML(
+          this.label,
+          this.DOMPurifyConfig,
+        );
       }
     }
 
@@ -475,7 +485,7 @@ export default class StoriiiesViewer {
   }
 
   /**
-   * Get the region from the URL
+   * Get the region from the URL as a Rect relative to the viewport of this instance's viewer
    */
   public getRegion(url?: string): OpenSeadragon.Rect | null {
     const regex = /#xywh=(\d+),(\d+),(\d+),(\d+)/;
