@@ -4,13 +4,58 @@ Storiiies Viewer is an open source viewer for [Storiiies](https://www.cogapp.com
 
 ## Usage
 
-TODO
+### Adding the dependencies
+
+There's two options for adding StoriiiesViewer to your project:
+
+#### In the browser
+
+(This is the quickest and easiest way to get started)
+
+You can include the JavaScript and CSS in the HTML like so, using the [unpkg CDN](https://unpkg.com/):
+
+```HTML
+<head>
+  <!-- ... -->
+  <link rel="stylesheet" href="https://unpkg.com/browse/@cogapp/storiiiesviewer@latest/dist//storiiies-viewer.css">
+  <script src="https://unpkg.com/browse/@cogapp/storiiiesviewer@latest/dist/storiiies-viewwer.js"></script>
+  <!-- ... -->
+</head>
+```
+
+Or you could save these files and serve them locally if you prefer.
+
+Including the JavaScript file this way will make `StoriiiesViewer` available globally in JavaScript.
+
+
+#### Using a bundler
+
+1. Install the dependecy with `npm install --save @cogapp/storiiiesviewer`
+2. Use `import StoriiiesViewer from '@cogapp/storiiiesviewer'` in your code to access the StoriiiesViewer constructor
+3. Depending on how your tooling handles importing CSS you might also be able to import the CSS file with `import @cogapp/storiiiesviewer/dist/storiiies-viewer.css` — but you could also use the method above, or copy the contents of the CSS file into your own src files.
+
+
+### Initialise a viewer
+In your HTML:
+```HTML
+<div id="storiiies-viewer"></div>
+```
+
+In your JavaScript
+```JS
+Document.addEventListener('DOMContentLoaded', () => {
+  const myViewer = new StoriiiesViewer({
+    container: "#storiiies-viewer", // or document.querySelector("#storiiies-viewer")
+    manifestUrl: "https://path-to-your-storiiies-manifest",
+  });
+});
+```
 
 ## Customisation
 
 To customize of appearance of StoriiiesViewer you have a few options:
 
-1. If you'd prefer to bring all your own styles, StoriiiesViewer can be styled from scratch without needing to include the default stylesheet.
+1. If you'd prefer to bring all your own styles, StoriiiesViewer can be styled from scratch without needing to include the default stylesheet
 2. To 'theme' StoriiiesViewer, you may find the custom properties provided by the default stylesheet to be sufficient
 3. Start with default stylesheet and expand or override these styles as you see fit
 
