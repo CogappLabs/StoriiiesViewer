@@ -8,7 +8,12 @@ TODO
 
 ## Customisation
 
-TODO
+To customize of appearance of StoriiiesViewer you have a few options:
+
+1. If you'd prefer to bring all your own styles, StoriiiesViewer can be styled from scratch without needing to include the default stylesheet.
+2. To 'theme' StoriiiesViewer, you may find the custom properties provided by the default stylesheet to be sufficient
+3. Start with default stylesheet and expand or override these styles as you see fit
+
 
 ## Local development
 
