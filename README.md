@@ -32,23 +32,62 @@ npm ci
 
 ### Compiling and previewing changes
 
-| Command | Action |
-| --- | --- |
-| `npm run dev` | Watches files in the [`src`](./src) directory for changes and serves a preview at https://localhost:43110 with hot module replacement |
-| `npm run build` | Builds the package for use in production. See "[Usage](#usage)" for how this package can be used |
+<table width="100%">
+  <thead>
+    <tr>
+      <td>Command</td>
+      <td>Action</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>npm run dev</code></td>
+      <td>Watches files in the <a href="./src"><code>src</code></a> directory for changes and serves a preview at https://localhost:43110 with hot module replacement</td>
+    </tr>
+    <tr>
+      <td><code>npm run build</code></td>
+      <td>Builds the package for use in production. See "<a href="#usage">Usage</a> for how this package can be used</td>
+    </tr>
+  </tbody>
+</table>
+
 
 ### Running the tests
 
-| Command | Action |
-| --- | --- |
-| `npm run test:gui` | Will start the local dev server and run the e2e tests with the interactive GUI |
-| `npm run test` | Starts the dev server as above, but instead runs the tests without the GUI |
+<table width="100%">
+  <thead>
+    <tr>
+      <td>Command</td>
+      <td>Action</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>npm run test:gui</code></td>
+      <td>Will start the local dev server and run the e2e tests with the interactive GUI</td>
+    </tr>
+    <tr>
+      <td><code>npm run test</code></td>
+      <td> Starts the dev server as above, but instead runs the tests without the GUI</td>
+    </tr>
+  </tbody>
+</table>
 
 `npm run cypress:gui` and `npm run cypress` will also do the same as the above _without_ starting the dev server, if you already have it running.
 
 ### Linting the code
 
-| Command | Action |
-| --- | --- |
-| `npm run lint` | Will lint (and fix where possible) all problems in the code |
-
+<table width="100%">
+  <thead>
+    <tr>
+      <td>Command</td>
+      <td>Action</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>npm run lint</code></td>
+      <td>Will lint (and fix where possible) all problems in the code</td>
+    </tr>
+  </tbody>
+</table>
