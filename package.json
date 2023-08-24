@@ -23,6 +23,7 @@
     "cypress": "cypress run -b chrome",
     "cypress:gui": "cypress open",
     "dev": "vite",
+    "docs": "typedoc src/StoriiiesViewer.ts --validation.notExported false --readme none --out docs/api --plugin typedoc-plugin-rename-defaults",
     "lint": "run-p lint:* prettier",
     "lint:scripts": "eslint --fix \"src/**/*.ts\"",
     "lint:styles": "stylelint --fix \"src/**/*.css\"",
