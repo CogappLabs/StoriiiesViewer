@@ -5,16 +5,21 @@ import { defineConfig } from "vite";
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, "src/index.ts"),
+      entry: resolve(__dirname, "src/StoriiiesViewer.ts"),
       fileName: (format) => {
         if (format === "umd") {
-          return "storiiies-viewer.js";
+          return "umd/storiiies-viewer.js";
         } else {
-          return "index.js";
+          return "esm/storiiies-viewer.js";
         }
       },
       name: "StoriiiesViewer",
       formats: ["es", "umd"],
+    },
+    rollupOptions: {
+      output: {
+        assetFileNames: "storiiies-viewer.[ext]",
+      },
     },
     copyPublicDir: false,
   },

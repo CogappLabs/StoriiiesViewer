@@ -3,7 +3,14 @@
   "version": "0.1.0",
   "description": "A viewer for Storiiies",
   "exports": {
-    "default": "./dist/index.js"
+    ".": {
+      "import": "./dist/esm/storiiies-viewer.js",
+      "require": "./dist/umd/storiiies-viewer.js"
+    },
+    "./dist/storiiies-viewer.css": {
+      "import": "./dist/storiiies-viewer.css",
+      "require": "./dist/storiiies-viewer.css"
+    }
   },
   "files": [
     "dist"
