@@ -4,7 +4,12 @@
   "type": "Manifest",
   "label": {
     "en": [
-      "A Sunday on La Grande Jatte — 1884"
+      "<em>A Sunday on La Grande Jatte — 1884</em>"
+    ]
+  },
+  "summary": {
+    "en": [
+      "A demo tour of the famous painting by Georges Seurat. "
     ]
   },
   "metadata": [
@@ -17,29 +22,24 @@
       "value": "Cogapp"
     }
   ],
+  "requiredStatement": {
+    "label": {
+      "en": [
+        "Attribution"
+      ]
+    },
+    "value": {
+      "en": [
+        "CC0 Public Domain image hosted by the Art Institute of Chicago"
+      ]
+    }
+  },
   "items": [
     {
       "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/canvases/1",
       "type": "Canvas",
       "height": 2048,
       "width": 2048,
-      "label": {
-        "en": [
-          "A demo tour of the famous painting by Georges Seurat. "
-        ]
-      },
-      "requiredStatement": {
-        "label": {
-          "en": [
-            "Attribution"
-          ]
-        },
-        "value": {
-          "en": [
-            "CC0 Public Domain image hosted by the Art Institute of Chicago"
-          ]
-        }
-      },
       "items": [
         {
           "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte/pages/1",
