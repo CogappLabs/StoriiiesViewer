@@ -4,6 +4,12 @@ Storiiies Viewer is an open source viewer for [Storiiies](https://www.cogapp.com
 
 ## Usage
 
+<details>
+  <summary><h3>Which manifests are supported?</h3></summary>
+  Find out more here
+
+</details>
+
 ### Adding the dependencies
 
 There's two options for adding StoriiiesViewer to your project:
