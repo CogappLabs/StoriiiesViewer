@@ -5,5 +5,15 @@
 
 . "$(dirname -- "$0")/_/husky.sh"
 
-
+# Run lint-staged
 npx lint-staged
+
+# Check if any TypeScript files are staged for commit
+if git diff --cached --name-only --diff-filter=ACMRTUXB | grep -q '\.ts$'; then
+  # Run Typedoc and add the regenerated docs to the commit if any changes were made
+  npm run docs
+  git add docs/api/
+else
+  exit 0
+fi
+

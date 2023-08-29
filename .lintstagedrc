@@ -4,5 +4,5 @@
     "prettier -w",
     "bash -c 'npx tsc -p tsconfig.json --noEmit'"
   ],
-  "*.css": ["stylelint --fix", "prettier -w"]
+  "!(docs/api/**/*)*.css": ["stylelint --fix", "prettier -w"]
 }
