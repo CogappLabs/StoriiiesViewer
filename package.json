@@ -27,6 +27,7 @@
     "lint": "run-p lint:* prettier",
     "lint:scripts": "eslint --fix \"src/**/*.ts\"",
     "lint:styles": "stylelint --fix \"src/**/*.css\"",
+    "lint:typecheck": "tsc --noEmit",
     "prepare": "husky install",
     "prettier": "prettier -w \"src/**/*.(ts|css)\"",
     "test": "run-p -r dev cypress",
