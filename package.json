@@ -65,10 +65,18 @@
     "type": "git",
     "url": "git+https://github.com/CogappLabs/StoriiiesViewer.git"
   },
+  "author": {
+    "name": "Jon White"
+  },
   "contributors": [
     {
-      "name": "Jon White",
-      "email": "jonw@cogapp.com"
+      "name": "Jon White"
+    },
+    {
+      "name": "Iain Bean"
+    },
+    {
+      "name": "Tristan Roddis"
     }
   ],
   "keywords": [
