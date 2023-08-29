@@ -102,12 +102,6 @@ export default class StoriiiesViewer {
   public infoToggleElement!: HTMLElement;
 
   constructor(config: IStoriiiesViewerConfig) {
-    this.instanceId = StoriiiesViewer.#instanceCounter++;
-
-    this.#prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
     // Normalise the config container
     if (typeof config.container === "string") {
       this.containerElement = document.querySelector(config.container);
@@ -128,6 +122,13 @@ export default class StoriiiesViewer {
     if (!this.containerElement || !this.manifestUrl) {
       this.#logger("bad-config", true);
     }
+
+    // Increment the instance ID if the config is valid
+    this.instanceId = StoriiiesViewer.#instanceCounter++;
+
+    this.#prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     this.#initManifest().then(() => {
       // Should only get styles if manifest can load
