@@ -4,12 +4,6 @@ Storiiies Viewer is an open source viewer for [Storiiies](https://www.cogapp.com
 
 ## Usage
 
-<details>
-  <summary><h3>Which manifests are supported?</h3></summary>
-  Find out more here
-
-</details>
-
 ### Adding the dependencies
 
 There's two options for adding StoriiiesViewer to your project:
@@ -64,6 +58,32 @@ To customize of appearance of StoriiiesViewer you have a few options:
 1. If you'd prefer to bring all your own styles, StoriiiesViewer can be styled from scratch without needing to include the default stylesheet
 2. To 'theme' StoriiiesViewer, you may find the custom properties provided by the default stylesheet to be sufficient
 3. Start with default stylesheet and expand or override these styles as you see fit
+
+
+
+## Supported manifest formats
+StoriiiesViewer supports a subset of the [IIIF presentation API v3](https://iiif.io/api/presentation/3.0/). Specifically, we target `annotationPages` which are included directly in the manifest ([like in this cookbook recipe](https://iiif.io/api/cookbook/recipe/0258-tagging-external-resource/)).
+
+Annotations themselves can either be `text/plain` or `text/html` denoted by the `format` field. For `text/plain` newline characters will be converted and output as `<br>` tags.
+
+StoriiiesViewer has no required fields (aside from those required by the presentation API), but it will render certain values from the manifest if provided. These are:
+
+- [A manifest `label`](https://iiif.io/api/presentation/3.0/#label), which is required by the presentation API and will be shown on a "title slide", before any annotations
+- [A manifest level `summary`](https://iiif.io/api/presentation/3.0/#summary), which will appear below the label if provided
+- [A manifest level `requiredStatement`](https://iiif.io/api/presentation/3.0/#requiredstatement), which will appear below the summary if provided
+
+> [!NOTE]<br>
+> Certain features which aren't currently supported include:
+>
+> - Externally referenced `annotationPages` ([as shown in this cookbook recipe](https://iiif.io/api/cookbook/recipe/0306-linking-annotations-to-manifests/))
+> - Multiple images
+> - Non-text based annotations (e.g. audio)
+> - Full multi-lingual support
+>
+> However, pathways exist to enable these features with further development.
+
+> [!WARNING]<br>
+> Manifest with a version lower than 3 may load images, but aren't guaranteed to work beyond this, and will display a warning in the console.
 
 
 ## Local development
