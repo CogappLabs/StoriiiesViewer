@@ -14,7 +14,7 @@ import arrowIcon from "./images/arrow.svg?raw";
 import showIcon from "./images/eye.svg?raw";
 import hideIcon from "./images/hide.svg?raw";
 
-export interface IStoriiiesViewerConfig {
+export interface StoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
   manifestUrl: string;
 }
@@ -101,7 +101,7 @@ export default class StoriiiesViewer {
   public controlButtonElements!: ControlButtons;
   public infoToggleElement!: HTMLElement;
 
-  constructor(config: IStoriiiesViewerConfig) {
+  constructor(config: StoriiiesViewerConfig) {
     // Normalise the config container
     if (typeof config.container === "string") {
       this.containerElement = document.querySelector(config.container);
