@@ -85,8 +85,8 @@ npm ci
 <table width="100%">
   <thead>
     <tr>
-      <td>Command</td>
-      <td>Action</td>
+      <th width="300px">Command</th>
+      <th width="800px">Action</th>
     </tr>
   </thead>
   <tbody>
@@ -107,8 +107,8 @@ npm ci
 <table width="100%">
   <thead>
     <tr>
-      <td>Command</td>
-      <td>Action</td>
+      <th width="300px">Command</th>
+      <th width="800px">Action</th>
     </tr>
   </thead>
   <tbody>
@@ -130,8 +130,8 @@ npm ci
 <table width="100%">
   <thead>
     <tr>
-      <td>Command</td>
-      <td>Action</td>
+      <th width="300px">Command</th>
+      <th width="800px">Action</th>
     </tr>
   </thead>
   <tbody>
