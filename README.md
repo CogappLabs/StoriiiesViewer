@@ -17,8 +17,8 @@ You can include the JavaScript and CSS in the HTML like so, using the [unpkg CDN
 ```HTML
 <head>
   <!-- ... -->
-  <link rel="stylesheet" href="https://unpkg.com/browse/@cogapp/storiiiesviewer@latest/dist//storiiies-viewer.css">
-  <script src="https://unpkg.com/browse/@cogapp/storiiiesviewer@latest/dist/storiiies-viewwer.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/browse/@cogapp/storiiiesviewer@latest/dist/storiiies-viewer.css">
+  <script src="https://unpkg.com/browse/@cogapp/storiiiesviewer@latest/dist/umd/storiiies-viewwer.js"></script>
   <!-- ... -->
 </head>
 ```
