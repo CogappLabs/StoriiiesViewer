@@ -94,9 +94,10 @@ StoriiiesViewer has no required fields (aside from those required by the present
 
 - [Node.js / npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
-Although optional, we recommend using [nvm](https://github.com/nvm-sh/nvm) to match the version of Node used in this project before running the install command, or the npm scripts described below.
-
-If you encounter problems and aren't using the version of Node shown in the [.nvmrc](.nvmrc) file, you should try aligning your node version to this first. This represents a known compatibility with the code here and our dependencies.
+> [!IMPORTANT]<br>
+> Although optional, we recommend using [nvm](https://github.com/nvm-sh/nvm) to match the version of Node used in this project before running the install command, or the npm scripts described below.
+>
+> If you encounter problems and aren't using the version of Node shown in the [.nvmrc](.nvmrc) file, you should try aligning your node version to this first. This represents a known compatibility with the code here and our dependencies.
 
 #### Setup
 
@@ -149,7 +150,8 @@ npm ci
   </tbody>
 </table>
 
-`npm run cypress:gui` and `npm run cypress` will also do the same as the above _without_ starting the dev server, if you already have it running.
+> [!NOTE]<br>
+> `npm run cypress:gui` and `npm run cypress` will also do the same as the above _without_ starting the dev server, if you already have it running.
 
 ### Linting the code
 
