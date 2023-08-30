@@ -14,6 +14,11 @@ import arrowIcon from "./images/arrow.svg?raw";
 import showIcon from "./images/eye.svg?raw";
 import hideIcon from "./images/hide.svg?raw";
 
+/**
+ * Config object used when instantiating a new StoriiiesViewer
+ * @property {HTMLElement | Element | string | null} container - The container element where StoriiiesViewer should be mounted. Must exist in the page
+ * @property {string} manifestUrl - The URL for the IIIF manifest to be loaded into StoriiiesViewer
+ */
 export interface StoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
   manifestUrl: string;
@@ -71,17 +76,45 @@ export default class StoriiiesViewer {
     "no-ext-anno": ["warn", "External annotationPages are not supported"],
   };
   static #instanceCounter: number = 0;
+  /** The normalised reference to the container where this instance is mounted
+   * @readonly
+   */
   public containerElement: HTMLElement | null = null;
+  /** The URL for the IIIF manifest loaded into this instance */
   public manifestUrl: string;
+  /** ID used for creating id attributes that shouldn't clash, or referencing a particular instance of StoriiiesViewer
+   * @readonly
+   */
   public instanceId: number;
+  /** The IIIF manifest loaded into this instance */
   public manifest!: Manifest;
+  /** The label retrieved from the manifest */
   public label: string = "";
+  /** The canvases retrieved from the manifest */
   public canvases!: Canvas[];
+  /** The annotationPages retrieved from the manifest */
   public annotationPages: AnnotationPage[] = [];
+  /** The annotations for the current canvas */
   public activeCanvasAnnotations: Array<Annotation> = [];
+  /** A reference to the OpenSeadragon viewer */
   public viewer!: OpenSeadragon.Viewer;
+  /** A reference to the info-area HTML element
+   * @readonly
+   */
   public infoAreaElement!: HTMLElement;
+  /** A reference to the info-text-area HTML element
+   * @readonly
+   */
   public infoTextElement!: HTMLElement;
+  /** References to the navigation control button HTML elements
+   * @readonly
+   */
+  public controlButtonElements!: ControlButtons;
+  /** A reference to the info-toggle HTML element
+   * @readonly
+   */
+  public infoToggleElement!: HTMLElement;
+  /** DOMPurify configuration */
   public DOMPurifyConfig: DOMPurify.Config = {
     ALLOWED_TAGS: [
       "a",
@@ -98,8 +131,6 @@ export default class StoriiiesViewer {
     ],
     ALLOWED_ATTR: ["href"],
   };
-  public controlButtonElements!: ControlButtons;
-  public infoToggleElement!: HTMLElement;
 
   constructor(config: StoriiiesViewerConfig) {
     // Normalise the config container
@@ -264,14 +295,16 @@ export default class StoriiiesViewer {
   }
 
   /**
-   * Get the active canvas index
+   * Get the active canvas index\
+   * Used to determine which canvas is currently active
    */
   get activeCanvasIndex(): number {
     return this.#_activeCanvasIndex;
   }
 
   /**
-   * Set the active canvas index and perform any necessary updates
+   * Set the active canvas index and perform any necessary updates\
+   * Used to navigate between canvases
    */
   set activeCanvasIndex(index: number) {
     this.#_activeCanvasIndex = index;
@@ -279,14 +312,16 @@ export default class StoriiiesViewer {
   }
 
   /**
-   * Get the active annotation index
+   * Get the active annotation index\
+   * Used to determine which annotation is currently active
    */
   get activeAnnotationIndex(): number {
     return this.#_activeAnnotationIndex;
   }
 
   /**
-   * Set the active annotation index and perform any necessary updates
+   * Set the active annotation index and perform any necessary updates\
+   * Used to navigate between annotations
    */
   set activeAnnotationIndex(index: number) {
     // Lower bound can only be -1 if there is a label
@@ -344,14 +379,16 @@ export default class StoriiiesViewer {
   }
 
   /**
-   * Get the showInfoArea value
+   * Get the showInfoArea value\
+   * Used to determine whether the info area is visible
    */
   get showInfoArea(): boolean {
     return this.#_showInfoArea;
   }
 
   /**
-   * Set the showInfoArea value and perform any necessary updates
+   * Set the showInfoArea value and perform any necessary updates\
+   * Used to toggle the info area visibility
    */
   set showInfoArea(value: boolean) {
     this.#_showInfoArea = value;
