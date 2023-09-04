@@ -6,7 +6,7 @@ Storiiies Viewer is an open source viewer for [Storiiies](https://www.cogapp.com
 
 ### Adding the dependencies
 
-There's two options for adding StoriiiesViewer to your project:
+There are two options for adding StoriiiesViewer to your project:
 
 #### In the browser
 
@@ -30,7 +30,7 @@ Including the JavaScript file this way will make `StoriiiesViewer` available glo
 
 #### Using a bundler
 
-1. Install the dependecy with `npm install --save @cogapp/storiiiesviewer`
+1. Install the dependecy with `npm install @cogapp/storiiiesviewer`
 2. Use `import StoriiiesViewer from '@cogapp/storiiiesviewer'` in your code to access the StoriiiesViewer constructor
 3. Depending on how your tooling handles importing CSS you might also be able to import the CSS file with `import @cogapp/storiiiesviewer/dist/storiiies-viewer.css` — but you could also use the method above, or copy the contents of the CSS file into your own src files.
 
@@ -43,7 +43,7 @@ In your HTML:
 
 In your JavaScript
 ```JS
-Document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const myViewer = new StoriiiesViewer({
     container: "#storiiies-viewer", // or document.querySelector("#storiiies-viewer")
     manifestUrl: "https://path-to-your-storiiies-manifest",
