@@ -4,6 +4,8 @@ Storiiies Viewer is an open source viewer for [Storiiies](https://www.cogapp.com
 
 ## Usage
 
+[API documentation](https://cogapp.github.io/storiiies-viewer/api)
+
 ### Adding the dependencies
 
 There are two options for adding StoriiiesViewer to your project:
@@ -18,7 +20,7 @@ You can include the JavaScript and CSS in the HTML like so, using the [unpkg CDN
 <head>
   <!-- ... -->
   <link rel="stylesheet" href="https://unpkg.com/browse/@cogapp/storiiiesviewer@latest/dist/storiiies-viewer.css">
-  <script src="https://unpkg.com/browse/@cogapp/storiiiesviewer@latest/dist/umd/storiiies-viewwer.js"></script>
+  <script src="https://unpkg.com/browse/@cogapp/storiiiesviewer@latest/dist/umd/storiiies-viewer.js"></script>
   <!-- ... -->
 </head>
 ```
@@ -53,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ## Customisation
 
-To customize of appearance of StoriiiesViewer you have a few options:
+To customise of appearance of StoriiiesViewer you have a few options:
 
 1. If you'd prefer to bring all your own styles, StoriiiesViewer can be styled from scratch without needing to include the default stylesheet
 2. To 'theme' StoriiiesViewer, you may find the custom properties provided by the default stylesheet to be sufficient
@@ -119,11 +121,11 @@ npm ci
   <tbody>
     <tr>
       <td><code>npm run dev</code></td>
-      <td>Watches files in the <a href="./src"><code>src</code></a> directory for changes and serves a preview at https://localhost:43110 with hot module replacement</td>
+      <td>Watches files in the <a href="./src"><code>src</code></a> directory for changes and serves a preview at <a href="https://localhost:43110">https://localhost:43110</a> with hot module replacement</td>
     </tr>
     <tr>
       <td><code>npm run build</code></td>
-      <td>Builds the package for use in production. See "<a href="#usage">Usage</a> for how this package can be used</td>
+      <td>Builds the package for use in production. See "<a href="#usage">Usage</a>" for how this package can be used</td>
     </tr>
   </tbody>
 </table>
