@@ -1,4 +1,4 @@
-import StoriiiesViewer from "../../src";
+import StoriiiesViewer from "../../src/StoriiiesViewer";
 import OpenSeadragon from "openseadragon";
 
 declare global {

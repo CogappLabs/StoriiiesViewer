@@ -1,0 +1,8 @@
+{
+  "*.ts": [
+    "eslint --fix",
+    "prettier -w",
+    "bash -c 'npx tsc -p tsconfig.json --noEmit'"
+  ],
+  "!(docs/api/**/*)*.css": ["stylelint --fix", "prettier -w"]
+}

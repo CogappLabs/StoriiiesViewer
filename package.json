@@ -3,7 +3,14 @@
   "version": "0.1.0",
   "description": "A viewer for Storiiies",
   "exports": {
-    "default": "./dist/index.js"
+    ".": {
+      "import": "./dist/esm/storiiies-viewer.js",
+      "require": "./dist/umd/storiiies-viewer.js"
+    },
+    "./dist/storiiies-viewer.css": {
+      "import": "./dist/storiiies-viewer.css",
+      "require": "./dist/storiiies-viewer.css"
+    }
   },
   "files": [
     "dist"
@@ -16,9 +23,12 @@
     "cypress": "cypress run -b chrome",
     "cypress:gui": "cypress open",
     "dev": "vite",
+    "docs": "typedoc src/StoriiiesViewer.ts --validation.notExported false --readme none --out docs/api --plugin typedoc-plugin-rename-defaults",
     "lint": "run-p lint:* prettier",
     "lint:scripts": "eslint --fix \"src/**/*.ts\"",
     "lint:styles": "stylelint --fix \"src/**/*.css\"",
+    "lint:typecheck": "tsc --noEmit",
+    "prepare": "husky install",
     "prettier": "prettier -w \"src/**/*.(ts|css)\"",
     "test": "run-p -r dev cypress",
     "test:gui": "run-p -r dev cypress:gui"
@@ -30,6 +40,7 @@
   },
   "devDependencies": {
     "@types/dompurify": "^3.0.2",
+    "@types/node-fetch": "^2.6.4",
     "@types/openseadragon": "^3.0.6",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
@@ -37,12 +48,16 @@
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^5.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^14.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.0.0",
     "stylelint": "^15.10.1",
     "stylelint-config-recess-order": "^4.3.0",
     "stylelint-config-standard": "^34.0.0",
     "stylelint-prettier": "^4.0.0",
+    "typedoc": "^0.24.8",
+    "typedoc-plugin-rename-defaults": "^0.6.5",
     "typescript": "^5.1.6",
     "vite": "^4.4.3"
   },
@@ -50,10 +65,18 @@
     "type": "git",
     "url": "git+https://github.com/CogappLabs/StoriiiesViewer.git"
   },
+  "author": {
+    "name": "Jon White"
+  },
   "contributors": [
     {
-      "name": "Jon White",
-      "email": "jonw@cogapp.com"
+      "name": "Jon White"
+    },
+    {
+      "name": "Iain Bean"
+    },
+    {
+      "name": "Tristan Roddis"
     }
   ],
   "keywords": [
