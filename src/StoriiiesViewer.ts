@@ -456,7 +456,6 @@ export default class StoriiiesViewer {
       "beforeend",
       `
       <div id="storiiies-viewer-${this.instanceId}__info-text" class="storiiies-viewer__info-text" tabindex="0">
-        ${this.label}
       </div>
     `,
     );
