@@ -8,7 +8,7 @@ import {
 import DOMPurify from "dompurify";
 import OpenSeadragon from "openseadragon";
 
-import { sanitiseHTML } from "./utils";
+import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
 
 import arrowIcon from "./images/arrow.svg?raw";
 import showIcon from "./images/eye.svg?raw";
@@ -514,15 +514,25 @@ export default class StoriiiesViewer {
    * Generate HTML markup for the title slide
    */
   #creatTitleSlideMarkup(): string {
-    // Despite HTML not always being expected, we'll still need to sanitise it
-    const labelHTML = this.label.replace(/(?:\r\n|\r|\n)/g, "<br/>");
-    const summaryHTML = this.summary;
+    // Label should always be plain text
+    const labelHTML = nl2br(this.label);
+
+    // Summary might be plain text or HTML
+    const summaryHTML = IIIFSaysThisIsHTML(this.summary)
+      ? this.summary
+      : nl2br(this.summary);
     let requiredStatementHTML = "";
 
     requiredStatementHTML = requiredStatementHTML.concat(
       this.requiredStatement.label &&
         `<strong>${this.requiredStatement.label}:</strong> `,
-      this.requiredStatement.value && `${this.requiredStatement.value}`,
+      // Required statement value might be plain text or HTML
+      this.requiredStatement.value &&
+        `${
+          IIIFSaysThisIsHTML(this.requiredStatement.value)
+            ? this.requiredStatement.value
+            : nl2br(this.requiredStatement.value)
+        }`,
     );
 
     return sanitiseHTML(

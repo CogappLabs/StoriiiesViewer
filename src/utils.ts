@@ -13,3 +13,11 @@ export function sanitiseHTML(dirty: string, config: DOMPurify.Config): string {
     RETURN_TRUSTED_TYPE: false,
   });
 }
+
+export function nl2br(dirty: string): string {
+  return dirty.replace(/(?:\r\n|\r|\n)/g, "<br/>");
+}
+
+export function IIIFSaysThisIsHTML(str: string): boolean {
+  return /^<.*>$/gim.test(str);
+}
