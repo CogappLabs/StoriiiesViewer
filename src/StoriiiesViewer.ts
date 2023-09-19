@@ -215,6 +215,7 @@ export default class StoriiiesViewer {
 
     this.label = this.manifest.getLabel().getValue() || "";
 
+    // It's worth noting display of a title slide is predicated on the presence of a label in the manifest
     // In lieu of a label, set the active annotation to 0 to show the first annotation
     if (!this.label) {
       this.activeAnnotationIndex = 0;
@@ -327,6 +328,7 @@ export default class StoriiiesViewer {
     // Lower bound can only be -1 if there is a label
     const lowerBound = this.#annotationIndexFloor;
     const upperBound = this.activeCanvasAnnotations.length - 1;
+    let infoTextElementMarkup;
 
     // Ignore out of bounds values
     if (index < lowerBound || index > upperBound) return;
@@ -345,35 +347,14 @@ export default class StoriiiesViewer {
       this.controlButtonElements.next.disabled = true;
     }
 
-    // Info text to be label or annotation
-    if (this.infoTextElement) {
-      let value = this.label;
-      // Default to plain text (which will be implicity true for the label)
-      let format = "text/plain";
-
-      // The index will only be 0 or greater for annotations
-      if (this.activeAnnotationIndex >= 0) {
-        // Have to use getProperty here as there is no getValue() method
-        value = this.activeCanvasAnnotations[index]
-          .getBody()[0]
-          .getProperty("value");
-        format =
-          this.activeCanvasAnnotations[index].getBody()[0].getFormat() ||
-          "text/plain";
-      }
-
-      // Replace newlines with break tags for plain text
-      if (format === "text/plain") {
-        value = value.replace(/(?:\r\n|\r|\n)/g, "<br/>");
-      }
-
-      // Despite a label having HTML being invalid, we'll still sanitise it
-      // as we need to use innerHTML to display any <br>'s converted from newlines
-      this.infoTextElement.innerHTML = sanitiseHTML(
-        value,
-        this.DOMPurifyConfig,
-      );
+    // Determine rendering method for info text area
+    if (this.activeAnnotationIndex === this.#annotationIndexFloor) {
+      infoTextElementMarkup = this.#creatTitleSlideMarkup();
+    } else {
+      infoTextElementMarkup = this.#createAnnotationSlideMarkup();
     }
+
+    this.infoTextElement.innerHTML = infoTextElementMarkup;
 
     this.#updateViewer();
   }
@@ -495,6 +476,39 @@ export default class StoriiiesViewer {
     // Initialise values, let the setters handle the rest
     this.showInfoArea = true;
     this.activeAnnotationIndex = this.#annotationIndexFloor;
+  }
+
+  /**
+   * Generate HTML markup for the title slide
+   */
+  #creatTitleSlideMarkup(): string {
+    // Despite a label having HTML being invalid, we'll still sanitise it
+    // as we need to use innerHTML to display any <br>'s converted from newlines
+    return sanitiseHTML(
+      this.label.replace(/(?:\r\n|\r|\n)/g, "<br/>"),
+      this.DOMPurifyConfig,
+    );
+  }
+
+  /**
+   * Generate HTML markup for an annotation slide
+   */
+  #createAnnotationSlideMarkup(): string {
+    // Have to use getProperty here as there is no getValue() method
+    let value = this.activeCanvasAnnotations[this.activeAnnotationIndex]
+      .getBody()[0]
+      .getProperty("value");
+    const format =
+      this.activeCanvasAnnotations[this.activeAnnotationIndex]
+        .getBody()[0]
+        .getFormat() || "text/plain";
+
+    // Replace newlines with break tags for plain text
+    if (format === "text/plain") {
+      value = value.replace(/(?:\r\n|\r|\n)/g, "<br/>");
+    }
+
+    return sanitiseHTML(value, this.DOMPurifyConfig);
   }
 
   /**
