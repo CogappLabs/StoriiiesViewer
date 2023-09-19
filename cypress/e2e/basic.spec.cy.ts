@@ -33,7 +33,7 @@ function rendering(screenSize: ScreenSize) {
     it("Should initially display the label from the manifest", () => {
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum elit id metus blandit, vel egestas enim sagittis. Integer at sem sit amet nulla dictum sagittis a ut enim.<br><br>Sed dignissim commodo sapien ut vestibulum. Aenean sed iaculis metus, vel varius massa. Nullam placerat tempus pharetra. Vestibulum maximus elit ut eros sollicitudin, viverra aliquet metus condimentum. Proin sed pellentesque nibh. Pellentesque suscipit tempus risus, condimentum semper sem ultrices quis. Suspendisse blandit viverra ex in sollicitudin. Fusce aliquet tincidunt leo ut venenatis. Quisque eu sem hendrerit, pellentesque nibh et, imperdiet mi. Mauris arcu eros, consequat sit amet sapien accumsan, pellentesque malesuada justo.`,
+        `<div>\n        <h1 class="storiiies-viewer__text-section">Lorem ipsum dolor sit amet, consectetur adipiscing elit</h1>\n        <div class="storiiies-viewer__text-section"><div><p><em>Pellentesque tempor ante non congue pulvinar.</em> Maecenas non ipsum non metus imperdiet facilisis. Vestibulum ante ipsum primis in <strong>faucibus</strong> orci luctus et ultrices posuere cubilia curae; Praesent sem felis, porta eu nisl in, rhoncus luctus nunc.<br>Morbi bibendum, eros eu sollicitudin egestas, nisi dui convallis nisi, sed lacinia velit augue eu lectus. In enim est, elementum ac elit a, ultricies pellentesque nibh.</p></div></div>\n        <div class="storiiies-viewer__text-section"><strong>Attribution:</strong> Provided courtesy of Example Institution</div>\n      </div>`,
       );
     });
   });
@@ -61,7 +61,7 @@ function annotations(screenSize: ScreenSize) {
     it("should display the correct annotation text and be sanitised", () => {
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum elit id metus blandit, vel egestas enim sagittis. Integer at sem sit amet nulla dictum sagittis a ut enim.<br><br>Sed dignissim commodo sapien ut vestibulum. Aenean sed iaculis metus, vel varius massa. Nullam placerat tempus pharetra. Vestibulum maximus elit ut eros sollicitudin, viverra aliquet metus condimentum. Proin sed pellentesque nibh. Pellentesque suscipit tempus risus, condimentum semper sem ultrices quis. Suspendisse blandit viverra ex in sollicitudin. Fusce aliquet tincidunt leo ut venenatis. Quisque eu sem hendrerit, pellentesque nibh et, imperdiet mi. Mauris arcu eros, consequat sit amet sapien accumsan, pellentesque malesuada justo.`,
+        `<div>\n        <h1 class="storiiies-viewer__text-section">Lorem ipsum dolor sit amet, consectetur adipiscing elit</h1>\n        <div class="storiiies-viewer__text-section"><div><p><em>Pellentesque tempor ante non congue pulvinar.</em> Maecenas non ipsum non metus imperdiet facilisis. Vestibulum ante ipsum primis in <strong>faucibus</strong> orci luctus et ultrices posuere cubilia curae; Praesent sem felis, porta eu nisl in, rhoncus luctus nunc.<br>Morbi bibendum, eros eu sollicitudin egestas, nisi dui convallis nisi, sed lacinia velit augue eu lectus. In enim est, elementum ac elit a, ultricies pellentesque nibh.</p></div></div>\n        <div class="storiiies-viewer__text-section"><strong>Attribution:</strong> Provided courtesy of Example Institution</div>\n      </div>`,
       );
       cy.get("#storiiies-viewer-0__next").click();
 

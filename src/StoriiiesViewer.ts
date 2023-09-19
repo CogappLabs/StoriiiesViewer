@@ -90,6 +90,13 @@ export default class StoriiiesViewer {
   public manifest!: Manifest;
   /** The label retrieved from the manifest */
   public label: string = "";
+  /** The summary retrieved from the manifest */
+  public summary!: string;
+  /** The required statement label and value retrieved from the manifest */
+  public requiredStatement!: {
+    label: string;
+    value: string;
+  };
   /** The canvases retrieved from the manifest */
   public canvases!: Canvas[];
   /** The annotationPages retrieved from the manifest */
@@ -214,6 +221,31 @@ export default class StoriiiesViewer {
     }
 
     this.label = this.manifest.getLabel().getValue() || "";
+
+    // At the time of writing, a manifest.getSummary() doesn't exist
+    this.summary = this.manifest.getProperty("summary")?.en[0] || "";
+    let requiredStatementLabel;
+    let requiredStatementValue;
+
+    try {
+      requiredStatementLabel = this.manifest
+        ?.getRequiredStatement()
+        ?.getLabel();
+    } catch (e) {
+      // Ignore
+    }
+    try {
+      requiredStatementValue = this.manifest
+        ?.getRequiredStatement()
+        ?.getValue();
+    } catch (e) {
+      // Ignore
+    }
+
+    this.requiredStatement = {
+      label: requiredStatementLabel || "",
+      value: requiredStatementValue || "",
+    };
 
     // It's worth noting display of a title slide is predicated on the presence of a label in the manifest
     // In lieu of a label, set the active annotation to 0 to show the first annotation
@@ -482,11 +514,33 @@ export default class StoriiiesViewer {
    * Generate HTML markup for the title slide
    */
   #creatTitleSlideMarkup(): string {
-    // Despite a label having HTML being invalid, we'll still sanitise it
-    // as we need to use innerHTML to display any <br>'s converted from newlines
+    // Despite HTML not always being expected, we'll still need to sanitise it
+    const labelHTML = this.label.replace(/(?:\r\n|\r|\n)/g, "<br/>");
+    const summaryHTML = this.summary;
+    let requiredStatementHTML = "";
+
+    requiredStatementHTML = requiredStatementHTML.concat(
+      this.requiredStatement.label &&
+        `<strong>${this.requiredStatement.label}:</strong> `,
+      this.requiredStatement.value && `${this.requiredStatement.value}`,
+    );
+
     return sanitiseHTML(
-      this.label.replace(/(?:\r\n|\r|\n)/g, "<br/>"),
-      this.DOMPurifyConfig,
+      `<div>
+        <h1 class="storiiies-viewer__text-section">${labelHTML}</h1>
+        <div class="storiiies-viewer__text-section">${summaryHTML}</div>
+        <div class="storiiies-viewer__text-section">${requiredStatementHTML}</div>
+      </div>`,
+      // Use augmented config to allow for more tags
+      {
+        ...this.DOMPurifyConfig,
+        ALLOWED_TAGS: this.DOMPurifyConfig.ALLOWED_TAGS?.concat(
+          "h1",
+          "div",
+          "strong",
+        ),
+        ALLOWED_ATTR: this.DOMPurifyConfig.ALLOWED_ATTR?.concat("class"),
+      },
     );
   }
 
