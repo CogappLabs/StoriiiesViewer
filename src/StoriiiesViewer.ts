@@ -515,43 +515,36 @@ export default class StoriiiesViewer {
    */
   #creatTitleSlideMarkup(): string {
     // Label should always be plain text
-    const labelHTML = nl2br(this.label);
+    const labelHTML = sanitiseHTML(nl2br(this.label), this.DOMPurifyConfig);
 
     // Summary might be plain text or HTML
-    const summaryHTML = IIIFSaysThisIsHTML(this.summary)
-      ? this.summary
-      : nl2br(this.summary);
+    const summaryHTML = sanitiseHTML(
+      IIIFSaysThisIsHTML(this.summary) ? this.summary : nl2br(this.summary),
+      this.DOMPurifyConfig,
+    );
     let requiredStatementHTML = "";
 
-    requiredStatementHTML = requiredStatementHTML.concat(
-      this.requiredStatement.label &&
-        `<strong>${this.requiredStatement.label}:</strong> `,
-      // Required statement value might be plain text or HTML
-      this.requiredStatement.value &&
-        `${
-          IIIFSaysThisIsHTML(this.requiredStatement.value)
-            ? this.requiredStatement.value
-            : nl2br(this.requiredStatement.value)
-        }`,
+    requiredStatementHTML = sanitiseHTML(
+      requiredStatementHTML.concat(
+        this.requiredStatement.label &&
+          `<strong>${this.requiredStatement.label}:</strong> `,
+        // Required statement value might be plain text or HTML
+        this.requiredStatement.value &&
+          `${
+            IIIFSaysThisIsHTML(this.requiredStatement.value)
+              ? this.requiredStatement.value
+              : nl2br(this.requiredStatement.value)
+          }`,
+      ),
+      this.DOMPurifyConfig,
     );
 
-    return sanitiseHTML(
-      `<div>
-        <h1 class="storiiies-viewer__text-section">${labelHTML}</h1>
+    // N.B. Sanitising this whole chunk would require loosening restrictions on allowed tags and attributes
+    return `
+        <h1 class="storiiies-viewer__title storiiies-viewer__text-section">${labelHTML}</h1>
         <div class="storiiies-viewer__text-section">${summaryHTML}</div>
         <div class="storiiies-viewer__text-section">${requiredStatementHTML}</div>
-      </div>`,
-      // Use augmented config to allow for more tags
-      {
-        ...this.DOMPurifyConfig,
-        ALLOWED_TAGS: this.DOMPurifyConfig.ALLOWED_TAGS?.concat(
-          "h1",
-          "div",
-          "strong",
-        ),
-        ALLOWED_ATTR: this.DOMPurifyConfig.ALLOWED_ATTR?.concat("class"),
-      },
-    );
+      `;
   }
 
   /**
