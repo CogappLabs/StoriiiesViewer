@@ -21,6 +21,8 @@
   --storiiies-viewer-font-family: sans-serif;
   --storiiies-viewer-font-size: 16px;
   --storiiies-viewer-line-height: 1.2;
+  --storiiies-viewer-title-font-size: 20px;
+  --storiiies-viewer-title-line-height: 1.2;
   --storiiies-viewer-transition-speed: 400ms;
   --storiiies-viewer-scroll-size: 8px;
 
@@ -154,6 +156,10 @@
   scrollbar-gutter: stable;
 }
 
+.storiiies-viewer__info-text > *:first-child {
+  margin-block-start: 0;
+}
+
 .storiiies-viewer__info-text::-webkit-scrollbar {
   inline-size: var(--storiiies-viewer-scroll-size);
   block-size: var(--storiiies-viewer-scroll-size);
@@ -170,6 +176,12 @@
   border-radius: var(--storiiies-viewer-scroll-size);
   box-shadow: inset 0 0 calc(var(--storiiies-viewer-scroll-size) * 2)
     hsl(0deg 0% 0% / 50%);
+}
+
+.storiiies-viewer__title {
+  margin: 0;
+  font-size: var(--storiiies-viewer-title-font-size);
+  line-height: var(--storiiies-viewer-title-line-height);
 }
 
 /*
