@@ -20,7 +20,7 @@
   },
   "scripts": {
     "build": "vite build",
-    "cypress": "cypress run -b chrome",
+    "cypress": "cypress run",
     "cypress:gui": "cypress open",
     "dev": "vite",
     "docs": "typedoc src/StoriiiesViewer.ts --validation.notExported false --readme none --out docs/api --plugin typedoc-plugin-rename-defaults",
@@ -44,7 +44,7 @@
     "@types/openseadragon": "^3.0.6",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
-    "cypress": "^12.17.1",
+    "cypress": "^13.2.0",
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^5.0.0",
