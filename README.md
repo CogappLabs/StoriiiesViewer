@@ -90,6 +90,11 @@ StoriiiesViewer has no required fields (aside from those required by the present
 > [!WARNING]<br>
 > Manifest with a version lower than 3 may load images, but aren't guaranteed to work beyond this, and will display a warning in the console.
 
+### Compatibility with Storiiies Editor
+
+Cogapp maintains a free-to-use editor for Storiiies at [storiiies-editor.cogapp.com](https://storiiies-editor.cogapp.com/). To use a compatible v3 manifest for your story, append the short alphanumeric code from the "view and share" link to a base URL of `https://manifest.storiiies-editor.cogapp.com/v3/`
+
+For example, for the link https://storiiies.cogapp.com/viewer/7e4va/A-Sunday-on-La-Grande-Jatte-1884 use a manifest URL of https://manifest.storiiies-editor.cogapp.com/v3/7e4va
 
 ## Local development
 
