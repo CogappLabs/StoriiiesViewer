@@ -397,6 +397,11 @@ export default class StoriiiesViewer {
     // Determine rendering method for info text area
     if (this.activeAnnotationIndex === this.#annotationIndexFloor) {
       infoTextElementMarkup = this.#creatTitleSlideMarkup();
+    } else if (
+      this.activeAnnotationIndex === this.#annotationIndexCeiling &&
+      this.showCreditSlide
+    ) {
+      infoTextElementMarkup = this.#createCreditSlideMarkup();
     } else {
       infoTextElementMarkup = this.#createAnnotationSlideMarkup();
     }
