@@ -22,6 +22,7 @@ import hideIcon from "./images/hide.svg?raw";
 export interface StoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
   manifestUrl: string;
+  showCreditSlide?: boolean;
 }
 
 type ControlButtons = {
@@ -80,6 +81,10 @@ export default class StoriiiesViewer {
    * @readonly
    */
   public containerElement: HTMLElement | null = null;
+  /** Whether to display the closing credit slide. Defaults to true, can be overriden in StoriiiesViewerConfig
+   * @readonly
+   */
+  public showCreditSlide: boolean = true;
   /** The URL for the IIIF manifest loaded into this instance */
   public manifestUrl: string;
   /** ID used for creating id attributes that shouldn't clash, or referencing a particular instance of StoriiiesViewer
@@ -155,6 +160,9 @@ export default class StoriiiesViewer {
     }
 
     this.manifestUrl = config.manifestUrl;
+
+    // Use the provided preference if present
+    this.showCreditSlide = config.showCreditSlide ?? true;
 
     // Throw if the required config is missing and halt instantiation
     if (!this.containerElement || !this.manifestUrl) {
