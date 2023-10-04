@@ -384,15 +384,16 @@ export default class StoriiiesViewer {
 
     // Reset button states
     this.controlButtonElements.prev.disabled = false;
-    this.controlButtonElements.next.disabled = false;
+    // TODO: We need something a bit different here and below
+    // this.controlButtonElements.next.disabled = false;
 
     // Disable buttons
     if (index === lowerBound) {
       this.controlButtonElements.prev.disabled = true;
     }
-    if (index === upperBound) {
-      this.controlButtonElements.next.disabled = true;
-    }
+    // if (index === upperBound) {
+    //   this.controlButtonElements.next.disabled = true;
+    // }
 
     // Determine rendering method for info text area
     if (this.activeAnnotationIndex === this.#annotationIndexFloor) {
@@ -478,7 +479,11 @@ export default class StoriiiesViewer {
         if ((e.target as HTMLButtonElement).ariaLabel === "Previous") {
           this.activeAnnotationIndex = this.activeAnnotationIndex - 1;
         } else {
-          this.activeAnnotationIndex = this.activeAnnotationIndex + 1;
+          if (this.activeAnnotationIndex === this.#annotationIndexCeiling) {
+            this.activeCanvasIndex = 0;
+          } else {
+            this.activeAnnotationIndex = this.activeAnnotationIndex + 1;
+          }
         }
       });
     });
