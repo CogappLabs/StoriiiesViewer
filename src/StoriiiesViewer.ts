@@ -259,9 +259,8 @@ export default class StoriiiesViewer {
     };
 
     // It's worth noting display of a title slide is predicated on the presence of a label in the manifest
-    // In lieu of a label, set the active annotation to 0 to show the first annotation
+    // In lieu of a label, set the floor to 0 to effectively remove the title slide
     if (!this.label) {
-      this.activeAnnotationIndex = 0;
       this.#annotationIndexFloor = 0;
 
       // But should also warn that this is invalid
