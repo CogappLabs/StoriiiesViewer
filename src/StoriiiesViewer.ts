@@ -577,6 +577,18 @@ export default class StoriiiesViewer {
   }
 
   /**
+   * Generate HTML markup for an annotation slide
+   */
+  #createCreditSlideMarkup(): string {
+    // No need to sanitise this hardcoded markup
+    return `
+    <p>Storiiies was created by <a href="https://www.cogapp.com" target="_blank">Cogapp</a>.</p>
+    <p>It's easy to create your own story - find out more at <a href="https://storiiies.cogapp.com" target="_blank">storiiies.cogapp.com</a>.</p>
+    <p>This viewer is released as open source - see <a href="https://cogapp.com/open-source-at-cogapp">cogapp.com/open-source-at-cogapp</a>.</p>
+    `;
+  }
+
+  /**
    * Retrieves the annotationPages for the manifest
    * (Temporary solution)
    */
