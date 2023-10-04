@@ -11,6 +11,7 @@ import OpenSeadragon from "openseadragon";
 import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
 
 import arrowIcon from "./images/arrow.svg?raw";
+import restartIcon from "./images/restart.svg?raw";
 import showIcon from "./images/eye.svg?raw";
 import hideIcon from "./images/hide.svg?raw";
 
@@ -384,16 +385,18 @@ export default class StoriiiesViewer {
 
     // Reset button states
     this.controlButtonElements.prev.disabled = false;
-    // TODO: We need something a bit different here and below
-    // this.controlButtonElements.next.disabled = false;
+    this.controlButtonElements.next.innerHTML = `<span class="storiiies-viewer__button-icon" inert>${arrowIcon}</span>`;
+    this.controlButtonElements.next.ariaLabel = "Next";
 
-    // Disable buttons
+    // Update buttons
     if (index === lowerBound) {
       this.controlButtonElements.prev.disabled = true;
     }
-    // if (index === upperBound) {
-    //   this.controlButtonElements.next.disabled = true;
-    // }
+
+    if (index === upperBound) {
+      this.controlButtonElements.next.innerHTML = `<span class="storiiies-viewer__button-icon" inert>${restartIcon}</span>`;
+      this.controlButtonElements.next.ariaLabel = "Restart";
+    }
 
     // Determine rendering method for info text area
     if (this.activeAnnotationIndex === this.#annotationIndexFloor) {
@@ -462,14 +465,9 @@ export default class StoriiiesViewer {
       </span>
     `;
 
+    // (Next button innerHTML updated when activeAnnotationIndex changes)
     const nextButtonEl = prevButtonEl.cloneNode() as HTMLButtonElement;
     nextButtonEl.id = `storiiies-viewer-${this.instanceId}__next`;
-    nextButtonEl.ariaLabel = "Next";
-    nextButtonEl.innerHTML = `
-      <span class="storiiies-viewer__button-icon" inert>
-        ${arrowIcon}
-      </span>
-    `;
 
     prevButtonEl.classList.add("storiiies-viewer__previous");
     nextButtonEl.classList.add("storiiies-viewer__next");
