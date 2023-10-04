@@ -320,10 +320,17 @@ export default class StoriiiesViewer {
     // Show whole image when showing the label
     if (
       this.label &&
-      (this.activeAnnotationIndex === this.#annotationIndexFloor ||
-        this.activeAnnotationIndex === this.#annotationIndexCeiling)
+      this.activeAnnotationIndex === this.#annotationIndexFloor
     ) {
       this.viewer.viewport.goHome(this.#prefersReducedMotion);
+      return;
+    }
+
+    // Do nothing on the credit slide
+    if (
+      this.activeAnnotationIndex === this.#annotationIndexCeiling &&
+      this.showCreditSlide
+    ) {
       return;
     }
 
