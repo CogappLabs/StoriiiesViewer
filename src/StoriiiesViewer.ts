@@ -60,6 +60,8 @@ export default class StoriiiesViewer {
   #_activeCanvasIndex: number = 0;
   #_showInfoArea: boolean = true;
   #annotationIndexFloor: number = -1;
+  /** Uppermost number of slides considering factors such as credits */
+  #annotationIndexCeiling!: number;
   #prefersReducedMotion!: boolean;
   #statusCodes: statusCodes = {
     "bad-config": ["error", "Missing required config"],
@@ -267,6 +269,10 @@ export default class StoriiiesViewer {
 
     this.annotationPages = this.#getAnnotationPages();
     this.activeCanvasAnnotations = this.#getActiveCanvasAnnotations();
+    // Calculate the upper bound for the annotation index
+    this.#annotationIndexCeiling = this.showCreditSlide
+      ? this.activeCanvasAnnotations.length
+      : this.activeCanvasAnnotations.length - 1;
   }
 
   /**
@@ -313,7 +319,8 @@ export default class StoriiiesViewer {
     // Show whole image when showing the label
     if (
       this.label &&
-      this.activeAnnotationIndex === this.#annotationIndexFloor
+      (this.activeAnnotationIndex === this.#annotationIndexFloor ||
+        this.activeAnnotationIndex === this.#annotationIndexCeiling)
     ) {
       this.viewer.viewport.goHome(this.#prefersReducedMotion);
       return;
@@ -367,7 +374,7 @@ export default class StoriiiesViewer {
   set activeAnnotationIndex(index: number) {
     // Lower bound can only be -1 if there is a label
     const lowerBound = this.#annotationIndexFloor;
-    const upperBound = this.activeCanvasAnnotations.length - 1;
+    const upperBound = this.#annotationIndexCeiling;
     let infoTextElementMarkup;
 
     // Ignore out of bounds values
