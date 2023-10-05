@@ -45,7 +45,7 @@
                 "service": {
                   "@context": "http://iiif.io/api/image/3/context.json",
                   "profile": "http://iiif.io/api/image/3/level0.json",
-                  "@id": "http://localhost:43110/images/tractor/info.json"
+                  "@id": "http://localhost:43110/images/tractor"
                 }
               },
               "@type": "oa:Annotation",
