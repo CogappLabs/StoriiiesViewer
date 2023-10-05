@@ -57,13 +57,23 @@ type RawAnnotationBody = {
 };
 
 export default class StoriiiesViewer {
+  /** Index pointing to the annotation from the annotationPage, currently being viewed\
+   * The active annotationPage is treated as being the same as activeCanvasIndex
+   */
   #_activeAnnotationIndex: number = -1;
+  /** Index pointing to the canvas from the manifest currently being viewed\
+   * This value is also used to infer the active annotationPage
+   */
   #_activeCanvasIndex: number = 0;
+  /** Visibility flag for the infoArea element */
   #_showInfoArea: boolean = true;
+  /** Lowermost number of slides considering factors such as a title slide */
   #annotationIndexFloor: number = -1;
   /** Uppermost number of slides considering factors such as credits */
   #annotationIndexCeiling!: number;
+  /** Cached user preference on reduced-motion */
   #prefersReducedMotion!: boolean;
+  /** Error codes and their levels and user facing log messages */
   #statusCodes: statusCodes = {
     "bad-config": ["error", "Missing required config"],
     "manifest-err": ["error", "Encountered a problem loading the manifest"],
@@ -79,6 +89,7 @@ export default class StoriiiesViewer {
     ],
     "no-ext-anno": ["warn", "External annotationPages are not supported"],
   };
+  /** Index representing the number of StoriiiesViewer instances in the current scope */
   static #instanceCounter: number = 0;
   /** The normalised reference to the container where this instance is mounted
    * @readonly
