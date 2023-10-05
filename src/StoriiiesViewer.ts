@@ -219,6 +219,16 @@ export default class StoriiiesViewer {
   }
 
   /**
+   * Takes a service ID and returns the expanded URL that includes "/info.json"\
+   * This format is a MUST for the IIIF Image API, so we can rely on our manipulations being valid
+   */
+  #expandServiceID(serviceID: string): string {
+    // Add "/info.json" to the end of the serviceID
+    // replacing trailing slash and/or info.json if present
+    return serviceID.replace(/\/?(?:info\.json)?$/, "/info.json");
+  }
+
+  /**
    * Load the manifest and extract the label, canvases and annotation pages
    */
   async #initManifest() {
@@ -296,7 +306,11 @@ export default class StoriiiesViewer {
     this.containerElement?.insertAdjacentElement("afterbegin", osdContainer);
     this.viewer = OpenSeadragon({
       element: osdContainer,
-      tileSources: [this.canvases[this.activeCanvasIndex].imageServiceIds[0]],
+      tileSources: [
+        this.#expandServiceID(
+          this.canvases[this.activeCanvasIndex].imageServiceIds[0],
+        ),
+      ],
       crossOriginPolicy: "Anonymous",
       showSequenceControl: false,
       showHomeControl: false,
