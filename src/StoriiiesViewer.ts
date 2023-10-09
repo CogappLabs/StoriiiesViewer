@@ -8,7 +8,7 @@ import {
 import DOMPurify from "dompurify";
 import OpenSeadragon from "openseadragon";
 
-import { sanitiseHTML } from "./utils";
+import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
 
 import arrowIcon from "./images/arrow.svg?raw";
 import showIcon from "./images/eye.svg?raw";
@@ -90,6 +90,13 @@ export default class StoriiiesViewer {
   public manifest!: Manifest;
   /** The label retrieved from the manifest */
   public label: string = "";
+  /** The summary retrieved from the manifest */
+  public summary!: string;
+  /** The required statement label and value retrieved from the manifest */
+  public requiredStatement!: {
+    label: string;
+    value: string;
+  };
   /** The canvases retrieved from the manifest */
   public canvases!: Canvas[];
   /** The annotationPages retrieved from the manifest */
@@ -215,6 +222,32 @@ export default class StoriiiesViewer {
 
     this.label = this.manifest.getLabel().getValue() || "";
 
+    // At the time of writing, a manifest.getSummary() doesn't exist
+    this.summary = this.manifest.getProperty("summary")?.en[0] || "";
+    let requiredStatementLabel;
+    let requiredStatementValue;
+
+    try {
+      requiredStatementLabel = this.manifest
+        ?.getRequiredStatement()
+        ?.getLabel();
+    } catch (e) {
+      // Ignore
+    }
+    try {
+      requiredStatementValue = this.manifest
+        ?.getRequiredStatement()
+        ?.getValue();
+    } catch (e) {
+      // Ignore
+    }
+
+    this.requiredStatement = {
+      label: requiredStatementLabel || "",
+      value: requiredStatementValue || "",
+    };
+
+    // It's worth noting display of a title slide is predicated on the presence of a label in the manifest
     // In lieu of a label, set the active annotation to 0 to show the first annotation
     if (!this.label) {
       this.activeAnnotationIndex = 0;
@@ -327,6 +360,7 @@ export default class StoriiiesViewer {
     // Lower bound can only be -1 if there is a label
     const lowerBound = this.#annotationIndexFloor;
     const upperBound = this.activeCanvasAnnotations.length - 1;
+    let infoTextElementMarkup;
 
     // Ignore out of bounds values
     if (index < lowerBound || index > upperBound) return;
@@ -345,35 +379,14 @@ export default class StoriiiesViewer {
       this.controlButtonElements.next.disabled = true;
     }
 
-    // Info text to be label or annotation
-    if (this.infoTextElement) {
-      let value = this.label;
-      // Default to plain text (which will be implicity true for the label)
-      let format = "text/plain";
-
-      // The index will only be 0 or greater for annotations
-      if (this.activeAnnotationIndex >= 0) {
-        // Have to use getProperty here as there is no getValue() method
-        value = this.activeCanvasAnnotations[index]
-          .getBody()[0]
-          .getProperty("value");
-        format =
-          this.activeCanvasAnnotations[index].getBody()[0].getFormat() ||
-          "text/plain";
-      }
-
-      // Replace newlines with break tags for plain text
-      if (format === "text/plain") {
-        value = value.replace(/(?:\r\n|\r|\n)/g, "<br/>");
-      }
-
-      // Despite a label having HTML being invalid, we'll still sanitise it
-      // as we need to use innerHTML to display any <br>'s converted from newlines
-      this.infoTextElement.innerHTML = sanitiseHTML(
-        value,
-        this.DOMPurifyConfig,
-      );
+    // Determine rendering method for info text area
+    if (this.activeAnnotationIndex === this.#annotationIndexFloor) {
+      infoTextElementMarkup = this.#creatTitleSlideMarkup();
+    } else {
+      infoTextElementMarkup = this.#createAnnotationSlideMarkup();
     }
+
+    this.infoTextElement.innerHTML = infoTextElementMarkup;
 
     this.#updateViewer();
   }
@@ -456,7 +469,6 @@ export default class StoriiiesViewer {
       "beforeend",
       `
       <div id="storiiies-viewer-${this.instanceId}__info-text" class="storiiies-viewer__info-text" tabindex="0">
-        ${this.label}
       </div>
     `,
     );
@@ -496,6 +508,64 @@ export default class StoriiiesViewer {
     // Initialise values, let the setters handle the rest
     this.showInfoArea = true;
     this.activeAnnotationIndex = this.#annotationIndexFloor;
+  }
+
+  /**
+   * Generate HTML markup for the title slide
+   */
+  #creatTitleSlideMarkup(): string {
+    // Label should always be plain text
+    const labelHTML = sanitiseHTML(nl2br(this.label), this.DOMPurifyConfig);
+
+    // Summary might be plain text or HTML
+    const summaryHTML = sanitiseHTML(
+      IIIFSaysThisIsHTML(this.summary) ? this.summary : nl2br(this.summary),
+      this.DOMPurifyConfig,
+    );
+    let requiredStatementHTML = "";
+
+    requiredStatementHTML = sanitiseHTML(
+      requiredStatementHTML.concat(
+        this.requiredStatement.label &&
+          `<strong>${this.requiredStatement.label}:</strong> `,
+        // Required statement value might be plain text or HTML
+        this.requiredStatement.value &&
+          `${
+            IIIFSaysThisIsHTML(this.requiredStatement.value)
+              ? this.requiredStatement.value
+              : nl2br(this.requiredStatement.value)
+          }`,
+      ),
+      this.DOMPurifyConfig,
+    );
+
+    // N.B. Sanitising this whole chunk would require loosening restrictions on allowed tags and attributes
+    return `
+        <h1 class="storiiies-viewer__title storiiies-viewer__text-section">${labelHTML}</h1>
+        <div class="storiiies-viewer__text-section">${summaryHTML}</div>
+        <div class="storiiies-viewer__text-section">${requiredStatementHTML}</div>
+      `;
+  }
+
+  /**
+   * Generate HTML markup for an annotation slide
+   */
+  #createAnnotationSlideMarkup(): string {
+    // Have to use getProperty here as there is no getValue() method
+    let value = this.activeCanvasAnnotations[this.activeAnnotationIndex]
+      .getBody()[0]
+      .getProperty("value");
+    const format =
+      this.activeCanvasAnnotations[this.activeAnnotationIndex]
+        .getBody()[0]
+        .getFormat() || "text/plain";
+
+    // Replace newlines with break tags for plain text
+    if (format === "text/plain") {
+      value = value.replace(/(?:\r\n|\r|\n)/g, "<br/>");
+    }
+
+    return sanitiseHTML(value, this.DOMPurifyConfig);
   }
 
   /**

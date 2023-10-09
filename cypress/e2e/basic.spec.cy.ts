@@ -6,7 +6,7 @@ import {
   screenSizes,
 } from "../support/utils";
 
-function setupViewer(screenSize: ScreenSize) {
+function setupViewer(screenSize: ScreenSize, manifestUrl: string) {
   cy.visit("/").then((window) => {
     cy.document().then((document) => {
       cy.viewport(screenSize.width, screenSize.height);
@@ -15,8 +15,7 @@ function setupViewer(screenSize: ScreenSize) {
 
       window.storiiiesViewerInstance = new window.StoriiiesViewer({
         container,
-        manifestUrl:
-          "http://localhost:43110/manifests/standard-v3/manifest.json",
+        manifestUrl,
       });
     });
   });
@@ -24,7 +23,12 @@ function setupViewer(screenSize: ScreenSize) {
 
 function rendering(screenSize: ScreenSize) {
   describe(`Basic rendering (${screenSize.label})`, () => {
-    beforeEach(() => setupViewer(screenSize));
+    beforeEach(() =>
+      setupViewer(
+        screenSize,
+        "http://localhost:43110/manifests/standard-v3/manifest.json",
+      ),
+    );
 
     it("Should render an Openseadragon viewer", () => {
       cy.get("#viewer[data-loaded='true']");
@@ -33,7 +37,26 @@ function rendering(screenSize: ScreenSize) {
     it("Should initially display the label from the manifest", () => {
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum elit id metus blandit, vel egestas enim sagittis. Integer at sem sit amet nulla dictum sagittis a ut enim.<br><br>Sed dignissim commodo sapien ut vestibulum. Aenean sed iaculis metus, vel varius massa. Nullam placerat tempus pharetra. Vestibulum maximus elit ut eros sollicitudin, viverra aliquet metus condimentum. Proin sed pellentesque nibh. Pellentesque suscipit tempus risus, condimentum semper sem ultrices quis. Suspendisse blandit viverra ex in sollicitudin. Fusce aliquet tincidunt leo ut venenatis. Quisque eu sem hendrerit, pellentesque nibh et, imperdiet mi. Mauris arcu eros, consequat sit amet sapien accumsan, pellentesque malesuada justo.`,
+        `\n        <h1 class="storiiies-viewer__title storiiies-viewer__text-section">Lorem ipsum dolor sit amet, consectetur adipiscing elit</h1>\n        <div class="storiiies-viewer__text-section"><p><em>Pellentesque tempor ante non congue pulvinar.</em> Maecenas non ipsum non metus imperdiet facilisis. Vestibulum ante ipsum primis in <strong>faucibus</strong> orci luctus et ultrices posuere cubilia curae; Praesent sem felis, porta eu nisl in, rhoncus luctus nunc.<br>Morbi bibendum, eros eu sollicitudin egestas, nisi dui convallis nisi, sed lacinia velit augue eu lectus. In enim est, elementum ac elit a, ultricies pellentesque nibh.</p></div>\n        <div class="storiiies-viewer__text-section"><strong>Attribution:</strong> Provided courtesy of Example Institution</div>\n      `,
+      );
+    });
+  });
+
+  describe(`Rendering manifest with plain text summary (${screenSize.label})`, () => {
+    beforeEach(() =>
+      setupViewer(
+        screenSize,
+        "http://localhost:43110/manifests/plain-text-summary-v3/manifest.json",
+      ),
+    );
+    it("Should render an Openseadragon viewer", () => {
+      cy.get("#viewer[data-loaded='true']");
+    });
+
+    it("Should initially display the label from the manifest", () => {
+      cy.get("#storiiies-viewer-0__info-text").should(
+        "have.html",
+        `\n        <h1 class="storiiies-viewer__title storiiies-viewer__text-section">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h1>\n        <div class="storiiies-viewer__text-section">Pellentesque tempor ante non congue pulvinar.<br><br>Maecenas non ipsum non metus imperdiet facilisis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Praesent sem felis, porta eu nisl in, rhoncus luctus nunc.<br>Morbi bibendum, eros eu sollicitudin egestas, nisi dui convallis nisi, sed lacinia velit augue eu lectus. In enim est, elementum ac elit a, ultricies pellentesque nibh.</div>\n        <div class="storiiies-viewer__text-section"><strong>Attribution:</strong> Provided courtesy of Example Institution</div>\n      `,
       );
     });
   });
@@ -41,7 +64,12 @@ function rendering(screenSize: ScreenSize) {
 
 function annotations(screenSize: ScreenSize) {
   describe(`Annotations (${screenSize.label})`, () => {
-    beforeEach(() => setupViewer(screenSize));
+    beforeEach(() =>
+      setupViewer(
+        screenSize,
+        "http://localhost:43110/manifests/standard-v3/manifest.json",
+      ),
+    );
 
     it("should be able to navigate between annotations, and disable buttons where necessary", () => {
       cy.get("#storiiies-viewer-0__previous").should("be.disabled");
@@ -61,7 +89,7 @@ function annotations(screenSize: ScreenSize) {
     it("should display the correct annotation text and be sanitised", () => {
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rutrum elit id metus blandit, vel egestas enim sagittis. Integer at sem sit amet nulla dictum sagittis a ut enim.<br><br>Sed dignissim commodo sapien ut vestibulum. Aenean sed iaculis metus, vel varius massa. Nullam placerat tempus pharetra. Vestibulum maximus elit ut eros sollicitudin, viverra aliquet metus condimentum. Proin sed pellentesque nibh. Pellentesque suscipit tempus risus, condimentum semper sem ultrices quis. Suspendisse blandit viverra ex in sollicitudin. Fusce aliquet tincidunt leo ut venenatis. Quisque eu sem hendrerit, pellentesque nibh et, imperdiet mi. Mauris arcu eros, consequat sit amet sapien accumsan, pellentesque malesuada justo.`,
+        `\n        <h1 class="storiiies-viewer__title storiiies-viewer__text-section">Lorem ipsum dolor sit amet, consectetur adipiscing elit</h1>\n        <div class="storiiies-viewer__text-section"><p><em>Pellentesque tempor ante non congue pulvinar.</em> Maecenas non ipsum non metus imperdiet facilisis. Vestibulum ante ipsum primis in <strong>faucibus</strong> orci luctus et ultrices posuere cubilia curae; Praesent sem felis, porta eu nisl in, rhoncus luctus nunc.<br>Morbi bibendum, eros eu sollicitudin egestas, nisi dui convallis nisi, sed lacinia velit augue eu lectus. In enim est, elementum ac elit a, ultricies pellentesque nibh.</p></div>\n        <div class="storiiies-viewer__text-section"><strong>Attribution:</strong> Provided courtesy of Example Institution</div>\n      `,
       );
       cy.get("#storiiies-viewer-0__next").click();
 
