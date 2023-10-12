@@ -11,6 +11,7 @@ import OpenSeadragon from "openseadragon";
 import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
 
 import arrowIcon from "./images/arrow.svg?raw";
+import restartIcon from "./images/restart.svg?raw";
 import showIcon from "./images/eye.svg?raw";
 import hideIcon from "./images/hide.svg?raw";
 
@@ -22,6 +23,7 @@ import hideIcon from "./images/hide.svg?raw";
 export interface StoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
   manifestUrl: string;
+  showCreditSlide?: boolean;
 }
 
 type ControlButtons = {
@@ -55,11 +57,23 @@ type RawAnnotationBody = {
 };
 
 export default class StoriiiesViewer {
+  /** Index pointing to the annotation from the annotationPage, currently being viewed\
+   * The active annotationPage is treated as being the same as activeCanvasIndex
+   */
   #_activeAnnotationIndex: number = -1;
+  /** Index pointing to the canvas from the manifest currently being viewed\
+   * This value is also used to infer the active annotationPage
+   */
   #_activeCanvasIndex: number = 0;
+  /** Visibility flag for the infoArea element */
   #_showInfoArea: boolean = true;
+  /** Lowermost number of slides considering factors such as a title slide */
   #annotationIndexFloor: number = -1;
+  /** Uppermost number of slides considering factors such as credits */
+  #annotationIndexCeiling!: number;
+  /** Cached user preference on reduced-motion */
   #prefersReducedMotion!: boolean;
+  /** Error codes and their levels and user facing log messages */
   #statusCodes: statusCodes = {
     "bad-config": ["error", "Missing required config"],
     "manifest-err": ["error", "Encountered a problem loading the manifest"],
@@ -75,11 +89,16 @@ export default class StoriiiesViewer {
     ],
     "no-ext-anno": ["warn", "External annotationPages are not supported"],
   };
+  /** Index representing the number of StoriiiesViewer instances in the current scope */
   static #instanceCounter: number = 0;
   /** The normalised reference to the container where this instance is mounted
    * @readonly
    */
   public containerElement: HTMLElement | null = null;
+  /** Whether to display the closing credit slide. Defaults to true, can be overriden in StoriiiesViewerConfig
+   * @readonly
+   */
+  public showCreditSlide: boolean = true;
   /** The URL for the IIIF manifest loaded into this instance */
   public manifestUrl: string;
   /** ID used for creating id attributes that shouldn't clash, or referencing a particular instance of StoriiiesViewer
@@ -155,6 +174,9 @@ export default class StoriiiesViewer {
     }
 
     this.manifestUrl = config.manifestUrl;
+
+    // Use the provided preference if present
+    this.showCreditSlide = config.showCreditSlide ?? true;
 
     // Throw if the required config is missing and halt instantiation
     if (!this.containerElement || !this.manifestUrl) {
@@ -248,9 +270,8 @@ export default class StoriiiesViewer {
     };
 
     // It's worth noting display of a title slide is predicated on the presence of a label in the manifest
-    // In lieu of a label, set the active annotation to 0 to show the first annotation
+    // In lieu of a label, set the floor to 0 to effectively remove the title slide
     if (!this.label) {
-      this.activeAnnotationIndex = 0;
       this.#annotationIndexFloor = 0;
 
       // But should also warn that this is invalid
@@ -259,6 +280,10 @@ export default class StoriiiesViewer {
 
     this.annotationPages = this.#getAnnotationPages();
     this.activeCanvasAnnotations = this.#getActiveCanvasAnnotations();
+    // Calculate the upper bound for the annotation index
+    this.#annotationIndexCeiling = this.showCreditSlide
+      ? this.activeCanvasAnnotations.length
+      : this.activeCanvasAnnotations.length - 1;
   }
 
   /**
@@ -311,6 +336,14 @@ export default class StoriiiesViewer {
       return;
     }
 
+    // Do nothing on the credit slide
+    if (
+      this.activeAnnotationIndex === this.#annotationIndexCeiling &&
+      this.showCreditSlide
+    ) {
+      return;
+    }
+
     const target =
       this.#getActiveCanvasAnnotations()[
         this.activeAnnotationIndex
@@ -359,7 +392,7 @@ export default class StoriiiesViewer {
   set activeAnnotationIndex(index: number) {
     // Lower bound can only be -1 if there is a label
     const lowerBound = this.#annotationIndexFloor;
-    const upperBound = this.activeCanvasAnnotations.length - 1;
+    const upperBound = this.#annotationIndexCeiling;
     let infoTextElementMarkup;
 
     // Ignore out of bounds values
@@ -369,19 +402,27 @@ export default class StoriiiesViewer {
 
     // Reset button states
     this.controlButtonElements.prev.disabled = false;
-    this.controlButtonElements.next.disabled = false;
+    this.controlButtonElements.next.innerHTML = `<span class="storiiies-viewer__button-icon" inert>${arrowIcon}</span>`;
+    this.controlButtonElements.next.ariaLabel = "Next";
 
-    // Disable buttons
+    // Update buttons
     if (index === lowerBound) {
       this.controlButtonElements.prev.disabled = true;
     }
+
     if (index === upperBound) {
-      this.controlButtonElements.next.disabled = true;
+      this.controlButtonElements.next.innerHTML = `<span class="storiiies-viewer__button-icon" inert>${restartIcon}</span>`;
+      this.controlButtonElements.next.ariaLabel = "Restart";
     }
 
     // Determine rendering method for info text area
     if (this.activeAnnotationIndex === this.#annotationIndexFloor) {
       infoTextElementMarkup = this.#creatTitleSlideMarkup();
+    } else if (
+      this.activeAnnotationIndex === this.#annotationIndexCeiling &&
+      this.showCreditSlide
+    ) {
+      infoTextElementMarkup = this.#createCreditSlideMarkup();
     } else {
       infoTextElementMarkup = this.#createAnnotationSlideMarkup();
     }
@@ -441,14 +482,9 @@ export default class StoriiiesViewer {
       </span>
     `;
 
+    // (Next button innerHTML updated when activeAnnotationIndex changes)
     const nextButtonEl = prevButtonEl.cloneNode() as HTMLButtonElement;
     nextButtonEl.id = `storiiies-viewer-${this.instanceId}__next`;
-    nextButtonEl.ariaLabel = "Next";
-    nextButtonEl.innerHTML = `
-      <span class="storiiies-viewer__button-icon" inert>
-        ${arrowIcon}
-      </span>
-    `;
 
     prevButtonEl.classList.add("storiiies-viewer__previous");
     nextButtonEl.classList.add("storiiies-viewer__next");
@@ -458,7 +494,11 @@ export default class StoriiiesViewer {
         if ((e.target as HTMLButtonElement).ariaLabel === "Previous") {
           this.activeAnnotationIndex = this.activeAnnotationIndex - 1;
         } else {
-          this.activeAnnotationIndex = this.activeAnnotationIndex + 1;
+          if (this.activeAnnotationIndex === this.#annotationIndexCeiling) {
+            this.activeCanvasIndex = 0;
+          } else {
+            this.activeAnnotationIndex = this.activeAnnotationIndex + 1;
+          }
         }
       });
     });
@@ -566,6 +606,14 @@ export default class StoriiiesViewer {
     }
 
     return sanitiseHTML(value, this.DOMPurifyConfig);
+  }
+
+  /**
+   * Generate HTML markup for an annotation slide
+   */
+  #createCreditSlideMarkup(): string {
+    // No need to sanitise this hardcoded markup
+    return `<p>Storiiies was created by <a href="https://www.cogapp.com" target="_blank">Cogapp</a>.</p><p>It's easy to create your own story - find out more at <a href="https://storiiies.cogapp.com" target="_blank">storiiies.cogapp.com</a>.</p><p>This viewer is released as open source - see <a href="https://cogapp.com/open-source-at-cogapp" target="_blank">cogapp.com/open-source-at-cogapp</a>.</p>`;
   }
 
   /**

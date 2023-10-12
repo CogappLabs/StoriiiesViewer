@@ -36,10 +36,12 @@ function annotations() {
           .should("not.be.disabled")
           .click()
           .click()
-          .should("be.disabled");
+          .click()
+          .should("have.attr", "aria-label", "Restart");
 
         cy.get(`#storiiies-viewer-${i}__previous`)
           .should("not.be.disabled")
+          .click()
           .click()
           .click()
           .should("be.disabled");
@@ -58,17 +60,30 @@ function annotations() {
       cy.get("#storiiies-viewer-2__previous").should("be.disabled");
 
       // Click next twice in instance 1, check others
-      cy.get("#storiiies-viewer-1__next").click().click().should("be.disabled");
+      cy.get("#storiiies-viewer-1__next")
+        .click()
+        .click()
+        .click()
+        .should("have.attr", "aria-label", "Restart");
       cy.get("#storiiies-viewer-0__next").should("not.be.disabled");
-      cy.get("#storiiies-viewer-2__next").should("not.be.disabled");
+      cy.get("#storiiies-viewer-2__next").should(
+        "have.attr",
+        "aria-label",
+        "Next",
+      );
 
       // Click previous twice in instance 1, check others
       cy.get("#storiiies-viewer-1__previous")
         .click()
         .click()
+        .click()
         .should("be.disabled");
       cy.get("#storiiies-viewer-0__next").should("not.be.disabled");
-      cy.get("#storiiies-viewer-2__next").should("not.be.disabled");
+      cy.get("#storiiies-viewer-2__next").should(
+        "have.attr",
+        "aria-label",
+        "Next",
+      );
 
       // Click info toggle in instance 0, check info area visibility
       cy.get("#storiiies-viewer-0__info-toggle").click();
