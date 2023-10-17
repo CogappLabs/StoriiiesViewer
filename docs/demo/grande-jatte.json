@@ -3,9 +3,7 @@
   "id": "https://cogapplabs.github.io/StoriiiesViewer/demo/grande-jatte.json",
   "type": "Manifest",
   "label": {
-    "en": [
-      "A Sunday on La Grande Jatte — 1884"
-    ]
+    "en": ["A Sunday on La Grande Jatte — 1884"]
   },
   "summary": {
     "en": [
@@ -24,14 +22,10 @@
   ],
   "requiredStatement": {
     "label": {
-      "en": [
-        "Attribution"
-      ]
+      "en": ["Attribution"]
     },
     "value": {
-      "en": [
-        "CC0 Public Domain image hosted by the Art Institute of Chicago"
-      ]
+      "en": ["CC0 Public Domain image hosted by the Art Institute of Chicago"]
     }
   },
   "items": [
@@ -57,7 +51,7 @@
                 "width": 9310,
                 "service": [
                   {
-                    "id": "https://www.artic.edu/iiif/2/2d484387-2509-5e8e-2c43-22f9981972eb/info.json",
+                    "id": "https://www.artic.edu/iiif/2/2d484387-2509-5e8e-2c43-22f9981972eb",
                     "profile": "level2",
                     "type": "ImageService2"
                   }

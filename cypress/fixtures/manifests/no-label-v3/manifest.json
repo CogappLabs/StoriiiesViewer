@@ -25,7 +25,7 @@
                 "width": 2048,
                 "service": [
                   {
-                    "id": "http://localhost:43110/images/exact-tiles/info.json",
+                    "id": "http://localhost:43110/images/exact-tiles",
                     "profile": "level0",
                     "type": "ImageService3"
                   }
