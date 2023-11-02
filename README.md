@@ -2,11 +2,6 @@
 
 ![Storiies promotional banner](docs/Storiies_banner_1280_95.jpg)
 
-<sub>Image credits:</sub><br>
-<sub>Georges Seurat. _A Sunday on La Grande Jatte_, 1884-86. The Art Institute of Chicago.</sub><br>
-<sub>Vincent van Gogh. _The Bedroom_, 1889. The Art Institute of Chicago.</sub><br>
-<sub>Rosalba Carriera. _A Young Lady with a Parrot_, c. 1730. The Art Institute of Chicago.</sub>
-
 Storiiies Viewer is an open source viewer for [Storiiies](https://www.cogapp.com/r-d/storiiies), the IIIF digital storytelling platform.
 
 ## Demo
@@ -186,3 +181,8 @@ npm ci
     </tr>
   </tbody>
 </table>
+
+<sub>Image credits from banner image:</sub><br>
+<sub>Georges Seurat. _A Sunday on La Grande Jatte_, 1884-86. The Art Institute of Chicago.</sub><br>
+<sub>Vincent van Gogh. _The Bedroom_, 1889. The Art Institute of Chicago.</sub><br>
+<sub>Rosalba Carriera. _A Young Lady with a Parrot_, c. 1730. The Art Institute of Chicago.</sub>
