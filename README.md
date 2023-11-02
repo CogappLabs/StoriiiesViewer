@@ -182,8 +182,10 @@ npm ci
   </tbody>
 </table>
 
-#### Image credits from banner image
+### Image credits from banner image
 
-<small>Georges Seurat. _[A Sunday on La Grande Jatte](https://www.artic.edu/artworks/27992/a-sunday-on-la-grande-jatte-1884)_, 1884-86. The Art Institute of Chicago.</small><br>
-<small>Vincent van Gogh. _[The Bedroom](https://www.artic.edu/artworks/28560/the-bedroom)_, 1889. The Art Institute of Chicago.</small><br>
-<small>Rosalba Carriera. _[A Young Lady with a Parrot](https://www.artic.edu/artworks/103887/a-young-lady-with-a-parrot)_, c. 1730. The Art Institute of Chicago.</small>
+Georges Seurat. _[A Sunday on La Grande Jatte](https://www.artic.edu/artworks/27992/a-sunday-on-la-grande-jatte-1884)_, 1884-86. The Art Institute of Chicago.
+
+Vincent van Gogh. _[The Bedroom](https://www.artic.edu/artworks/28560/the-bedroom)_, 1889. The Art Institute of Chicago.
+
+Rosalba Carriera. _[A Young Lady with a Parrot](https://www.artic.edu/artworks/103887/a-young-lady-with-a-parrot)_, c. 1730. The Art Institute of Chicago.
