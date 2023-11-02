@@ -627,7 +627,7 @@ export default class StoriiiesViewer {
    */
   #createCreditSlideMarkup(): string {
     // No need to sanitise this hardcoded markup
-    return `<p>Storiiies was created by <a href="https://www.cogapp.com" target="_blank">Cogapp</a>.</p><p>It's easy to create your own story - find out more at <a href="https://storiiies.cogapp.com" target="_blank">storiiies.cogapp.com</a>.</p><p>This viewer is released as open source - see <a href="https://cogapp.com/open-source-at-cogapp" target="_blank">cogapp.com/open-source-at-cogapp</a>.</p>`;
+    return `<p>Storiiies was created by <a href="https://www.cogapp.com" target="_blank">Cogapp</a>.</p><p>It's easy, and free, to create your own story - find out more at <a href="https://www.cogapp.com/storiiies" target="_blank">cogapp.com/storiiies</a>.</p><p>This viewer is released as open source - see <a href="https://cogapp.com/open-source-at-cogapp" target="_blank">cogapp.com/open-source-at-cogapp</a>.</p>`;
   }
 
   /**
