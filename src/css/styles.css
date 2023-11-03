@@ -8,7 +8,7 @@
 .storiiies-viewer {
   --storiiies-viewer-container-bg: #111;
   --storiiies-viewer-outer-spacing: 16px;
-  --storiiies-viewer-row-gap: 8px;
+  --storiiies-viewer-row-gap: 16px;
   --storiiies-viewer-col-gap: 16px;
   --storiiies-viewer-bg: #fff;
   --storiiies-viewer-fg: #111;
@@ -113,7 +113,7 @@
   block-size: 50cqb;
   grid-template-rows: 44px 1fr;
   grid-template-columns: 1fr repeat(2, 44px);
-  gap: var(--storiiies-viewer-col-gap) var(--storiiies-viewer-row-gap);
+  gap: var(--storiiies-viewer-row-gap) var(--storiiies-viewer-col-gap);
   padding: var(--storiiies-viewer-outer-spacing);
   color: var(--storiiies-viewer-fg);
   background: var(--storiiies-viewer-bg);
