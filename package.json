@@ -16,9 +16,10 @@
     "dist"
   ],
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "scripts": {
+    "prepublish": "npm run build",
     "build": "vite build",
     "cypress": "cypress run",
     "cypress:gui": "cypress open",

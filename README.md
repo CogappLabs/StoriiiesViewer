@@ -5,11 +5,11 @@
 Storiiies Viewer is an open source viewer for [Storiiies](https://www.cogapp.com/r-d/storiiies), the IIIF digital storytelling platform.
 
 ## Demo
-[See an example StoriiiesViewer in action on codepen](https://codepen.io/jonw-cogapp/pen/QWzwMqE)
+[See an example StoriiiesViewer in action on codepen](https://codepen.io/Cogapp/pen/JjxbjGz)
 
 ## Usage
 
-[API documentation](https://cogapp.github.io/storiiies-viewer/api)
+[API documentation](https://cogapplabs.github.io/StoriiiesViewer/api)
 
 ### Adding the dependencies
 
@@ -113,9 +113,10 @@ For example, for the link https://storiiies.cogapp.com/viewer/7e4va/A-Sunday-on-
 
 #### Setup
 
-Install the dependencies in the project root with:
+Switch node version and install the dependencies in the project root with:
 
 ```console
+nvm use
 npm ci
 ```
 
