@@ -10,6 +10,8 @@ declare global {
 
 export function getExpectedCentre(region: string) {
   const [x, y, width, height] = region.split(",").map(Number);
+  // Note: this doesn't currently account for viewer.viewport.visibilityRatio
+  // if large enough "out of bounds" values are used
   return new OpenSeadragon.Point(x + width / 2, y + height / 2);
 }
 
