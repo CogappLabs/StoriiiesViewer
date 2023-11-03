@@ -113,9 +113,10 @@ For example, for the link https://storiiies.cogapp.com/viewer/7e4va/A-Sunday-on-
 
 #### Setup
 
-Install the dependencies in the project root with:
+Switch node version and install the dependencies in the project root with:
 
 ```console
+nvm use
 npm ci
 ```
 
