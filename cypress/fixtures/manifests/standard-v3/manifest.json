@@ -63,7 +63,7 @@
                 "language": "en",
                 "format": "text/plain"
               },
-              "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=265,661,100,200"
+              "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=265.53218,661.3333,100,200"
             },
             {
               "id": "http://localhost:43110/annotations/standard-v3/page-1/annotation/2",
@@ -75,7 +75,7 @@
                 "language": "en",
                 "format": "text/html"
               },
-              "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=333,242,200,120"
+              "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=-20,242,200,120"
             }
           ]
         }

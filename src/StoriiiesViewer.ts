@@ -685,11 +685,10 @@ export default class StoriiiesViewer {
    * Get the region from the URL as a Rect relative to the viewport of this instance's viewer
    */
   #getRegion(url?: string): OpenSeadragon.Rect | null {
-    const regex = /#xywh=(\d+),(\d+),(\d+),(\d+)/;
-    const match = url?.match(regex);
+    const xywh = url?.split("#xywh=")[1];
 
-    if (match) {
-      const [, x, y, w, h] = match.map(Number);
+    if (xywh) {
+      const [x, y, w, h] = xywh.split(",").map(Number);
       return this.viewer.viewport.imageToViewportRectangle(x, y, w, h);
     }
 
