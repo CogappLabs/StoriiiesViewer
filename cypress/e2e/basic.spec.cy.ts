@@ -147,7 +147,7 @@ function annotationsWithCredits(screenSize: ScreenSize) {
           cy.get("#storiiies-viewer-0__next")
             .click()
             .then(() => {
-              expectedCentre = getExpectedCentre("265,661,100,200");
+              expectedCentre = getExpectedCentre("265.53218,661.3333,100,200");
               actualCentre = getActualCentre(viewer);
 
               assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
@@ -158,7 +158,7 @@ function annotationsWithCredits(screenSize: ScreenSize) {
           cy.get("#storiiies-viewer-0__next")
             .click()
             .then(() => {
-              expectedCentre = getExpectedCentre("333,242,200,120");
+              expectedCentre = getExpectedCentre("-20,242,200,120");
               actualCentre = getActualCentre(viewer);
 
               assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
@@ -262,7 +262,7 @@ function annotationsWithoutCredits(screenSize: ScreenSize) {
           cy.get("#storiiies-viewer-0__next")
             .click()
             .then(() => {
-              expectedCentre = getExpectedCentre("265,661,100,200");
+              expectedCentre = getExpectedCentre("265.53218,661.3333,100,200");
               actualCentre = getActualCentre(viewer);
 
               assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
@@ -273,7 +273,7 @@ function annotationsWithoutCredits(screenSize: ScreenSize) {
           cy.get("#storiiies-viewer-0__next")
             .click()
             .then(() => {
-              expectedCentre = getExpectedCentre("333,242,200,120");
+              expectedCentre = getExpectedCentre("-20,242,200,120");
               actualCentre = getActualCentre(viewer);
 
               assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
