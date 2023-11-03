@@ -9,7 +9,7 @@ Storiiies Viewer is an open source viewer for [Storiiies](https://www.cogapp.com
 
 ## Usage
 
-[API documentation](https://cogapp.github.io/storiiies-viewer/api)
+[API documentation](https://cogapplabs.github.io/StoriiiesViewer/api)
 
 ### Adding the dependencies
 
