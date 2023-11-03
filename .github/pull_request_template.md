@@ -2,8 +2,8 @@
 
 ---
 
-- **Pivotal ticket**: [#id](https://www.pivotaltracker.com/story/show/id)
-- Other Relevant Links (Mailing list discussion, related pull requests, etc.)
+- **Pivotal ticket**: [#id](https://www.pivotaltracker.com/story/show/id) (if applicable)
+- Other Relevant Links (related issues, related pull requests, etc.)
 
 # What does this Pull Request do?
 
