@@ -8,16 +8,16 @@
 .storiiies-viewer {
   --storiiies-viewer-container-bg: #111;
   --storiiies-viewer-outer-spacing: 16px;
-  --storiiies-viewer-row-gap: 8px;
+  --storiiies-viewer-row-gap: 16px;
   --storiiies-viewer-col-gap: 16px;
-  --storiiies-viewer-accent: #2a4e7d;
-  --storiiies-viewer-hover-bg: #111;
-  --storiiies-viewer-hover-fg: #fff;
-  --storiiies-viewer-outline: 2px solid var(--storiiies-viewer-accent);
   --storiiies-viewer-bg: #fff;
   --storiiies-viewer-fg: #111;
   --storiiies-viewer-button-bg: var(--storiiies-viewer-bg);
   --storiiies-viewer-button-fg: var(--storiiies-viewer-fg);
+  --storiiies-viewer-button-hover-bg: var(--storiiies-viewer-button-fg);
+  --storiiies-viewer-button-hover-fg: var(--storiiies-viewer-button-bg);
+  --storiiies-viewer-accent-outer: var(--storiiies-viewer-button-hover-bg);
+  --storiiies-viewer-accent-inner: var(--storiiies-viewer-button-hover-fg);
   --storiiies-viewer-font-family: sans-serif;
   --storiiies-viewer-font-size: 16px;
   --storiiies-viewer-line-height: 1.2;
@@ -75,18 +75,17 @@
     background 100ms;
 }
 
-.storiiies-viewer__icon-button:focus-visible {
-  outline: var(--storiiies-viewer-outline);
-}
-
 .storiiies-viewer__icon-button:disabled {
   cursor: default;
   opacity: 0.3;
 }
 
+.storiiies-viewer__icon-button:focus-visible,
 .storiiies-viewer__icon-button:hover:not(:disabled) {
-  color: var(--storiiies-viewer-hover-fg);
-  background: var(--storiiies-viewer-hover-bg);
+  color: var(--storiiies-viewer-button-hover-fg);
+  background: var(--storiiies-viewer-button-hover-bg);
+  outline: 2px solid var(--storiiies-viewer-accent-inner);
+  box-shadow: 0 0 0 4px var(--storiiies-viewer-accent-outer);
 }
 
 .storiiies-viewer__button-icon {
@@ -114,7 +113,7 @@
   block-size: 50cqb;
   grid-template-rows: 44px 1fr;
   grid-template-columns: 1fr repeat(2, 44px);
-  gap: var(--storiiies-viewer-col-gap) var(--storiiies-viewer-row-gap);
+  gap: var(--storiiies-viewer-row-gap) var(--storiiies-viewer-col-gap);
   padding: var(--storiiies-viewer-outer-spacing);
   color: var(--storiiies-viewer-fg);
   background: var(--storiiies-viewer-bg);
@@ -154,6 +153,7 @@
     75cqb - var(--storiiies-viewer-outer-spacing) * 4 - 44px
   );
   scrollbar-gutter: stable;
+  overflow-wrap: break-word;
 }
 
 .storiiies-viewer__info-text > *:first-child {
