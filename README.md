@@ -5,7 +5,7 @@
 Storiiies Viewer is an open source viewer for [Storiiies](https://www.cogapp.com/r-d/storiiies), the IIIF digital storytelling platform.
 
 ## Demo
-[See an example StoriiiesViewer in action on codepen](https://codepen.io/jonw-cogapp/pen/QWzwMqE)
+[See an example StoriiiesViewer in action on codepen](https://codepen.io/Cogapp/pen/JjxbjGz)
 
 ## Usage
 
