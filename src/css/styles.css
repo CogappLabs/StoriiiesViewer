@@ -153,6 +153,7 @@
     75cqb - var(--storiiies-viewer-outer-spacing) * 4 - 44px
   );
   scrollbar-gutter: stable;
+  overflow-wrap: break-word;
 }
 
 .storiiies-viewer__info-text > *:first-child {
