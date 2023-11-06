@@ -1,3 +1,4 @@
+import "./css/styles.css";
 import {
   loadManifest,
   Manifest,
