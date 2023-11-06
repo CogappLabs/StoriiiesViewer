@@ -24,8 +24,8 @@ You can include the JavaScript and CSS in the HTML like so, using the [unpkg CDN
 ```HTML
 <head>
   <!-- ... -->
-  <link rel="stylesheet" href="https://unpkg.com/browse/@cogapp/storiiiesviewer@latest/dist/storiiies-viewer.css">
-  <script src="https://unpkg.com/browse/@cogapp/storiiiesviewer@latest/dist/umd/storiiies-viewer.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/browse/@cogapp/storiiies-viewer@latest/dist/storiiies-viewer.css">
+  <script src="https://unpkg.com/browse/@cogapp/storiiies-viewer@latest/dist/umd/storiiies-viewer.js"></script>
   <!-- ... -->
 </head>
 ```
@@ -37,9 +37,9 @@ Including the JavaScript file this way will make `StoriiiesViewer` available glo
 
 #### Using a bundler
 
-1. Install the dependecy with `npm install @cogapp/storiiiesviewer`
-2. Use `import StoriiiesViewer from '@cogapp/storiiiesviewer'` in your code to access the StoriiiesViewer constructor
-3. Depending on how your tooling handles importing CSS you might also be able to import the CSS file with `import @cogapp/storiiiesviewer/dist/storiiies-viewer.css` — but you could also use the method above, or copy the contents of the CSS file into your own src files.
+1. Install the dependecy with `npm install @cogapp/storiiies-viewer`
+2. Use `import StoriiiesViewer from '@cogapp/storiiies-viewer'` in your code to access the StoriiiesViewer constructor
+3. Depending on how your tooling handles importing CSS you might also be able to import the CSS file with `import @cogapp/storiiies-viewer/dist/storiiies-viewer.css` — but you could also use the method above, or copy the contents of the CSS file into your own src files.
 
 
 ### Initialise a viewer
