@@ -24,8 +24,8 @@ You can include the JavaScript and CSS in the HTML like so, using the [unpkg CDN
 ```HTML
 <head>
   <!-- ... -->
-  <link rel="stylesheet" href="https://unpkg.com/browse/@cogapp/storiiies-viewer@latest/dist/storiiies-viewer.css">
-  <script src="https://unpkg.com/browse/@cogapp/storiiies-viewer@latest/dist/umd/storiiies-viewer.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/@cogapp/storiiies-viewer@latest/dist/storiiies-viewer.css">
+  <script src="https://unpkg.com/@cogapp/storiiies-viewer@latest/dist/umd/storiiies-viewer.js"></script>
   <!-- ... -->
 </head>
 ```
