@@ -58,11 +58,31 @@ function rendering(screenSize: ScreenSize) {
       cy.get("#viewer[data-loaded='true']");
     });
 
+    // Plain text should include converted break tags
     it("Should initially display the label from the manifest", () => {
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
         `\n        <h1 class="storiiies-viewer__title storiiies-viewer__text-section">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h1>\n        <div class="storiiies-viewer__text-section">Pellentesque tempor ante non congue pulvinar.<br><br>Maecenas non ipsum non metus imperdiet facilisis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Praesent sem felis, porta eu nisl in, rhoncus luctus nunc.<br>Morbi bibendum, eros eu sollicitudin egestas, nisi dui convallis nisi, sed lacinia velit augue eu lectus. In enim est, elementum ac elit a, ultricies pellentesque nibh.</div>\n        <div class="storiiies-viewer__text-section"><strong>Attribution:</strong> Provided courtesy of Example Institution</div>\n      `,
       );
+    });
+  });
+
+  describe(`Rendering manifest with mixed HTML/plain text summary (${screenSize.label})`, () => {
+    beforeEach(() =>
+      setupViewer(
+        screenSize,
+        "http://localhost:43110/manifests/mixed-html-plain-summary-v3/manifest.json",
+      ),
+    );
+    it("Should render an Openseadragon viewer", () => {
+      cy.get("#viewer[data-loaded='true']");
+    });
+
+    // Something judged to be HTML (starts with < and ends with >) should not including any converted break tags
+    it("Should not convert \\n's to break tags", () => {
+      cy.get("#storiiies-viewer-0__info-text")
+        .invoke("html")
+        .should("not.contain", "<br>");
     });
   });
 }
