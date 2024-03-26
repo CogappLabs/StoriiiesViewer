@@ -155,8 +155,9 @@ export default class StoriiiesViewer {
       "strong",
       "sub",
       "sup",
+      "audio",
     ],
-    ALLOWED_ATTR: ["href"],
+    ALLOWED_ATTR: ["href", "src", "controls"],
   };
 
   constructor(config: StoriiiesViewerConfig) {
@@ -606,21 +607,30 @@ export default class StoriiiesViewer {
    * Generate HTML markup for an annotation slide
    */
   #createAnnotationSlideMarkup(): string {
-    // Have to use getProperty here as there is no getValue() method
-    let value = this.activeCanvasAnnotations[this.activeAnnotationIndex]
-      .getBody()[0]
-      .getProperty("value");
-    const format =
-      this.activeCanvasAnnotations[this.activeAnnotationIndex]
-        .getBody()[0]
-        .getFormat() || "text/plain";
+    let markup = "";
+    const activeAnnotations =
+      this.activeCanvasAnnotations[this.#_activeAnnotationIndex].getBody();
 
-    // Replace newlines with break tags for plain text
-    if (format === "text/plain") {
-      value = value.replace(/(?:\r\n|\r|\n)/g, "<br/>");
+    for (const body of activeAnnotations) {
+      if (body.getType() === "textualbody") {
+        let value = body.getProperty("value");
+        const format = body.getFormat() || "text/plain";
+
+        // Replace newlines with break tags for plain text
+        if (format === "text/plain") {
+          value = value.replace(/(?:\r\n|\r|\n)/g, "<br/>");
+        }
+
+        markup += value;
+      } else if (body.getType() === "sound") {
+        const soundUrl = body.id;
+        // Create the audio link and sanitize it
+        const audioElement = `<audio controls src="${soundUrl}">Your browser does not support the audio element.</audio>`;
+        markup += audioElement;
+      }
     }
 
-    return sanitiseHTML(value, this.DOMPurifyConfig);
+    return sanitiseHTML(markup, this.DOMPurifyConfig);
   }
 
   /**
