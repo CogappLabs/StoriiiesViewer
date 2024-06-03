@@ -5,6 +5,7 @@
 Storiiies Viewer is an open source viewer for [Storiiies](https://www.cogapp.com/r-d/storiiies), the IIIF digital storytelling platform.
 
 ## Demo
+
 [See an example StoriiiesViewer in action on codepen](https://codepen.io/Cogapp/pen/JjxbjGz)
 
 ## Usage
@@ -34,21 +35,22 @@ Or you could save these files and serve them locally if you prefer.
 
 Including the JavaScript file this way will make `StoriiiesViewer` available globally in JavaScript.
 
-
 #### Using a bundler
 
 1. Install the dependecy with `npm install @cogapp/storiiies-viewer`
 2. Use `import StoriiiesViewer from '@cogapp/storiiies-viewer'` in your code to access the StoriiiesViewer constructor
 3. Depending on how your tooling handles importing CSS you might also be able to import the CSS file with `import @cogapp/storiiies-viewer/dist/storiiies-viewer.css` — but you could also use the method above, or copy the contents of the CSS file into your own src files.
 
-
 ### Initialise a viewer
+
 In your HTML:
+
 ```HTML
 <div id="storiiies-viewer"></div>
 ```
 
 In your JavaScript
+
 ```JS
 document.addEventListener('DOMContentLoaded', () => {
   const myViewer = new StoriiiesViewer({
@@ -66,12 +68,13 @@ To customise of appearance of StoriiiesViewer you have a few options:
 2. To 'theme' StoriiiesViewer, you may find the custom properties provided by the default stylesheet to be sufficient
 3. Start with default stylesheet and expand or override these styles as you see fit
 
-
-
 ## Supported manifest formats
+
 StoriiiesViewer supports a subset of the [IIIF presentation API v3](https://iiif.io/api/presentation/3.0/). Specifically, we target `annotationPages` which are included directly in the manifest ([like in this cookbook recipe](https://iiif.io/api/cookbook/recipe/0258-tagging-external-resource/)).
 
-Annotations themselves can either be `text/plain` or `text/html` denoted by the `format` field. For `text/plain` newline characters will be converted and output as `<br>` tags.
+Text based annotations can either be `text/plain` or `text/html` denoted by the `format` field. For `text/plain` newline characters will be converted and output as `<br>` tags.
+
+Support for audio exists, and StoriiiesViewer will render an `<audio />` element for that have a type of `Sound`, [like shown in this cookbook recipe](https://iiif.io/api/cookbook/recipe/0002-mvm-audio/).
 
 StoriiiesViewer has no required fields (aside from those required by the presentation API), but it will render certain values from the manifest if provided. These are:
 
@@ -84,7 +87,6 @@ StoriiiesViewer has no required fields (aside from those required by the present
 >
 > - Externally referenced `annotationPages` ([as shown in this cookbook recipe](https://iiif.io/api/cookbook/recipe/0306-linking-annotations-to-manifests/))
 > - Multiple images
-> - Non-text based annotations (e.g. audio)
 > - Full multi-lingual support
 >
 > However, pathways exist to enable these features with further development.
@@ -96,7 +98,7 @@ StoriiiesViewer has no required fields (aside from those required by the present
 
 Cogapp maintains a free-to-use editor for Storiiies at [storiiies-editor.cogapp.com](https://storiiies-editor.cogapp.com/). To use a compatible v3 manifest for your story, append the short alphanumeric code from the "view and share" link to a base URL of `https://manifest.storiiies-editor.cogapp.com/v3/`
 
-For example, for the link https://storiiies.cogapp.com/viewer/7e4va/A-Sunday-on-La-Grande-Jatte-1884 use a manifest URL of https://manifest.storiiies-editor.cogapp.com/v3/7e4va
+For example, for the link <https://storiiies.cogapp.com/viewer/7e4va/A-Sunday-on-La-Grande-Jatte-1884> use a manifest URL of <https://manifest.storiiies-editor.cogapp.com/v3/7e4va>
 
 ## Local development
 
@@ -140,7 +142,6 @@ npm ci
     </tr>
   </tbody>
 </table>
-
 
 ### Running the tests
 
