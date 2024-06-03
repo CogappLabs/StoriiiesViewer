@@ -142,7 +142,10 @@
 * ## Annotation text
 */
 .storiiies-viewer__info-text {
+  display: flex;
+  flex-direction: column;
   grid-column: 1 / -1;
+  gap: 1em;
   padding-inline-end: 8px;
   overflow: auto;
   font-family: var(--storiiies-viewer-font-family);
@@ -154,10 +157,6 @@
   );
   scrollbar-gutter: stable;
   overflow-wrap: break-word;
-}
-
-.storiiies-viewer__info-text > *:first-child {
-  margin-block-start: 0;
 }
 
 .storiiies-viewer__info-text::-webkit-scrollbar {
@@ -176,6 +175,14 @@
   border-radius: var(--storiiies-viewer-scroll-size);
   box-shadow: inset 0 0 calc(var(--storiiies-viewer-scroll-size) * 2)
     var(--storiiies-viewer-fg);
+}
+
+.storiiies-viewer__text-section > *:first-child {
+  margin-block-start: 0;
+}
+
+.storiiies-viewer__text-section > *:last-child {
+  margin-block-end: 0;
 }
 
 .storiiies-viewer__title {
