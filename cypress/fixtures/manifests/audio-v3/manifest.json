@@ -65,10 +65,10 @@
                   "format": "text/plain"
                 },
                 {
-                  "id": "https://fixtures.iiif.io/audio/indiana/mahler-symphony-3/CD1/medium/128Kbps.mp4",
+                  "id": "http://localhost:43110/audio/royalty-free-talking.mp3",
                   "type": "Sound",
-                  "format": "audio/mp4",
-                  "duration": 1985.024
+                  "format": "audio/mpeg",
+                  "duration": 68.0
                 }
               ],
               "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=265.53218,661.3333,100,200"
