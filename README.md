@@ -74,7 +74,7 @@ StoriiiesViewer supports a subset of the [IIIF presentation API v3](https://iiif
 
 Text based annotations can either be `text/plain` or `text/html` denoted by the `format` field. For `text/plain` newline characters will be converted and output as `<br>` tags.
 
-Support for audio exists, and StoriiiesViewer will render an `<audio />` element for annotations that have a type of `Sound`, and which are structured [like shown this cookbook recipe](https://iiif.io/api/cookbook/recipe/0002-mvm-audio/).
+Support for audio exists, and StoriiiesViewer will render an `<audio />` element for annotations that have a type of `Sound`, and which are structured [like shown in this cookbook recipe](https://iiif.io/api/cookbook/recipe/0002-mvm-audio/).
 
 StoriiiesViewer has no required fields (aside from those required by the presentation API), but it will render certain values from the manifest if provided. These are:
 
