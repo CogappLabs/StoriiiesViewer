@@ -1,6 +1,6 @@
 {
   "@context": "http://iiif.io/api/presentation/3/context.json",
-  "id": "http://localhost:43110/manifests/standard-v3/manifest.json",
+  "id": "http://localhost:43110/manifests/audio-v3/manifest.json",
   "type": "Manifest",
   "label": {
     "en": ["Lorem ipsum dolor sit amet, consectetur adipiscing elit"]
@@ -50,11 +50,11 @@
       ],
       "annotations": [
         {
-          "id": "http://localhost:43110/annotations/standard-v3/page-1",
+          "id": "http://localhost:43110/annotations/audio-v3/page-1",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "http://localhost:43110/annotations/standard-v3/page-1/annotation/1",
+              "id": "http://localhost:43110/annotations/audio-v3/page-1/annotation/1",
               "type": "Annotation",
               "motivation": "commenting",
               "body": [
@@ -74,7 +74,7 @@
               "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=265.53218,661.3333,100,200"
             },
             {
-              "id": "http://localhost:43110/annotations/standard-v3/page-1/annotation/2",
+              "id": "http://localhost:43110/annotations/audio-v3/page-1/annotation/2",
               "type": "Annotation",
               "motivation": "commenting",
               "body": {
