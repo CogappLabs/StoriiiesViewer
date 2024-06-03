@@ -121,7 +121,7 @@ function annotationsWithCredits(screenSize: ScreenSize) {
       cy.get("#storiiies-viewer-0__next").click().click().click();
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `<p>Storiiies was created by <a href="https://www.cogapp.com" target="_blank">Cogapp</a>.</p><p>It's easy, and free, to create your own story - find out more at <a href="https://www.cogapp.com/storiiies" target="_blank">cogapp.com/storiiies</a>.</p><p>This viewer is released as open source - see <a href="https://cogapp.com/open-source-at-cogapp" target="_blank">cogapp.com/open-source-at-cogapp</a>.</p>`,
+        `<div class="storiiies-viewer__text-section"><p>Storiiies was created by <a href="https://www.cogapp.com" target="_blank">Cogapp</a>.</p><p>It's easy, and free, to create your own story - find out more at <a href="https://www.cogapp.com/storiiies" target="_blank">cogapp.com/storiiies</a>.</p><p>This viewer is released as open source - see <a href="https://cogapp.com/open-source-at-cogapp" target="_blank">cogapp.com/open-source-at-cogapp</a>.</p></div>`,
       );
     });
 
@@ -134,12 +134,12 @@ function annotationsWithCredits(screenSize: ScreenSize) {
 
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `Nullam sit amet egestas metus.<br><br>Sed dictum mattis erat feugiat gravida`,
+        `<div class="storiiies-viewer__text-section">Nullam sit amet egestas metus.<br><br>Sed dictum mattis erat feugiat gravida</div>`,
       );
       cy.get("#storiiies-viewer-0__next").click();
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `<p><strong>Suspendisse lacinia enim lorem</strong>, sit amet interdum odio dignissim et. Curabitur ultricies felis non sagittis commodo.</p><p>Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui <a href="https://www.google.com">consectetur consectetur</a>. Suspendisse non nisi turpis.</p>`,
+        `<div class="storiiies-viewer__text-section"><p><strong>Suspendisse lacinia enim lorem</strong>, sit amet interdum odio dignissim et. Curabitur ultricies felis non sagittis commodo.</p><p>Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui <a href="https://www.google.com">consectetur consectetur</a>. Suspendisse non nisi turpis.</p></div>`,
       );
     });
 
@@ -249,12 +249,12 @@ function annotationsWithoutCredits(screenSize: ScreenSize) {
 
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `Nullam sit amet egestas metus.<br><br>Sed dictum mattis erat feugiat gravida`,
+        `<div class="storiiies-viewer__text-section">Nullam sit amet egestas metus.<br><br>Sed dictum mattis erat feugiat gravida</div>`,
       );
       cy.get("#storiiies-viewer-0__next").click();
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `<p><strong>Suspendisse lacinia enim lorem</strong>, sit amet interdum odio dignissim et. Curabitur ultricies felis non sagittis commodo.</p><p>Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui <a href="https://www.google.com">consectetur consectetur</a>. Suspendisse non nisi turpis.</p>`,
+        `<div class="storiiies-viewer__text-section"><p><strong>Suspendisse lacinia enim lorem</strong>, sit amet interdum odio dignissim et. Curabitur ultricies felis non sagittis commodo.</p><p>Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui <a href="https://www.google.com">consectetur consectetur</a>. Suspendisse non nisi turpis.</p></div>`,
       );
     });
 

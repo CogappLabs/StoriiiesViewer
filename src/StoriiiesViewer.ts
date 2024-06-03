@@ -606,21 +606,40 @@ export default class StoriiiesViewer {
    * Generate HTML markup for an annotation slide
    */
   #createAnnotationSlideMarkup(): string {
-    // Have to use getProperty here as there is no getValue() method
-    let value = this.activeCanvasAnnotations[this.activeAnnotationIndex]
-      .getBody()[0]
-      .getProperty("value");
-    const format =
-      this.activeCanvasAnnotations[this.activeAnnotationIndex]
-        .getBody()[0]
-        .getFormat() || "text/plain";
+    let markup = "";
+    const activeAnnotation =
+      this.activeCanvasAnnotations[this.#_activeAnnotationIndex].getBody();
 
-    // Replace newlines with break tags for plain text
-    if (format === "text/plain") {
-      value = value.replace(/(?:\r\n|\r|\n)/g, "<br/>");
+    // getBody will always return AnnotationBody[]
+    for (const body of activeAnnotation) {
+      // Wrap each annotation in a div
+      markup += `<div class="storiiies-viewer__text-section">`;
+      if (body.getType() === "textualbody") {
+        let value = body.getProperty("value");
+        const format = body.getFormat() || "text/plain";
+
+        // Replace newlines with break tags for plain text
+        if (format === "text/plain") {
+          value = value.replace(/(?:\r\n|\r|\n)/g, "<br/>");
+        }
+
+        // Sanitize the value (e.g. it may be text/html)
+        markup += sanitiseHTML(value, this.DOMPurifyConfig);
+      } else if (body.getType() === "sound") {
+        const soundUrl = body.id;
+        // Create the audio link and sanitize the src
+        const audioElement = `<audio controls src="${sanitiseHTML(
+          soundUrl,
+          this.DOMPurifyConfig,
+        )}">Your browser does not support the audio element.</audio>`;
+        markup += audioElement;
+      }
+      markup += "</div>";
     }
 
-    return sanitiseHTML(value, this.DOMPurifyConfig);
+    // The return value isn't sanitised to avoid needing to open up the allowed tags and attributes
+    // Remember to sanitise your values when extending this!
+    return markup;
   }
 
   /**
@@ -628,7 +647,7 @@ export default class StoriiiesViewer {
    */
   #createCreditSlideMarkup(): string {
     // No need to sanitise this hardcoded markup
-    return `<p>Storiiies was created by <a href="https://www.cogapp.com" target="_blank">Cogapp</a>.</p><p>It's easy, and free, to create your own story - find out more at <a href="https://www.cogapp.com/storiiies" target="_blank">cogapp.com/storiiies</a>.</p><p>This viewer is released as open source - see <a href="https://cogapp.com/open-source-at-cogapp" target="_blank">cogapp.com/open-source-at-cogapp</a>.</p>`;
+    return `<div class="storiiies-viewer__text-section"><p>Storiiies was created by <a href="https://www.cogapp.com" target="_blank">Cogapp</a>.</p><p>It's easy, and free, to create your own story - find out more at <a href="https://www.cogapp.com/storiiies" target="_blank">cogapp.com/storiiies</a>.</p><p>This viewer is released as open source - see <a href="https://cogapp.com/open-source-at-cogapp" target="_blank">cogapp.com/open-source-at-cogapp</a>.</p></div>`;
   }
 
   /**

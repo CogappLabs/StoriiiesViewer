@@ -1,0 +1,93 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://localhost:43110/manifests/audio-v3/manifest.json",
+  "type": "Manifest",
+  "label": {
+    "en": ["Lorem ipsum dolor sit amet, consectetur adipiscing elit"]
+  },
+  "summary": {
+    "en": [
+      "<div><p><em>Pellentesque tempor ante non congue pulvinar.</em> Maecenas non ipsum non metus imperdiet facilisis. Vestibulum ante ipsum primis in <strong>faucibus</strong> orci luctus et ultrices posuere cubilia curae; Praesent sem felis, porta eu nisl in, rhoncus luctus nunc.<br/>Morbi bibendum, eros eu sollicitudin egestas, nisi dui convallis nisi, sed lacinia velit augue eu lectus. In enim est, elementum ac elit a, ultricies pellentesque nibh.</p></div>"
+    ]
+  },
+  "requiredStatement": {
+    "label": { "en": ["Attribution"] },
+    "value": { "en": ["Provided courtesy of Example Institution"] }
+  },
+  "items": [
+    {
+      "id": "http://localhost:43110/images/exact-tiles/canvases/1",
+      "type": "Canvas",
+      "height": 2048,
+      "width": 2048,
+      "items": [
+        {
+          "id": "http://localhost:43110/images/exact-tiles/pages/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/images/exact-tiles/annotations/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "http://localhost:43110/images/exact-tiles/full/full/0/default.jpg",
+                "type": "Image",
+                "format": "image/jpeg",
+                "height": 2048,
+                "width": 2048,
+                "service": [
+                  {
+                    "id": "http://localhost:43110/images/exact-tiles",
+                    "profile": "level0",
+                    "type": "ImageService3"
+                  }
+                ]
+              },
+              "target": "http://localhost:43110/images/exact-tiles/canvases/1"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:43110/annotations/audio-v3/page-1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/annotations/audio-v3/page-1/annotation/1",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "Nullam sit amet egestas metus.\n\nSed dictum mattis erat feugiat gravida",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/audio/royalty-free-talking.mp3",
+                  "type": "Sound",
+                  "format": "audio/mpeg",
+                  "duration": 68.0
+                }
+              ],
+              "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=265.53218,661.3333,100,200"
+            },
+            {
+              "id": "http://localhost:43110/annotations/audio-v3/page-1/annotation/2",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "<div><p><strong onclick=\"alert('malicious code')\">Suspendisse lacinia enim lorem</strong>, sit amet interdum odio dignissim et. <marquee style=\"color:red;\">Curabitur ultricies felis</marquee> non sagittis commodo.</p><p>Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui <a href=\"https://www.google.com\">consectetur consectetur</a>. Suspendisse non nisi turpis.</p></div>",
+                "language": "en",
+                "format": "text/html"
+              },
+              "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=-20,242,200,120"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
