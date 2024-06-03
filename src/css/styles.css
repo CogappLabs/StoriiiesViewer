@@ -168,14 +168,14 @@
 .storiiies-viewer__info-text::-webkit-scrollbar-track {
   border-radius: var(--storiiies-viewer-scroll-size);
   box-shadow: inset 0 0 var(--storiiies-viewer-scroll-size)
-    hsl(0deg 0% 0% / 30%);
+    var(--storiiies-viewer-fg);
 }
 
 .storiiies-viewer__info-text::-webkit-scrollbar-thumb {
-  background: hsl(0deg 255 255 / 30%);
+  background: var(--storiiies-viewer-fg);
   border-radius: var(--storiiies-viewer-scroll-size);
   box-shadow: inset 0 0 calc(var(--storiiies-viewer-scroll-size) * 2)
-    hsl(0deg 0% 0% / 50%);
+    var(--storiiies-viewer-fg);
 }
 
 .storiiies-viewer__title {
