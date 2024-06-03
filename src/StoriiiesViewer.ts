@@ -608,10 +608,11 @@ export default class StoriiiesViewer {
    */
   #createAnnotationSlideMarkup(): string {
     let markup = "";
-    const activeAnnotations =
+    const activeAnnotation =
       this.activeCanvasAnnotations[this.#_activeAnnotationIndex].getBody();
 
-    for (const body of activeAnnotations) {
+    // getBody will always return AnnotationBody[]
+    for (const body of activeAnnotation) {
       if (body.getType() === "textualbody") {
         let value = body.getProperty("value");
         const format = body.getFormat() || "text/plain";
