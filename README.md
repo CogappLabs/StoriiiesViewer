@@ -68,6 +68,19 @@ To customise of appearance of StoriiiesViewer you have a few options:
 2. To 'theme' StoriiiesViewer, you may find the custom properties provided by the default stylesheet to be sufficient
 3. Start with default stylesheet and expand or override these styles as you see fit
 
+### Disabling Mouse Navigation
+
+If you want to disable mouse-based interactions (such as panning and zooming via scroll), you can pass the `disableMouseNav` option when initializing the viewer:
+
+````js
+document.addEventListener('DOMContentLoaded', () => {
+  const myViewer = new StoriiiesViewer({
+    container: "#storiiies-viewer",
+    manifestUrl: "https://path-to-your-storiiies-manifest",
+    disableMouseNav: true, // Disables mouse navigation
+  });
+});
+
 ## Supported manifest formats
 
 StoriiiesViewer supports a subset of the [IIIF presentation API v3](https://iiif.io/api/presentation/3.0/). Specifically, we target `annotationPages` which are included directly in the manifest ([like in this cookbook recipe](https://iiif.io/api/cookbook/recipe/0258-tagging-external-resource/)).
@@ -120,7 +133,7 @@ Switch node version and install the dependencies in the project root with:
 ```console
 nvm use
 npm ci
-```
+````
 
 ### Compiling and previewing changes
 
@@ -164,8 +177,7 @@ npm ci
   </tbody>
 </table>
 
-> [!NOTE]<br>
-> `npm run cypress:gui` and `npm run cypress` will also do the same as the above _without_ starting the dev server, if you already have it running.
+> [!NOTE]<br> > `npm run cypress:gui` and `npm run cypress` will also do the same as the above _without_ starting the dev server, if you already have it running.
 
 ### Linting the code
 
