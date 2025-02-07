@@ -70,14 +70,14 @@ To customise of appearance of StoriiiesViewer you have a few options:
 
 ### Disabling Mouse Navigation
 
-If you want to disable mouse-based interactions (such as panning and zooming via scroll), you can pass the `disableMouseNav` option when initializing the viewer:
+If you want to disable interactions such as panning and zooming via scroll, you can pass the `disablePanAndZoom` option when initializing the viewer:
 
 ````js
 document.addEventListener('DOMContentLoaded', () => {
   const myViewer = new StoriiiesViewer({
     container: "#storiiies-viewer",
     manifestUrl: "https://path-to-your-storiiies-manifest",
-    disableMouseNav: true, // Disables mouse navigation
+    disablePanAndZoom: true, // Disables mouse navigation
   });
 });
 
