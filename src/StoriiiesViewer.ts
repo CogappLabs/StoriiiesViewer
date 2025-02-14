@@ -20,6 +20,8 @@ import hideIcon from "./images/hide.svg?raw";
  * Config object used when instantiating a new StoriiiesViewer
  * @property {HTMLElement | Element | string | null} container - The container element where StoriiiesViewer should be mounted. Must exist in the page
  * @property {string} manifestUrl - The URL for the IIIF manifest to be loaded into StoriiiesViewer
+ * @property {boolean} showCreditSlide - Whether to show the final credit slide (default: true)
+ * @property {boolean} disablePanAndZoom - Whether to disable user panning and zooming (default: false)
  */
 export interface StoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
