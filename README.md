@@ -72,14 +72,15 @@ To customise of appearance of StoriiiesViewer you have a few options:
 
 If you want to disable interactions such as panning and zooming via scroll, you can pass the `disablePanAndZoom` option when initializing the viewer:
 
-````js
-document.addEventListener('DOMContentLoaded', () => {
+```js
+document.addEventListener("DOMContentLoaded", () => {
   const myViewer = new StoriiiesViewer({
     container: "#storiiies-viewer",
     manifestUrl: "https://path-to-your-storiiies-manifest",
     disablePanAndZoom: true, // Disables mouse navigation
   });
 });
+```
 
 ## Supported manifest formats
 
@@ -133,7 +134,7 @@ Switch node version and install the dependencies in the project root with:
 ```console
 nvm use
 npm ci
-````
+```
 
 ### Compiling and previewing changes
 
