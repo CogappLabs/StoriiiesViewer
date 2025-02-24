@@ -20,11 +20,14 @@ import hideIcon from "./images/hide.svg?raw";
  * Config object used when instantiating a new StoriiiesViewer
  * @property {HTMLElement | Element | string | null} container - The container element where StoriiiesViewer should be mounted. Must exist in the page
  * @property {string} manifestUrl - The URL for the IIIF manifest to be loaded into StoriiiesViewer
+ * @property {boolean} showCreditSlide - Whether to show the final credit slide (default: true)
+ * @property {boolean} disablePanAndZoom - Whether to disable user panning and zooming (default: false)
  */
 export interface StoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
   manifestUrl: string;
   showCreditSlide?: boolean;
+  disablePanAndZoom?: boolean;
 }
 
 type ControlButtons = {
@@ -102,6 +105,8 @@ export default class StoriiiesViewer {
   public showCreditSlide: boolean = true;
   /** The URL for the IIIF manifest loaded into this instance */
   public manifestUrl: string;
+  /** Whether to disable panning and scrolling */
+  public disablePanAndZoom: boolean = false;
   /** ID used for creating id attributes that shouldn't clash, or referencing a particular instance of StoriiiesViewer
    * @readonly
    */
@@ -178,6 +183,8 @@ export default class StoriiiesViewer {
 
     // Use the provided preference if present
     this.showCreditSlide = config.showCreditSlide ?? true;
+
+    this.disablePanAndZoom = config.disablePanAndZoom ?? false;
 
     // Throw if the required config is missing and halt instantiation
     if (!this.containerElement || !this.manifestUrl) {
@@ -318,7 +325,9 @@ export default class StoriiiesViewer {
       showZoomControl: false,
       showFullPageControl: false,
       visibilityRatio: 0.3,
+      mouseNavEnabled: !this.disablePanAndZoom,
     });
+
     this.viewer.canvas.ariaLabel = "Storiiies viewer";
     this.viewer.canvas.role = "application";
     this.viewer.element.insertAdjacentHTML(
