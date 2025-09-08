@@ -9,7 +9,6 @@ export function sanitiseHTML(dirty: string, config: DOMPurify.Config): string {
     ...config,
     RETURN_DOM_FRAGMENT: false,
     RETURN_DOM: false,
-    RETURN_DOM_IMPORT: false,
     RETURN_TRUSTED_TYPE: false,
   });
 }
