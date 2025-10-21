@@ -60,7 +60,7 @@
     "typedoc": "^0.24.8",
     "typedoc-plugin-rename-defaults": "^0.6.5",
     "typescript": "^5.1.6",
-    "vite": "^4.4.3"
+    "vite": "^5.4.21"
   },
   "repository": {
     "type": "git",
