@@ -19,7 +19,19 @@
         window.storiiiesViewerInstance = new StoriiiesViewer({
           container,
           manifestUrl:
-            "http://localhost:43110/manifests/standard-v3/manifest.json",
+            "http://localhost:43110/manifests/map-pins-v1/manifest.json",
+          enablePins: true,
+          enableRoute: true,
+          showCreditSlide: false,
+          theme: {
+            containerBg: "#2a2a2a",
+            bg: "#ede7dd",
+            fg: "#2a2a2a",
+            buttonBg: "#ede7dd",
+            buttonFg: "#d31145",
+            buttonHoverBg: "#d31145",
+            buttonHoverFg: "#ede7dd",
+          },
         });
       });
     </script>

@@ -1,0 +1,176 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://localhost:43110/manifests/map-pins-v1/manifest.json",
+  "type": "Manifest",
+  "label": {
+    "en": ["Captain Scott's Discovery Expedition (1901-1904)"]
+  },
+  "summary": {
+    "en": [
+      "Follow the route of the British National Antarctic Expedition aboard RRS Discovery, led by Captain Robert Falcon Scott."
+    ]
+  },
+  "requiredStatement": {
+    "label": { "en": ["Attribution"] },
+    "value": { "en": ["Chart by Captain R.F. Scott, R.N. C.V.O."] }
+  },
+  "items": [
+    {
+      "id": "http://localhost:43110/manifests/map-pins-v1/canvas/1",
+      "type": "Canvas",
+      "height": 5740,
+      "width": 7413,
+      "items": [
+        {
+          "id": "http://localhost:43110/manifests/map-pins-v1/canvas/1/page/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/manifests/map-pins-v1/canvas/1/page/1/annotation/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "https://storiiies-images.cogapp.com/iiif/2/1762360944808output.ptif/full/full/0/default.jpg",
+                "type": "Image",
+                "format": "image/jpeg",
+                "height": 5740,
+                "width": 7413,
+                "service": [
+                  {
+                    "id": "https://storiiies-images.cogapp.com/iiif/2/1762360944808output.ptif",
+                    "profile": "http://iiif.io/api/image/2/level2.json",
+                    "type": "ImageService2"
+                  }
+                ]
+              },
+              "target": "http://localhost:43110/manifests/map-pins-v1/canvas/1"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:43110/manifests/map-pins-v1/annotations/page-1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/manifests/map-pins-v1/annotations/1",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "Departure from New Zealand\n\nOn 21 December 1901, RRS Discovery departed from Lyttelton, New Zealand, heading south into the unknown waters of the Antarctic.",
+                "language": "en",
+                "format": "text/plain"
+              },
+              "target": "http://localhost:43110/manifests/map-pins-v1/canvas/1#xywh=5050,5350,400,300"
+            },
+            {
+              "id": "http://localhost:43110/manifests/map-pins-v1/annotations/2",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "Crossing the Antarctic Circle\n\nThe Discovery crossed into Antarctic waters, navigating through pack ice and icebergs as they pushed southward.",
+                "language": "en",
+                "format": "text/plain"
+              },
+              "target": "http://localhost:43110/manifests/map-pins-v1/canvas/1#xywh=5150,4400,400,300"
+            },
+            {
+              "id": "http://localhost:43110/manifests/map-pins-v1/annotations/3",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "Cape Adare\n\nThe expedition's first landfall on the Antarctic continent. Scott and his crew observed the dramatic cliffs and large colonies of Adélie penguins.",
+                "language": "en",
+                "format": "text/plain"
+              },
+              "target": "http://localhost:43110/manifests/map-pins-v1/canvas/1#xywh=4950,3550,400,300"
+            },
+            {
+              "id": "http://localhost:43110/manifests/map-pins-v1/annotations/4",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "Victoria Land Coast\n\nThe Discovery sailed south along the mountainous coast of Victoria Land, charting new territory and marvelling at the glaciers.",
+                "language": "en",
+                "format": "text/plain"
+              },
+              "target": "http://localhost:43110/manifests/map-pins-v1/canvas/1#xywh=4700,2900,400,300"
+            },
+            {
+              "id": "http://localhost:43110/manifests/map-pins-v1/annotations/5",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "Ross Island & McMurdo Sound\n\nThe expedition established winter quarters at Hut Point on Ross Island, in the shadow of Mount Erebus. The Discovery became frozen in the ice here for two winters.",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "type": "Image",
+                  "id": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Emperor_Penguin_Manchot_empereur.jpg/220px-Emperor_Penguin_Manchot_empereur.jpg",
+                  "format": "image/jpeg"
+                }
+              ],
+              "target": "http://localhost:43110/manifests/map-pins-v1/canvas/1#xywh=4450,2350,400,300"
+            },
+            {
+              "id": "http://localhost:43110/manifests/map-pins-v1/annotations/6",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "The Great Ice Barrier\n\nScott explored the Ross Ice Shelf, calling it 'The Barrier' - a vast floating ice shelf. The expedition traced its edge, looking for a route south.",
+                "language": "en",
+                "format": "text/plain"
+              },
+              "target": "http://localhost:43110/manifests/map-pins-v1/canvas/1#xywh=3900,2150,400,300"
+            },
+            {
+              "id": "http://localhost:43110/manifests/map-pins-v1/annotations/7",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "Along the Barrier\n\nThe Discovery sailed westward along the ice shelf edge, charting its extent and searching for inlets or landing points.",
+                "language": "en",
+                "format": "text/plain"
+              },
+              "target": "http://localhost:43110/manifests/map-pins-v1/canvas/1#xywh=3200,1900,400,300"
+            },
+            {
+              "id": "http://localhost:43110/manifests/map-pins-v1/annotations/8",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "King Edward VII Land\n\nDiscovered and named by Scott during the expedition. This was new land never before seen by human eyes, a major geographical discovery.",
+                "language": "en",
+                "format": "text/plain"
+              },
+              "target": "http://localhost:43110/manifests/map-pins-v1/canvas/1#xywh=2100,1550,500,300"
+            },
+            {
+              "id": "http://localhost:43110/manifests/map-pins-v1/annotations/9",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "Furthest South Journey\n\nFrom their base, Scott, Shackleton and Wilson made a sledge journey south, reaching 82°17'S on 30 December 1902 - a new record for the furthest south.",
+                "language": "en",
+                "format": "text/plain"
+              },
+              "target": "http://localhost:43110/manifests/map-pins-v1/canvas/1#xywh=4200,1200,400,300"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
