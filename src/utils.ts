@@ -1,6 +1,19 @@
 import DOMPurify from "dompurify";
 
 /**
+ * Parse xywh media fragment from a URL
+ * @see https://www.w3.org/TR/media-frags/#naming-space
+ */
+export function parseXYWH(
+  url?: string,
+): { x: number; y: number; w: number; h: number } | null {
+  const xywh = url?.split("#xywh=")[1];
+  if (!xywh) return null;
+  const [x, y, w, h] = xywh.split(",").map(Number);
+  return { x, y, w, h };
+}
+
+/**
  * Takes a string of potentially unsafe HTML and returns a sanitised string
  */
 export function sanitiseHTML(dirty: string, config: DOMPurify.Config): string {

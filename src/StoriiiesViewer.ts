@@ -9,12 +9,33 @@ import {
 import DOMPurify from "dompurify";
 import OpenSeadragon from "openseadragon";
 
-import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
+import { IIIFSaysThisIsHTML, nl2br, parseXYWH, sanitiseHTML } from "./utils";
 
 import arrowIcon from "./images/arrow.svg?raw";
 import restartIcon from "./images/restart.svg?raw";
 import showIcon from "./images/eye.svg?raw";
 import hideIcon from "./images/hide.svg?raw";
+import PinsOverlay from "./PinsOverlay";
+
+/**
+ * Theme configuration for customizing viewer colors
+ */
+export interface StoriiiesViewerTheme {
+  /** Background color of the container area behind the image */
+  containerBg?: string;
+  /** Background color of the info panel */
+  bg?: string;
+  /** Foreground/text color */
+  fg?: string;
+  /** Button background color */
+  buttonBg?: string;
+  /** Button foreground/icon color */
+  buttonFg?: string;
+  /** Button hover background color */
+  buttonHoverBg?: string;
+  /** Button hover foreground color */
+  buttonHoverFg?: string;
+}
 
 /**
  * Config object used when instantiating a new StoriiiesViewer
@@ -22,12 +43,18 @@ import hideIcon from "./images/hide.svg?raw";
  * @property {string} manifestUrl - The URL for the IIIF manifest to be loaded into StoriiiesViewer
  * @property {boolean} showCreditSlide - Whether to show the final credit slide (default: true)
  * @property {boolean} disablePanAndZoom - Whether to disable user panning and zooming (default: false)
+ * @property {boolean} enablePins - Whether to show pin markers at annotation locations (default: false)
+ * @property {boolean} enableRoute - Whether to show route lines connecting pins (default: false, requires enablePins)
+ * @property {StoriiiesViewerTheme} theme - Custom theme colors
  */
 export interface StoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
   manifestUrl: string;
   showCreditSlide?: boolean;
   disablePanAndZoom?: boolean;
+  enablePins?: boolean;
+  enableRoute?: boolean;
+  theme?: StoriiiesViewerTheme;
 }
 
 type ControlButtons = {
@@ -107,6 +134,10 @@ export default class StoriiiesViewer {
   public manifestUrl: string;
   /** Whether to disable panning and scrolling */
   public disablePanAndZoom: boolean = false;
+  /** Whether to enable pin markers at annotation locations */
+  public enablePins: boolean = false;
+  /** Whether to enable route lines connecting pins */
+  public enableRoute: boolean = false;
   /** ID used for creating id attributes that shouldn't clash, or referencing a particular instance of StoriiiesViewer
    * @readonly
    */
@@ -146,6 +177,8 @@ export default class StoriiiesViewer {
    * @readonly
    */
   public infoToggleElement!: HTMLElement;
+  /** Pins overlay handler */
+  public pinsOverlay: PinsOverlay | null = null;
   /** DOMPurify configuration */
   public DOMPurifyConfig: DOMPurify.Config = {
     ALLOWED_TAGS: [
@@ -185,6 +218,13 @@ export default class StoriiiesViewer {
     this.showCreditSlide = config.showCreditSlide ?? true;
 
     this.disablePanAndZoom = config.disablePanAndZoom ?? false;
+    this.enablePins = config.enablePins ?? false;
+    this.enableRoute = config.enableRoute ?? false;
+
+    // Apply custom theme if provided
+    if (config.theme) {
+      this.#applyTheme(config.theme);
+    }
 
     // Throw if the required config is missing and halt instantiation
     if (!this.containerElement || !this.manifestUrl) {
@@ -204,6 +244,29 @@ export default class StoriiiesViewer {
       this.#initViewer();
       this.#insertInfoAndControls();
     });
+  }
+
+  /**
+   * Apply custom theme colors as CSS custom properties
+   */
+  #applyTheme(theme: StoriiiesViewerTheme) {
+    if (!this.containerElement) return;
+
+    const props: Record<string, string | undefined> = {
+      "--storiiies-viewer-container-bg": theme.containerBg,
+      "--storiiies-viewer-bg": theme.bg,
+      "--storiiies-viewer-fg": theme.fg,
+      "--storiiies-viewer-button-bg": theme.buttonBg,
+      "--storiiies-viewer-button-fg": theme.buttonFg,
+      "--storiiies-viewer-button-hover-bg": theme.buttonHoverBg,
+      "--storiiies-viewer-button-hover-fg": theme.buttonHoverFg,
+    };
+
+    for (const [prop, value] of Object.entries(props)) {
+      if (value) {
+        this.containerElement.style.setProperty(prop, value);
+      }
+    }
   }
 
   /**
@@ -330,6 +393,18 @@ export default class StoriiiesViewer {
 
     this.viewer.canvas.ariaLabel = "Storiiies viewer";
     this.viewer.canvas.role = "application";
+
+    // Initialize pins overlay if enabled
+    if (this.enablePins) {
+      this.pinsOverlay = new PinsOverlay(this.viewer, {
+        instanceId: this.instanceId,
+        enabled: true,
+        enableRoute: this.enableRoute,
+        onPinClick: (index) => {
+          this.activeAnnotationIndex = index;
+        },
+      });
+    }
     this.viewer.element.insertAdjacentHTML(
       "afterbegin",
       `<p class="storiiies-viewer__description" id="storiiies-viewer-${this.instanceId}__description">Drag with your mouse or the arrow keys, and zoom with scroll or <kbd aria-label="plus">+</kbd> and <kbd aria-label="minus">-</kbd></p>`,
@@ -343,6 +418,12 @@ export default class StoriiiesViewer {
     this.viewer.addHandler("open", () => {
       if (this.containerElement) {
         this.containerElement.dataset.loaded = "true";
+      }
+      if (this.enablePins && this.pinsOverlay) {
+        this.pinsOverlay.create(
+          this.activeCanvasAnnotations,
+          this.canvases[this.activeCanvasIndex],
+        );
       }
     });
   }
@@ -454,6 +535,7 @@ export default class StoriiiesViewer {
     this.infoTextElement.innerHTML = infoTextElementMarkup;
 
     this.#updateViewer();
+    this.pinsOverlay?.updateActiveState(this.activeAnnotationIndex);
   }
 
   /**
@@ -560,6 +642,12 @@ export default class StoriiiesViewer {
     infoAreaEl.insertAdjacentElement("beforebegin", infoToggleEl);
     infoAreaEl.classList.add("storiiies-viewer__info-area");
 
+    // Pin toggle button (inside info area so it hides with it)
+    if (this.enablePins && this.pinsOverlay) {
+      const pinToggleEl = this.pinsOverlay.createToggleButton();
+      infoAreaEl.insertAdjacentElement("afterbegin", pinToggleEl);
+    }
+
     // Register elements
     this.infoAreaElement = infoAreaEl;
     this.infoTextElement = infoTextEl;
@@ -642,6 +730,13 @@ export default class StoriiiesViewer {
           this.DOMPurifyConfig,
         )}">Your browser does not support the audio element.</audio>`;
         markup += audioElement;
+      } else if (body.getType() === "image") {
+        const imageUrl = body.id;
+        const imageElement = `<img class="storiiies-viewer__annotation-image" src="${sanitiseHTML(
+          imageUrl,
+          this.DOMPurifyConfig,
+        )}" alt="" />`;
+        markup += imageElement;
       }
       markup += "</div>";
     }
@@ -714,13 +809,9 @@ export default class StoriiiesViewer {
    * Get the region from the URL as a Rect relative to the viewport of this instance's viewer
    */
   #getRegion(url?: string): OpenSeadragon.Rect | null {
-    const xywh = url?.split("#xywh=")[1];
-
-    if (xywh) {
-      const [x, y, w, h] = xywh.split(",").map(Number);
-      return this.viewer.viewport.imageToViewportRectangle(x, y, w, h);
-    }
-
-    return null;
+    const coords = parseXYWH(url);
+    if (!coords) return null;
+    const { x, y, w, h } = coords;
+    return this.viewer.viewport.imageToViewportRectangle(x, y, w, h);
   }
 }
