@@ -1,10 +1,10 @@
 /**
-* # StoriiiesViewer
-**/
+ * # StoriiiesViewer
+ **/
 
 /**
-* ## General styles
-*/
+ * ## General styles
+ */
 .storiiies-viewer {
   --storiiies-viewer-container-bg: #111;
   --storiiies-viewer-outer-spacing: 16px;
@@ -152,9 +152,7 @@
   font-size: var(--storiiies-viewer-font-size);
   line-height: var(--storiiies-viewer-line-height);
   color: var(--storiiies-viewer-fg);
-  max-block-size: calc(
-    75cqb - var(--storiiies-viewer-outer-spacing) * 4 - 44px
-  );
+  max-block-size: calc(75cqb - var(--storiiies-viewer-outer-spacing) * 4 - 44px);
   scrollbar-gutter: stable;
   overflow-wrap: break-word;
 }
@@ -166,15 +164,13 @@
 
 .storiiies-viewer__info-text::-webkit-scrollbar-track {
   border-radius: var(--storiiies-viewer-scroll-size);
-  box-shadow: inset 0 0 var(--storiiies-viewer-scroll-size)
-    var(--storiiies-viewer-fg);
+  box-shadow: inset 0 0 var(--storiiies-viewer-scroll-size) var(--storiiies-viewer-fg);
 }
 
 .storiiies-viewer__info-text::-webkit-scrollbar-thumb {
   background: var(--storiiies-viewer-fg);
   border-radius: var(--storiiies-viewer-scroll-size);
-  box-shadow: inset 0 0 calc(var(--storiiies-viewer-scroll-size) * 2)
-    var(--storiiies-viewer-fg);
+  box-shadow: inset 0 0 calc(var(--storiiies-viewer-scroll-size) * 2) var(--storiiies-viewer-fg);
 }
 
 .storiiies-viewer__text-section > *:first-child {
@@ -207,8 +203,7 @@
   }
 
   .storiiies-viewer__info-toggle {
-    transition: inset-block-end var(--storiiies-viewer-transition-speed)
-      ease-in-out;
+    transition: inset-block-end var(--storiiies-viewer-transition-speed) ease-in-out;
   }
 }
 
@@ -233,10 +228,7 @@
     position: absolute;
     inset-block-start: var(--storiiies-viewer-outer-spacing);
     inset-inline-start: var(--storiiies-viewer-outer-spacing);
-    inline-size: max(
-      420px,
-      calc(42cqi - var(--storiiies-viewer-outer-spacing) * 2)
-    );
+    inline-size: max(420px, calc(42cqi - var(--storiiies-viewer-outer-spacing) * 2));
     block-size: auto;
     box-shadow: 0 0 2px hsl(0deg 0% 12% / 42%);
   }
@@ -268,8 +260,6 @@
   }
 
   .storiiies-viewer__info-text {
-    max-block-size: calc(
-      100% - var(--storiiies-viewer-outer-spacing) * 2 - 44px
-    );
+    max-block-size: calc(100% - var(--storiiies-viewer-outer-spacing) * 2 - 44px);
   }
 }

@@ -25,11 +25,9 @@
     "cypress:gui": "cypress open",
     "dev": "vite",
     "docs": "typedoc src/StoriiiesViewer.ts --validation.notExported false --readme none --out docs/api --plugin typedoc-plugin-rename-defaults",
-    "lint": "run-p lint:* prettier",
-    "lint:scripts": "eslint --fix \"src/**/*.ts\"",
-    "lint:styles": "stylelint --fix \"src/**/*.css\"",
+    "lint": "run-p lint:*",
+    "lint:biome": "biome check --write",
     "lint:typecheck": "tsc --noEmit",
-    "prettier": "prettier -w \"src/**/*.(ts|css)\"",
     "test": "run-p -r dev cypress",
     "test:gui": "run-p -r dev cypress:gui"
   },
@@ -39,6 +37,7 @@
     "openseadragon": "^4.1.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.3.8",
     "@types/dompurify": "^3.0.2",
     "@types/node-fetch": "^2.6.4",
     "@types/openseadragon": "^3.0.8",

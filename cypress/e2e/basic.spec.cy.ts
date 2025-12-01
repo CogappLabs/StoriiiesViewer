@@ -1,7 +1,7 @@
 import {
-  getExpectedCentre,
-  getActualCentre,
   assertWithinAcceptableRange,
+  getActualCentre,
+  getExpectedCentre,
   ScreenSize,
   screenSizes,
 } from "../support/utils";
