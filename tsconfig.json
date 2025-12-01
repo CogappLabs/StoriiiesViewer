@@ -2,11 +2,11 @@
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "module": "esnext",
-    "moduleResolution": "node",
     "noImplicitAny": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "strict": true,
-    "target": "es2020",
+    "target": "es2022",
     "types": ["cypress", "node", "vite/client"],
     "allowSyntheticDefaultImports": true
   },

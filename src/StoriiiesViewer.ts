@@ -1,4 +1,5 @@
 import "./css/styles.css";
+import type { Config } from "dompurify";
 import DOMPurify from "dompurify";
 import {
   Annotation,
@@ -145,7 +146,7 @@ export default class StoriiiesViewer {
    */
   public infoToggleElement!: HTMLElement;
   /** DOMPurify configuration */
-  public DOMPurifyConfig: DOMPurify.Config = {
+  public DOMPurifyConfig: Config = {
     ALLOWED_TAGS: [
       "a",
       "b",
