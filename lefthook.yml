@@ -1,0 +1,18 @@
+pre-commit:
+  parallel: true
+  skip:
+    - merge
+    - rebase
+
+  commands:
+    lint:
+      glob:
+        - "src/**"
+        - "cypress/e2e/**"
+        - "cypress/support/**"
+      run: npx biome check --write {staged_files} && npm run lint:typecheck
+      stage_fixed: true
+      fail_text: |
+        Some files did not pass the linting.
+        The issues have been fixed automatically where possible.
+        Please review the changes and stage them before committing again.
