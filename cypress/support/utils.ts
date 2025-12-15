@@ -1,5 +1,5 @@
-import StoriiiesViewer from "../../src/StoriiiesViewer";
 import OpenSeadragon from "openseadragon";
+import StoriiiesViewer from "../../src/StoriiiesViewer";
 
 declare global {
   interface Window {

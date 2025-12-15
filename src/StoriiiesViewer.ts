@@ -1,20 +1,19 @@
 import "./css/styles.css";
+import type { Config } from "dompurify";
+import DOMPurify from "dompurify";
 import {
+  Annotation,
+  AnnotationPage,
+  Canvas,
   loadManifest,
   Manifest,
-  Canvas,
-  AnnotationPage,
-  Annotation,
 } from "manifesto.js";
-import DOMPurify from "dompurify";
 import OpenSeadragon from "openseadragon";
-
-import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
-
 import arrowIcon from "./images/arrow.svg?raw";
-import restartIcon from "./images/restart.svg?raw";
 import showIcon from "./images/eye.svg?raw";
 import hideIcon from "./images/hide.svg?raw";
+import restartIcon from "./images/restart.svg?raw";
+import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
 
 /**
  * Config object used when instantiating a new StoriiiesViewer
@@ -147,7 +146,7 @@ export default class StoriiiesViewer {
    */
   public infoToggleElement!: HTMLElement;
   /** DOMPurify configuration */
-  public DOMPurifyConfig: DOMPurify.Config = {
+  public DOMPurifyConfig: Config = {
     ALLOWED_TAGS: [
       "a",
       "b",

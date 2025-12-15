@@ -2,8 +2,8 @@
 
 ---
 
-- **Pivotal ticket**: [#id](https://www.pivotaltracker.com/story/show/id) (if applicable)
-- Other Relevant Links (related issues, related pull requests, etc.)
+- **Linear ticket**: [#id](https://linear.app/cogapp/issue/id) (if applicable)
+- Other Relevant Links (related tickets, related pull requests, etc.)
 
 # What does this Pull Request do?
 
