@@ -6,19 +6,19 @@
  * ## General styles
  */
 .storiiies-viewer {
-  --storiiies-viewer-container-bg: #1f1d1a;
+  --storiiies-viewer-container-bg: #171513ff;
   --storiiies-viewer-outer-spacing: 16px;
   --storiiies-viewer-row-gap: 16px;
   --storiiies-viewer-col-gap: 16px;
-  --storiiies-viewer-bg: #fff;
-  --storiiies-viewer-fg: #111;
+  --storiiies-viewer-bg: #2d2d2d;
+  --storiiies-viewer-fg: #f6eee4;
   --storiiies-viewer-button-bg: var(--storiiies-viewer-bg);
   --storiiies-viewer-button-fg: var(--storiiies-viewer-fg);
   --storiiies-viewer-button-hover-bg: var(--storiiies-viewer-button-fg);
   --storiiies-viewer-button-hover-fg: var(--storiiies-viewer-button-bg);
   --storiiies-viewer-accent-outer: var(--storiiies-viewer-button-hover-bg);
   --storiiies-viewer-accent-inner: var(--storiiies-viewer-button-hover-fg);
-  --storiiies-viewer-font-family: sans-serif;
+  --storiiies-viewer-font-family: "Source Sans 3", sans-serif;
   --storiiies-viewer-font-size: 16px;
   --storiiies-viewer-line-height: 1.2;
   --storiiies-viewer-title-font-size: 20px;
@@ -33,6 +33,20 @@
   background: var(--storiiies-viewer-container-bg);
   container: storiiies-viewer / size;
   block-size: min(640px, 100dvb);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Spectral", sans-serif;
+  font-weight: 400;
+}
+
+strong {
+  font-weight: 600;
 }
 
 /* Reset — apart from OSD */
@@ -70,9 +84,7 @@
   background: var(--storiiies-viewer-button-bg);
   block-size: 44px;
   border-radius: 50%;
-  transition:
-    color 100ms,
-    background 100ms;
+  transition: color 100ms, background 100ms;
 }
 
 .storiiies-viewer__icon-button:disabled {
@@ -112,7 +124,7 @@
   display: grid;
   block-size: 50cqb;
   grid-template-rows: 44px 1fr;
-  grid-template-columns: 1fr repeat(2, 44px);
+  grid-template-columns: 1fr 54px 44px 44px;
   gap: var(--storiiies-viewer-row-gap) var(--storiiies-viewer-col-gap);
   padding: var(--storiiies-viewer-outer-spacing);
   color: var(--storiiies-viewer-fg);
@@ -129,9 +141,29 @@
 /*
 * ## Pagination
 */
+
+/* Autoplay toggle */
+.storiiies-viewer__play-toggle {
+  font-family: var(--storiiies-viewer-font-family);
+  font-size: 14px;
+  color: var(--storiiies-viewer-button-fg);
+  text-align: center;
+  cursor: pointer;
+  background: var(--storiiies-viewer-button-bg);
+  grid-column: -4 / -3;
+}
+
 .storiiies-viewer__previous {
   grid-column: -3 / -2;
   rotate: 180deg;
+}
+
+.storiiies-viewer__play-toggle:focus-visible,
+.storiiies-viewer__play-toggle:hover:not(:disabled) {
+  color: var(--storiiies-viewer-button-hover-fg);
+  background: var(--storiiies-viewer-button-hover-bg);
+  outline: 2px solid var(--storiiies-viewer-accent-inner);
+  box-shadow: 0 0 0 4px var(--storiiies-viewer-accent-outer);
 }
 
 .storiiies-viewer__next {
@@ -147,12 +179,13 @@
   grid-column: 1 / -1;
   gap: 1em;
   padding-inline-end: 8px;
-  overflow: auto;
   font-family: var(--storiiies-viewer-font-family);
   font-size: var(--storiiies-viewer-font-size);
   line-height: var(--storiiies-viewer-line-height);
   color: var(--storiiies-viewer-fg);
-  max-block-size: calc(75cqb - var(--storiiies-viewer-outer-spacing) * 4 - 44px);
+  max-block-size: calc(
+    75cqb - var(--storiiies-viewer-outer-spacing) * 4 - 44px
+  );
   scrollbar-gutter: stable;
   overflow-wrap: break-word;
 }
@@ -164,13 +197,15 @@
 
 .storiiies-viewer__info-text::-webkit-scrollbar-track {
   border-radius: var(--storiiies-viewer-scroll-size);
-  box-shadow: inset 0 0 var(--storiiies-viewer-scroll-size) var(--storiiies-viewer-fg);
+  box-shadow: inset 0 0 var(--storiiies-viewer-scroll-size)
+    var(--storiiies-viewer-fg);
 }
 
 .storiiies-viewer__info-text::-webkit-scrollbar-thumb {
   background: var(--storiiies-viewer-fg);
   border-radius: var(--storiiies-viewer-scroll-size);
-  box-shadow: inset 0 0 calc(var(--storiiies-viewer-scroll-size) * 2) var(--storiiies-viewer-fg);
+  box-shadow: inset 0 0 calc(var(--storiiies-viewer-scroll-size) * 2)
+    var(--storiiies-viewer-fg);
 }
 
 .storiiies-viewer__text-section > *:first-child {
@@ -193,8 +228,7 @@
 @media (prefers-reduced-motion: no-preference) {
   .storiiies-viewer__info-area,
   .storiiies-viewer__info-area--hidden {
-    transition:
-      opacity var(--storiiies-viewer-transition-speed) ease-in-out,
+    transition: opacity var(--storiiies-viewer-transition-speed) ease-in-out,
       translate var(--storiiies-viewer-transition-speed) ease-in-out;
   }
 
@@ -203,7 +237,8 @@
   }
 
   .storiiies-viewer__info-toggle {
-    transition: inset-block-end var(--storiiies-viewer-transition-speed) ease-in-out;
+    transition: inset-block-end var(--storiiies-viewer-transition-speed)
+      ease-in-out;
   }
 }
 
@@ -228,7 +263,10 @@
     position: absolute;
     inset-block-start: var(--storiiies-viewer-outer-spacing);
     inset-inline-start: var(--storiiies-viewer-outer-spacing);
-    inline-size: max(420px, calc(42cqi - var(--storiiies-viewer-outer-spacing) * 2));
+    inline-size: max(
+      420px,
+      calc(42cqi - var(--storiiies-viewer-outer-spacing) * 2)
+    );
     block-size: auto;
     box-shadow: 0 0 2px hsl(0deg 0% 12% / 42%);
   }
@@ -260,6 +298,8 @@
   }
 
   .storiiies-viewer__info-text {
-    max-block-size: calc(100% - var(--storiiies-viewer-outer-spacing) * 2 - 44px);
+    max-block-size: calc(
+      100% - var(--storiiies-viewer-outer-spacing) * 2 - 44px
+    );
   }
 }

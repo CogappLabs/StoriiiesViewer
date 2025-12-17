@@ -635,7 +635,7 @@ export default class StoriiiesViewer {
     this.playToggleElement.ariaLabel = isPlaying
       ? "Pause autoplay"
       : "Start autoplay";
-    this.playToggleElement.textContent = isPlaying ? "Pause" : "Play";
+    this.playToggleElement.textContent = isPlaying ? "Pause autoplay" : "Autoplay";
   }
 
   /**
@@ -685,10 +685,7 @@ export default class StoriiiesViewer {
     });
     // Autoplay toggle button (Play/Pause)
     playToggleEl.id = `storiiies-viewer-${this.instanceId}__play-toggle`;
-    playToggleEl.classList.add(
-      "storiiies-viewer__icon-button",
-      "storiiies-viewer__play-toggle"
-    );
+    playToggleEl.classList.add("storiiies-viewer__play-toggle");
     playToggleEl.addEventListener("click", () => {
       if (this.#isAutoPlaying) {
         this.#stopAutoPlay();
@@ -697,7 +694,7 @@ export default class StoriiiesViewer {
       }
     });
 
-    infoAreaEl.append(prevButtonEl, playToggleEl, nextButtonEl);
+    infoAreaEl.append(playToggleEl, prevButtonEl, nextButtonEl);
 
     // Text element
     infoAreaEl.insertAdjacentHTML(
