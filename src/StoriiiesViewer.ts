@@ -15,6 +15,9 @@ import hideIcon from "./images/hide.svg?raw";
 import restartIcon from "./images/restart.svg?raw";
 import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
 
+/** Time (in milliseconds) to wait before automatically moving to the next annotation when autoplay is enabled */
+const AUTOPLAY_INTERVAL_MS = 10_000;
+
 /**
  * Config object used when instantiating a new StoriiiesViewer
  * @property {HTMLElement | Element | string | null} container - The container element where StoriiiesViewer should be mounted. Must exist in the page
@@ -76,6 +79,16 @@ export default class StoriiiesViewer {
   #annotationIndexCeiling!: number;
   /** Cached user preference on reduced-motion */
   #prefersReducedMotion!: boolean;
+  /** Whether autoplay is currently enabled */
+  #isAutoPlaying: boolean = false;
+  /** Timeout id for the autoplay timer */
+  #autoPlayTimeoutId: number | null = null;
+  /** The audio element currently managed by autoplay, if any */
+  #autoPlayAudioElement: HTMLAudioElement | null = null;
+  /** The handler attached to the current autoplay audio element */
+  #autoPlayAudioEndedHandler: (() => void) | null = null;
+  /** Tracks whether the last navigation to an annotation was triggered by autoplay */
+  #lastNavigationWasAutoPlay: boolean = false;
   /** Error codes and their levels and user facing log messages */
   #statusCodes: statusCodes = {
     "bad-config": ["error", "Missing required config"],
@@ -145,6 +158,10 @@ export default class StoriiiesViewer {
    * @readonly
    */
   public infoToggleElement!: HTMLElement;
+  /** A reference to the autoplay toggle HTML element
+   * @readonly
+   */
+  public playToggleElement!: HTMLButtonElement;
   /** DOMPurify configuration */
   public DOMPurifyConfig: Config = {
     ALLOWED_TAGS: [
@@ -194,7 +211,7 @@ export default class StoriiiesViewer {
     this.instanceId = StoriiiesViewer.#instanceCounter++;
 
     this.#prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
+      "(prefers-reduced-motion: reduce)"
     ).matches;
 
     this.#initManifest().then(() => {
@@ -315,7 +332,7 @@ export default class StoriiiesViewer {
       element: osdContainer,
       tileSources: [
         this.#expandServiceID(
-          this.canvases[this.activeCanvasIndex].imageServiceIds[0],
+          this.canvases[this.activeCanvasIndex].imageServiceIds[0]
         ),
       ],
       crossOriginPolicy: "Anonymous",
@@ -331,11 +348,11 @@ export default class StoriiiesViewer {
     this.viewer.canvas.role = "application";
     this.viewer.element.insertAdjacentHTML(
       "afterbegin",
-      `<p class="storiiies-viewer__description" id="storiiies-viewer-${this.instanceId}__description">Drag with your mouse or the arrow keys, and zoom with scroll or <kbd aria-label="plus">+</kbd> and <kbd aria-label="minus">-</kbd></p>`,
+      `<p class="storiiies-viewer__description" id="storiiies-viewer-${this.instanceId}__description">Drag with your mouse or the arrow keys, and zoom with scroll or <kbd aria-label="plus">+</kbd> and <kbd aria-label="minus">-</kbd></p>`
     );
     this.viewer.canvas.setAttribute(
       "aria-describedby",
-      `storiiies-viewer-${this.instanceId}__description`,
+      `storiiies-viewer-${this.instanceId}__description`
     );
 
     // After the image has loaded
@@ -376,7 +393,7 @@ export default class StoriiiesViewer {
     if (region) {
       this.viewer.viewport.fitBoundsWithConstraints(
         region,
-        this.#prefersReducedMotion,
+        this.#prefersReducedMotion
       );
     } else {
       this.viewer.viewport.goHome(this.#prefersReducedMotion);
@@ -453,6 +470,52 @@ export default class StoriiiesViewer {
     this.infoTextElement.innerHTML = infoTextElementMarkup;
 
     this.#updateViewer();
+
+    // If this navigation was triggered by autoplay, decide whether to
+    // automatically play audio (if present) or fall back to a timeout-based
+    // advance if it's a text-only annotation.
+    if (this.#lastNavigationWasAutoPlay && this.#isAutoPlaying) {
+      this.#lastNavigationWasAutoPlay = false;
+
+      // Clear any previous pending timers / listeners
+      this.#clearPendingAutoPlay();
+
+      const audioEl = this.infoTextElement.querySelector(
+        "audio"
+      ) as HTMLAudioElement | null;
+
+      if (audioEl) {
+        this.#autoPlayAudioElement = audioEl;
+
+        const onEnded = () => {
+          // Clean up this listener reference before moving on
+          if (this.#autoPlayAudioElement && this.#autoPlayAudioEndedHandler) {
+            this.#autoPlayAudioElement.removeEventListener(
+              "ended",
+              this.#autoPlayAudioEndedHandler
+            );
+          }
+          this.#autoPlayAudioElement = null;
+          this.#autoPlayAudioEndedHandler = null;
+
+          this.#advanceAnnotationForAutoPlay();
+        };
+
+        this.#autoPlayAudioEndedHandler = onEnded;
+        audioEl.addEventListener("ended", onEnded);
+
+        // Best-effort autoplay; browsers may still block this based on their
+        // own autoplay policies, so ignore any resulting errors. If playback
+        // is blocked, fall back to a timeout so the story continues.
+        audioEl.play().catch(() => {
+          this.#scheduleAutoPlayTimeout();
+        });
+      } else {
+        // No audio for this annotation; wait the configured interval before
+        // moving to the next one.
+        this.#scheduleAutoPlayTimeout();
+      }
+    }
   }
 
   /**
@@ -471,7 +534,7 @@ export default class StoriiiesViewer {
     this.#_showInfoArea = value;
     this.containerElement?.classList.toggle(
       "storiiies-viewer--info-hidden",
-      !value,
+      !value
     );
     this.infoToggleElement.ariaLabel = `${value ? "Hide" : "Show"} annotations`;
     this.infoToggleElement.innerHTML = `
@@ -483,8 +546,95 @@ export default class StoriiiesViewer {
     this.infoAreaElement.inert = !value;
     this.infoAreaElement.classList.toggle(
       "storiiies-viewer__info-area--hidden",
-      !value,
+      !value
     );
+  }
+
+  /**
+   * Clear any pending autoplay timers and audio listeners
+   */
+  #clearPendingAutoPlay() {
+    if (this.#autoPlayTimeoutId !== null) {
+      window.clearTimeout(this.#autoPlayTimeoutId);
+      this.#autoPlayTimeoutId = null;
+    }
+
+    if (this.#autoPlayAudioElement && this.#autoPlayAudioEndedHandler) {
+      this.#autoPlayAudioElement.removeEventListener(
+        "ended",
+        this.#autoPlayAudioEndedHandler
+      );
+    }
+
+    this.#autoPlayAudioElement = null;
+    this.#autoPlayAudioEndedHandler = null;
+  }
+
+  /**
+   * Stop autoplaying annotations
+   */
+  #stopAutoPlay() {
+    this.#clearPendingAutoPlay();
+
+    this.#isAutoPlaying = false;
+    this.#updatePlayToggleButton();
+  }
+
+  /**
+   * Advance to the next annotation for autoplay
+   */
+  #advanceAnnotationForAutoPlay() {
+    if (!this.#isAutoPlaying) return;
+
+    // If we've reached the end (credits slide or last annotation), stop autoplay
+    if (this.activeAnnotationIndex === this.#annotationIndexCeiling) {
+      this.#stopAutoPlay();
+      return;
+    }
+
+    // Mark this navigation as being triggered by autoplay so we can decide
+    // whether to automatically start audio playback for the new annotation.
+    this.#lastNavigationWasAutoPlay = true;
+    this.activeAnnotationIndex = this.activeAnnotationIndex + 1;
+  }
+
+  /**
+   * Schedule a timeout-based autoplay advance for text-only annotations
+   */
+  #scheduleAutoPlayTimeout() {
+    if (!this.#isAutoPlaying) return;
+
+    this.#autoPlayTimeoutId = window.setTimeout(() => {
+      this.#advanceAnnotationForAutoPlay();
+    }, AUTOPLAY_INTERVAL_MS);
+  }
+
+  /**
+   * Start autoplaying annotations
+   */
+  #startAutoPlay() {
+    if (this.#isAutoPlaying) return;
+
+    this.#isAutoPlaying = true;
+    this.#updatePlayToggleButton();
+
+    // Treat the current annotation as being entered via autoplay so that
+    // we can decide whether to play audio or start a timeout from here.
+    this.#lastNavigationWasAutoPlay = true;
+    this.activeAnnotationIndex = this.activeAnnotationIndex;
+  }
+
+  /**
+   * Update the play/pause button UI to reflect the current autoplay state
+   */
+  #updatePlayToggleButton() {
+    if (!this.playToggleElement) return;
+
+    const isPlaying = this.#isAutoPlaying;
+    this.playToggleElement.ariaLabel = isPlaying
+      ? "Pause autoplay"
+      : "Start autoplay";
+    this.playToggleElement.textContent = isPlaying ? "Pause" : "Play";
   }
 
   /**
@@ -493,6 +643,7 @@ export default class StoriiiesViewer {
   #insertInfoAndControls() {
     const infoAreaEl = document.createElement("div");
     const prevButtonEl = document.createElement("button");
+    const playToggleEl = document.createElement("button");
     const infoToggleEl = document.createElement("button");
 
     // Navigation buttons
@@ -514,6 +665,12 @@ export default class StoriiiesViewer {
 
     [prevButtonEl, nextButtonEl].forEach((button) => {
       button.addEventListener("click", (e) => {
+        // Manual navigation should pause autoplay and reset the timer
+        this.#stopAutoPlay();
+
+        // Mark this navigation as manual so audio does not autoplay
+        this.#lastNavigationWasAutoPlay = false;
+
         if ((e.target as HTMLButtonElement).ariaLabel === "Previous") {
           this.activeAnnotationIndex = this.activeAnnotationIndex - 1;
         } else {
@@ -525,7 +682,21 @@ export default class StoriiiesViewer {
         }
       });
     });
-    infoAreaEl.append(prevButtonEl, nextButtonEl);
+    // Autoplay toggle button (Play/Pause)
+    playToggleEl.id = `storiiies-viewer-${this.instanceId}__play-toggle`;
+    playToggleEl.classList.add(
+      "storiiies-viewer__icon-button",
+      "storiiies-viewer__play-toggle"
+    );
+    playToggleEl.addEventListener("click", () => {
+      if (this.#isAutoPlaying) {
+        this.#stopAutoPlay();
+      } else {
+        this.#startAutoPlay();
+      }
+    });
+
+    infoAreaEl.append(prevButtonEl, playToggleEl, nextButtonEl);
 
     // Text element
     infoAreaEl.insertAdjacentHTML(
@@ -533,21 +704,21 @@ export default class StoriiiesViewer {
       `
       <div id="storiiies-viewer-${this.instanceId}__info-text" class="storiiies-viewer__info-text" tabindex="0">
       </div>
-    `,
+    `
     );
     const infoTextEl = infoAreaEl.querySelector(
-      ".storiiies-viewer__info-text",
+      ".storiiies-viewer__info-text"
     ) as HTMLElement;
 
     // Toggle button
     infoToggleEl.id = `storiiies-viewer-${this.instanceId}__info-toggle`;
     infoToggleEl.classList.add(
       "storiiies-viewer__icon-button",
-      "storiiies-viewer__info-toggle",
+      "storiiies-viewer__info-toggle"
     );
     infoToggleEl.setAttribute(
       "aria-controls",
-      `storiiies-viewer-${this.instanceId}__info-area`,
+      `storiiies-viewer-${this.instanceId}__info-area`
     );
     infoToggleEl.addEventListener("click", () => {
       this.showInfoArea = !this.showInfoArea;
@@ -567,9 +738,11 @@ export default class StoriiiesViewer {
       next: nextButtonEl,
     };
     this.infoToggleElement = infoToggleEl;
+    this.playToggleElement = playToggleEl;
 
     // Initialise values, let the setters handle the rest
     this.showInfoArea = true;
+    this.#updatePlayToggleButton();
     this.activeAnnotationIndex = this.#annotationIndexFloor;
   }
 
@@ -583,7 +756,7 @@ export default class StoriiiesViewer {
     // Summary might be plain text or HTML
     const summaryHTML = sanitiseHTML(
       IIIFSaysThisIsHTML(this.summary) ? this.summary : nl2br(this.summary),
-      this.DOMPurifyConfig,
+      this.DOMPurifyConfig
     );
     let requiredStatementHTML = "";
 
@@ -597,9 +770,9 @@ export default class StoriiiesViewer {
             IIIFSaysThisIsHTML(this.requiredStatement.value)
               ? this.requiredStatement.value
               : nl2br(this.requiredStatement.value)
-          }`,
+          }`
       ),
-      this.DOMPurifyConfig,
+      this.DOMPurifyConfig
     );
 
     // N.B. Sanitising this whole chunk would require loosening restrictions on allowed tags and attributes
@@ -638,7 +811,7 @@ export default class StoriiiesViewer {
         // Create the audio link and sanitize the src
         const audioElement = `<audio controls src="${sanitiseHTML(
           soundUrl,
-          this.DOMPurifyConfig,
+          this.DOMPurifyConfig
         )}">Your browser does not support the audio element.</audio>`;
         markup += audioElement;
       }
@@ -691,9 +864,9 @@ export default class StoriiiesViewer {
                 }),
                 type: rawAnnotationPage.type,
               },
-              this.manifest.options,
+              this.manifest.options
             );
-          }),
+          })
         );
         return [];
       });
