@@ -635,7 +635,9 @@ export default class StoriiiesViewer {
     this.playToggleElement.ariaLabel = isPlaying
       ? "Pause autoplay"
       : "Start autoplay";
-    this.playToggleElement.textContent = isPlaying ? "Pause autoplay" : "Autoplay";
+    this.playToggleElement.textContent = isPlaying
+      ? "Pause autoplay"
+      : "Autoplay";
   }
 
   /**
