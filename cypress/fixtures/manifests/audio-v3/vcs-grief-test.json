@@ -1,0 +1,279 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://localhost:43110/manifests/audio-v3/vcs-grief-test.json",
+  "type": "Manifest",
+  "label": {
+    "en": ["Grief - Frederick Elwell"]
+  },
+  "summary": {
+    "en": ["<div><p>Commentary by Heather Macumber</p></div>"]
+  },
+  "requiredStatement": {
+    "label": { "en": ["Attribution"] },
+    "value": { "en": ["Provided courtesy of Example Institution"] }
+  },
+  "items": [
+    {
+      "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1",
+      "type": "Canvas",
+      "height": 4848,
+      "width": 3864,
+      "items": [
+        {
+          "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/pages/image/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/annotations/image/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "https://storiiies-images.cogapp.com/iiif/2/1765903135395AW1276ElwellTheWeddingDressBRIDGEFER96204ptif.ptif/full/full/0/default.jpg",
+                "type": "Image",
+                "format": "image/jpeg",
+                "height": 4848,
+                "width": 3864,
+                "service": [
+                  {
+                    "id": "https://storiiies-images.cogapp.com/iiif/2/1765903135395AW1276ElwellTheWeddingDressBRIDGEFER96204ptif.ptif",
+                    "profile": "level2",
+                    "type": "ImageService2"
+                  }
+                ]
+              },
+              "target": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:43110/annotations/audio-v3/page-1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/annotations/audio-v3/page-1/annotation/1",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "Frederick Elwell’s The Wedding Dress juxtaposes light and shadow, pointing up the disparity between life and death, hope and despair.",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/audio/grief/grief-1-intro.mp3",
+                  "type": "Sound",
+                  "format": "audio/mpeg",
+                  "duration": 17.0
+                }
+              ],
+              "target": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1#xywh=-1991,0,7846,4848"
+            },
+            {
+              "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/pages/text/1/annotation/1",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "A white wedding dress and shoes lying on the floor...",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/audio/grief/grief-2-a-white-wedding-dress.mp3",
+                  "type": "Sound",
+                  "format": "audio/mpeg",
+                  "duration": 4.0
+                }
+              ],
+              "target": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1#xywh=-12,3278,2534,1565"
+            },
+            {
+              "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/pages/text/1/annotation/2",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "...draw one’s attention to the figure of a grieving woman dressed in dark clothes.",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/audio/grief/grief-3-draw-ones-attention.mp3",
+                  "type": "Sound",
+                  "format": "audio/mpeg",
+                  "duration": 5.0
+                }
+              ],
+              "target": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1#xywh=452,2593,3040,1878"
+            },
+            {
+              "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/pages/text/1/annotation/3",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "With her face buried in her hands...",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/audio/grief/grief-4a-face-buried-in-hands.mp3",
+                  "type": "Sound",
+                  "format": "audio/mpeg",
+                  "duration": 2.0
+                }
+              ],
+              "target": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1#xywh=1485,2783,1018,629"
+            },
+            {
+              "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/pages/text/1/annotation/4",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "...she is bent over a chest from which the edge of a bridal veil spills out.",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/audio/grief/grief-4b-bent-over-chest.mp3",
+                  "type": "Sound",
+                  "format": "audio/mpeg",
+                  "duration": 5.0
+                }
+              ],
+              "target": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1#xywh=761,2517,2111,1304"
+            },
+            {
+              "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/pages/text/1/annotation/5",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "Shadows dominate the muted, panelled bedroom walls in the background...",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/audio/grief/grief-5-shadows-dominate.mp3",
+                  "type": "Sound",
+                  "format": "audio/mpeg",
+                  "duration": 5.0
+                }
+              ],
+              "target": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1#xywh=694,861,3040,1878"
+            },
+            {
+              "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/pages/text/1/annotation/6",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "...while at bottom right they merge with the wedding chest and the woman’s clothes.",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/audio/grief/grief-6-while-at-bottom-right.mp3",
+                  "type": "Sound",
+                  "format": "audio/mpeg",
+                  "duration": 4.0
+                }
+              ],
+              "target": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1#xywh=-127,2135,4378,2705"
+            },
+            {
+              "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/pages/text/1/annotation/7",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "<p>There is a haunting quality to the painting as it highlights the absence or trace of something that cannot be retrieved.</p> <p>Elwell was known for his other works centred on domestic subjects, particularly The First Born (1913) where a father leans over to view his wife and newborn child. Bright tones dominate that painting in stark contrast to The Wedding Dress where the domestic setting no longer harbours life but death.</p>",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/audio/grief/grief-7-haunting-quality.mp3",
+                  "type": "Sound",
+                  "format": "audio/mpeg",
+                  "duration": 29.0
+                }
+              ],
+              "target": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1#xywh=-1627,197,7265,4489"
+            },
+            {
+              "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/pages/text/1/annotation/9",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "The identity of the grieving woman in The Wedding Dress is unknown. She may be a widow, or a prospective bride who has lost her fiancé.",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/audio/grief/grief-8-the-identity-of-the-woman.mp3",
+                  "type": "Sound",
+                  "format": "audio/mpeg",
+                  "duration": 10.0
+                }
+              ],
+              "target": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1#xywh=1398,2558,1466,906"
+            },
+            {
+              "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/pages/text/1/annotation/10",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "The wedding chest, a symbol of hope for one’s future, takes on a more ominous tone as it bears an uncanny resemblance to a funeral casket.",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/audio/grief/grief-9-the-wedding-chest.mp3",
+                  "type": "Sound",
+                  "format": "audio/mpeg",
+                  "duration": 10.0
+                }
+              ],
+              "target": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1#xywh=211,1630,3648,2254"
+            },
+            {
+              "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/pages/text/1/annotation/11",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "The book of Ruth also opens with the intersection of familial hope and despair.  It is a domestic tale focused on the daily lives of a single Israelite family. Naomi with her husband and her sons seek refuge in Moab from a famine in Bethlehem. Although known as ‘the house of bread [or 'food']', here is a terrible and ironic reversal for this family as Bethlehem becomes a place of scarcity.\n\nMore reversals follow. Their initial security in Moab is upended by the death of Naomi’s husband and two sons. Both Naomi and her daughters-in-law Ruth and Orpah are widows, left childless after the passing of their husbands. With no explanation for the death of the men, the book of Ruth, like Elwell’s The Wedding Dress, leaves the audience to fill in the gaps.\n\nYet, though this chapter opens with famine and despair, the narrator anticipates a hopeful change to their situation as Naomi and Ruth return to Bethlehem at the beginning of the barley harvest (Ruth 1:22).",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/audio/grief/grief-10-book-of-ruth.mp3",
+                  "type": "Sound",
+                  "format": "audio/mpeg",
+                  "duration": 73.0
+                }
+              ],
+              "target": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1#xywh=-1627,241,7265,4489"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
