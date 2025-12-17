@@ -342,6 +342,7 @@ export default class StoriiiesViewer {
       showFullPageControl: false,
       visibilityRatio: 0.3,
       mouseNavEnabled: !this.disablePanAndZoom,
+      animationTime: 4.5,
     });
 
     this.viewer.canvas.ariaLabel = "Storiiies viewer";
