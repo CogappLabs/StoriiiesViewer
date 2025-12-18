@@ -8,10 +8,6 @@
   "summary": {
     "en": ["<div><p>Commentary by Heather Macumber</p></div>"]
   },
-  "requiredStatement": {
-    "label": { "en": ["Attribution"] },
-    "value": { "en": ["Provided courtesy of Example Institution"] }
-  },
   "items": [
     {
       "id": "https://manifest.storiiies-editor.cogapp.com/v3/cd82e/VCS-grief-test-2/canvases/1",

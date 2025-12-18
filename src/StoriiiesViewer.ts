@@ -16,7 +16,7 @@ import restartIcon from "./images/restart.svg?raw";
 import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
 
 /** Time (in milliseconds) to wait before automatically moving to the next annotation when autoplay is enabled */
-const AUTOPLAY_INTERVAL_MS = 10_000;
+const AUTOPLAY_INTERVAL_MS = 5_000;
 
 /**
  * Config object used when instantiating a new StoriiiesViewer
@@ -161,7 +161,11 @@ export default class StoriiiesViewer {
   /** A reference to the autoplay toggle HTML element
    * @readonly
    */
-  public playToggleElement!: HTMLButtonElement;
+  public playToggleElement!: HTMLInputElement;
+  /** A reference to the autoplay toggle wrapper HTML element
+   * @readonly
+   */
+  public playToggleWrapperElement!: HTMLElement;
   /** DOMPurify configuration */
   public DOMPurifyConfig: Config = {
     ALLOWED_TAGS: [
@@ -456,6 +460,12 @@ export default class StoriiiesViewer {
       this.controlButtonElements.next.ariaLabel = "Restart";
     }
 
+    // Hide autoplay switch on the last slide (credits slide or last annotation)
+    if (this.playToggleWrapperElement) {
+      this.playToggleWrapperElement.style.display =
+        index === upperBound ? "none" : "flex";
+    }
+
     // Determine rendering method for info text area
     if (this.activeAnnotationIndex === this.#annotationIndexFloor) {
       infoTextElementMarkup = this.#creatTitleSlideMarkup();
@@ -619,25 +629,29 @@ export default class StoriiiesViewer {
     this.#isAutoPlaying = true;
     this.#updatePlayToggleButton();
 
-    // Treat the current annotation as being entered via autoplay so that
-    // we can decide whether to play audio or start a timeout from here.
-    this.#lastNavigationWasAutoPlay = true;
-    this.activeAnnotationIndex = this.activeAnnotationIndex;
+    // If we're on the intro annotation, immediately advance to the next one
+    if (this.activeAnnotationIndex === this.#annotationIndexFloor) {
+      this.#lastNavigationWasAutoPlay = true;
+      this.activeAnnotationIndex = this.activeAnnotationIndex + 1;
+    } else {
+      // Treat the current annotation as being entered via autoplay so that
+      // we can decide whether to play audio or start a timeout from here.
+      this.#lastNavigationWasAutoPlay = true;
+      this.activeAnnotationIndex = this.activeAnnotationIndex;
+    }
   }
 
   /**
-   * Update the play/pause button UI to reflect the current autoplay state
+   * Update the play/pause switch UI to reflect the current autoplay state
    */
   #updatePlayToggleButton() {
     if (!this.playToggleElement) return;
 
     const isPlaying = this.#isAutoPlaying;
+    this.playToggleElement.checked = isPlaying;
     this.playToggleElement.ariaLabel = isPlaying
       ? "Pause autoplay"
       : "Start autoplay";
-    this.playToggleElement.textContent = isPlaying
-      ? "Pause autoplay"
-      : "Autoplay";
   }
 
   /**
@@ -646,7 +660,9 @@ export default class StoriiiesViewer {
   #insertInfoAndControls() {
     const infoAreaEl = document.createElement("div");
     const prevButtonEl = document.createElement("button");
-    const playToggleEl = document.createElement("button");
+    const playToggleWrapperEl = document.createElement("div");
+    const playToggleEl = document.createElement("input");
+    const playToggleLabelEl = document.createElement("label");
     const infoToggleEl = document.createElement("button");
 
     // Navigation buttons
@@ -685,10 +701,19 @@ export default class StoriiiesViewer {
         }
       });
     });
-    // Autoplay toggle button (Play/Pause)
+    // Autoplay toggle switch (Play/Pause)
+    playToggleWrapperEl.classList.add("storiiies-viewer__play-toggle-wrapper");
+
+    const playToggleLabelTextEl = document.createElement("span");
+    playToggleLabelTextEl.classList.add(
+      "storiiies-viewer__play-toggle-label-text"
+    );
+    playToggleLabelTextEl.textContent = "Autoplay";
+
+    playToggleEl.type = "checkbox";
     playToggleEl.id = `storiiies-viewer-${this.instanceId}__play-toggle`;
     playToggleEl.classList.add("storiiies-viewer__play-toggle");
-    playToggleEl.addEventListener("click", () => {
+    playToggleEl.addEventListener("change", () => {
       if (this.#isAutoPlaying) {
         this.#stopAutoPlay();
       } else {
@@ -696,7 +721,14 @@ export default class StoriiiesViewer {
       }
     });
 
-    infoAreaEl.append(playToggleEl, prevButtonEl, nextButtonEl);
+    playToggleLabelEl.setAttribute("for", playToggleEl.id);
+    playToggleLabelEl.classList.add("storiiies-viewer__play-toggle-label");
+    playToggleLabelEl.appendChild(playToggleEl);
+
+    playToggleWrapperEl.appendChild(playToggleLabelTextEl);
+    playToggleWrapperEl.appendChild(playToggleLabelEl);
+
+    infoAreaEl.append(playToggleWrapperEl, prevButtonEl, nextButtonEl);
 
     // Text element
     infoAreaEl.insertAdjacentHTML(
@@ -739,6 +771,7 @@ export default class StoriiiesViewer {
     };
     this.infoToggleElement = infoToggleEl;
     this.playToggleElement = playToggleEl;
+    this.playToggleWrapperElement = playToggleWrapperEl;
 
     // Initialise values, let the setters handle the rest
     this.showInfoArea = true;
@@ -828,7 +861,7 @@ export default class StoriiiesViewer {
    */
   #createCreditSlideMarkup(): string {
     // No need to sanitise this hardcoded markup
-    return `<div class="storiiies-viewer__text-section"><p>Storiiies was created by <a href="https://www.cogapp.com" target="_blank">Cogapp</a>.</p><p>It's easy, and free, to create your own story - find out more at <a href="https://www.cogapp.com/storiiies" target="_blank">cogapp.com/storiiies</a>.</p><p>This viewer is released as open source - see <a href="https://cogapp.com/open-source-at-cogapp" target="_blank">cogapp.com/open-source-at-cogapp</a>.</p></div>`;
+    return `<div class="storiiies-viewer__text-section"><p>Audio commentary from <a href="https://thevcs.org/" target="_blank">The Visual Commentary on Scripture</a>.</p><p>Storiiies was created by <a href="https://www.cogapp.com" target="_blank">Cogapp</a>.</p><p>It's easy, and free, to create your own story - find out more at <a href="https://www.cogapp.com/storiiies" target="_blank">cogapp.com/storiiies</a>.</p><p>This viewer is released as open source - see <a href="https://cogapp.com/open-source-at-cogapp" target="_blank">cogapp.com/open-source-at-cogapp</a>.</p></div>`;
   }
 
   /**
