@@ -159,8 +159,9 @@ export default class StoriiiesViewer {
       "strong",
       "sub",
       "sup",
+      "img",
     ],
-    ALLOWED_ATTR: ["href"],
+    ALLOWED_ATTR: ["href", "src", "alt"],
   };
 
   constructor(config: StoriiiesViewerConfig) {

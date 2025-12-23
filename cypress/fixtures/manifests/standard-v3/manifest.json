@@ -71,7 +71,7 @@
               "motivation": "commenting",
               "body": {
                 "type": "TextualBody",
-                "value": "<div><p><strong onclick=\"alert('malicious code')\">Suspendisse lacinia enim lorem</strong>, sit amet interdum odio dignissim et. <marquee style=\"color:red;\">Curabitur ultricies felis</marquee> non sagittis commodo.</p><p>Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui <a href=\"https://www.google.com\">consectetur consectetur</a>. Suspendisse non nisi turpis.</p></div>",
+                "value": "<div><p><strong onclick=\"alert('malicious code')\">Suspendisse lacinia enim lorem</strong>, sit amet interdum odio dignissim et.</p><p><img src=\"http://localhost:43110/images/embedded/duck.jpg\" alt=\"Mallard\" /></p><p><marquee style=\"color:red;\">Curabitur ultricies felis</marquee> non sagittis commodo.</p><p>Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui <a href=\"https://www.google.com\">consectetur consectetur</a>. Suspendisse non nisi turpis.</p></div>",
                 "language": "en",
                 "format": "text/html"
               },
