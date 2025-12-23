@@ -181,6 +181,17 @@
   margin-block-end: 0;
 }
 
+.storiiies-viewer__text-section p,
+.storiiies-viewer__text-section img:not(p img) {
+  margin-block-start: 1em;
+  margin-block-end: 0em;
+}
+
+.storiiies-viewer__text-section img {
+  max-inline-size: 100%;
+  height: auto;
+}
+
 .storiiies-viewer__title {
   margin: 0;
   font-size: var(--storiiies-viewer-title-font-size);
