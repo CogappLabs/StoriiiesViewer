@@ -139,7 +139,7 @@ function annotationsWithCredits(screenSize: ScreenSize) {
       cy.get("#storiiies-viewer-0__next").click();
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `<div class="storiiies-viewer__text-section"><p><strong>Suspendisse lacinia enim lorem</strong>, sit amet interdum odio dignissim et. Curabitur ultricies felis non sagittis commodo.</p><p>Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui <a href="https://www.google.com">consectetur consectetur</a>. Suspendisse non nisi turpis.</p></div>`,
+        `<div class="storiiies-viewer__text-section"><p><strong>Suspendisse lacinia enim lorem</strong>, sit amet interdum odio dignissim et.</p><p><img src="http://localhost:43110/images/embedded/duck.jpg" alt="Mallard"></p><p>Curabitur ultricies felis non sagittis commodo.</p><p>Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui <a href="https://www.google.com">consectetur consectetur</a>. Suspendisse non nisi turpis.</p></div>`,
       );
     });
 
@@ -254,7 +254,7 @@ function annotationsWithoutCredits(screenSize: ScreenSize) {
       cy.get("#storiiies-viewer-0__next").click();
       cy.get("#storiiies-viewer-0__info-text").should(
         "have.html",
-        `<div class="storiiies-viewer__text-section"><p><strong>Suspendisse lacinia enim lorem</strong>, sit amet interdum odio dignissim et. Curabitur ultricies felis non sagittis commodo.</p><p>Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui <a href="https://www.google.com">consectetur consectetur</a>. Suspendisse non nisi turpis.</p></div>`,
+        `<div class="storiiies-viewer__text-section"><p><strong>Suspendisse lacinia enim lorem</strong>, sit amet interdum odio dignissim et.</p><p><img src="http://localhost:43110/images/embedded/duck.jpg" alt="Mallard"></p><p>Curabitur ultricies felis non sagittis commodo.</p><p>Proin finibus imperdiet lectus quis imperdiet. Maecenas at rhoncus nibh, ac lobortis ante. Nam et ligula a dui <a href="https://www.google.com">consectetur consectetur</a>. Suspendisse non nisi turpis.</p></div>`,
       );
     });
 
