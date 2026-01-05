@@ -707,6 +707,11 @@ export default class StoriiiesViewer {
    */
   #getActiveCanvasAnnotations(): Array<Annotation> {
     // The current canvas might not have any annotations
+    // TODO: Deprecation warning from manifesto.js
+    // but switching to getAnnotations seems break methods down the chain.
+    // This needs investigating further, but strongly suspect it's
+    // related to the temporary way we retrieve annotationPages.
+    // This has been patched in manifesto and can be updated.
     return this.annotationPages[this.activeCanvasIndex]?.getItems() || [];
   }
 
