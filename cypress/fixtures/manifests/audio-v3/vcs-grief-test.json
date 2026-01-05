@@ -1,6 +1,6 @@
 {
   "@context": "http://iiif.io/api/presentation/3/context.json",
-  "id": "http://localhost:43110/manifests/audio-v3/vcs-grief-test.json",
+  "id": "./manifests/audio-v3/vcs-grief-test.json",
   "type": "Manifest",
   "label": {
     "en": ["Grief - Frederick Elwell"]
@@ -44,11 +44,11 @@
       ],
       "annotations": [
         {
-          "id": "http://localhost:43110/annotations/audio-v3/page-1",
+          "id": "./annotations/audio-v3/page-1",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "http://localhost:43110/annotations/audio-v3/page-1/annotation/1",
+              "id": "./annotations/audio-v3/page-1/annotation/1",
               "type": "Annotation",
               "motivation": "commenting",
               "body": [
@@ -59,7 +59,7 @@
                   "format": "text/plain"
                 },
                 {
-                  "id": "http://localhost:43110/audio/grief/grief-1-intro.mp3",
+                  "id": "./audio/grief/grief-1-intro.mp3",
                   "type": "Sound",
                   "format": "audio/mpeg",
                   "duration": 17.0
@@ -79,7 +79,7 @@
                   "format": "text/plain"
                 },
                 {
-                  "id": "http://localhost:43110/audio/grief/grief-2-a-white-wedding-dress.mp3",
+                  "id": "./audio/grief/grief-2-a-white-wedding-dress.mp3",
                   "type": "Sound",
                   "format": "audio/mpeg",
                   "duration": 4.0
@@ -99,7 +99,7 @@
                   "format": "text/plain"
                 },
                 {
-                  "id": "http://localhost:43110/audio/grief/grief-3-draw-ones-attention.mp3",
+                  "id": "./audio/grief/grief-3-draw-ones-attention.mp3",
                   "type": "Sound",
                   "format": "audio/mpeg",
                   "duration": 5.0
@@ -119,7 +119,7 @@
                   "format": "text/plain"
                 },
                 {
-                  "id": "http://localhost:43110/audio/grief/grief-4a-face-buried-in-hands.mp3",
+                  "id": "./audio/grief/grief-4a-face-buried-in-hands.mp3",
                   "type": "Sound",
                   "format": "audio/mpeg",
                   "duration": 2.0
@@ -139,7 +139,7 @@
                   "format": "text/plain"
                 },
                 {
-                  "id": "http://localhost:43110/audio/grief/grief-4b-bent-over-chest.mp3",
+                  "id": "./audio/grief/grief-4b-bent-over-chest.mp3",
                   "type": "Sound",
                   "format": "audio/mpeg",
                   "duration": 5.0
@@ -159,7 +159,7 @@
                   "format": "text/plain"
                 },
                 {
-                  "id": "http://localhost:43110/audio/grief/grief-5-shadows-dominate.mp3",
+                  "id": "./audio/grief/grief-5-shadows-dominate.mp3",
                   "type": "Sound",
                   "format": "audio/mpeg",
                   "duration": 5.0
@@ -179,7 +179,7 @@
                   "format": "text/plain"
                 },
                 {
-                  "id": "http://localhost:43110/audio/grief/grief-6-while-at-bottom-right.mp3",
+                  "id": "./audio/grief/grief-6-while-at-bottom-right.mp3",
                   "type": "Sound",
                   "format": "audio/mpeg",
                   "duration": 4.0
@@ -199,7 +199,7 @@
                   "format": "text/plain"
                 },
                 {
-                  "id": "http://localhost:43110/audio/grief/grief-7-haunting-quality.mp3",
+                  "id": "./audio/grief/grief-7-haunting-quality.mp3",
                   "type": "Sound",
                   "format": "audio/mpeg",
                   "duration": 29.0
@@ -219,7 +219,7 @@
                   "format": "text/plain"
                 },
                 {
-                  "id": "http://localhost:43110/audio/grief/grief-8-the-identity-of-the-woman.mp3",
+                  "id": "./audio/grief/grief-8-the-identity-of-the-woman.mp3",
                   "type": "Sound",
                   "format": "audio/mpeg",
                   "duration": 10.0
@@ -239,7 +239,7 @@
                   "format": "text/plain"
                 },
                 {
-                  "id": "http://localhost:43110/audio/grief/grief-9-the-wedding-chest.mp3",
+                  "id": "./audio/grief/grief-9-the-wedding-chest.mp3",
                   "type": "Sound",
                   "format": "audio/mpeg",
                   "duration": 10.0
@@ -259,7 +259,7 @@
                   "format": "text/plain"
                 },
                 {
-                  "id": "http://localhost:43110/audio/grief/grief-10-book-of-ruth.mp3",
+                  "id": "./audio/grief/grief-10-book-of-ruth.mp3",
                   "type": "Sound",
                   "format": "audio/mpeg",
                   "duration": 73.0
