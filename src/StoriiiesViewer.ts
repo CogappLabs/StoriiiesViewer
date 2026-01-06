@@ -62,7 +62,7 @@ type RawAnnotationBody = {
 type PointOfInterestTarget = {
   type: string;
   source?: string;
-  selector?: {
+  selector: {
     type: "PointSelector";
     x: number;
     y: number;
@@ -372,21 +372,17 @@ export default class StoriiiesViewer {
     // Extract POI data from annotations
     const poiData = this.activeCanvasAnnotations.map((annotation, index) => {
       // TODO: Cast needed here until manifesto.js updates return type of getTarget()
-      const target = annotation.getTarget() as string | PointOfInterestTarget;
-
-      // Only process PointSelector targets
-      if (
-        typeof target === "object" &&
-        target.type === "SpecificResource" &&
-        target.selector?.type === "PointSelector"
-      ) {
+      const target = annotation.getTarget() as
+        | string
+        | null
+        | PointOfInterestTarget;
+      if (this.#isPointOfInterestTarget(target)) {
         return {
+          index,
           x: target.selector.x,
           y: target.selector.y,
-          index,
         };
       }
-      return null;
     });
 
     poiData.forEach((poi) => {
@@ -446,6 +442,39 @@ export default class StoriiiesViewer {
   }
 
   /**
+   * Verify that a target is a PointOfInterestTarget
+   * Type guard function
+   * @param target
+   * @returns boolean
+   */
+  #isPointOfInterestTarget(target: unknown): target is PointOfInterestTarget {
+    if (typeof target !== "object" || target === null) {
+      return false;
+    }
+    const t = target as PointOfInterestTarget;
+    return (
+      t.selector.type === "PointSelector" &&
+      typeof t.selector.x === "number" &&
+      typeof t.selector.y === "number"
+    );
+  }
+
+  /**
+   * Transform a PointOfInterestTarget to a region string
+   * This should be consumable by #getRegion
+   * @param target
+   * @returns string
+   */
+  #transformPointOfInterestToRegion(target: PointOfInterestTarget) {
+    // Define a region around the point
+    const regionSize = 100;
+
+    const x = Math.max(0, target.selector.x - regionSize / 2);
+    const y = Math.max(0, target.selector.y - regionSize / 2);
+    return `#xywh=${x},${y},${regionSize},${regionSize}`;
+  }
+
+  /**
    * Update the viewer
    */
   #updateViewer() {
@@ -466,10 +495,16 @@ export default class StoriiiesViewer {
       return;
     }
 
-    const target =
+    let target =
       this.#getActiveCanvasAnnotations()[
         this.activeAnnotationIndex
       ].getTarget() || "";
+
+    // Flatten a point of interest into something the viewer can fit to the screen
+    if (this.#isPointOfInterestTarget(target)) {
+      target = this.#transformPointOfInterestToRegion(target);
+    }
+
     const region = this.#getRegion(target);
 
     if (region) {
