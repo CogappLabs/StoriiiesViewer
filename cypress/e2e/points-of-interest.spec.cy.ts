@@ -34,40 +34,47 @@ function rendering(screenSize: ScreenSize) {
 
     it("Should render points of interest on the canvas", () => {
       cy.get(
-        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-poi[data-poi-index='0']",
+        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0']",
       ).should("exist");
       cy.get(
-        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-poi[data-poi-index='2']",
+        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='2']",
       ).should("exist");
       cy.get(
-        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-poi[data-poi-index='3']",
+        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='3']",
       ).should("exist");
       cy.get(
-        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-poi[data-poi-index='4']",
+        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='4']",
       ).should("exist");
       cy.get(
-        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-poi[data-poi-index='5']",
+        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='5']",
       ).should("exist");
     });
 
     it("Should navigate to a point of interest when clicked", () => {
       cy.get(
-        "#storiiies-viewer-0__poi-container button.storiiies-poi[data-poi-index='1']",
+        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0']",
       ).click();
       cy.get(
-        "#storiiies-viewer-0__poi-container button.storiiies-poi[data-poi-index='1']",
-      ).should("have.class", "storiiies-viewer___poi--active");
+        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0']",
+      ).should("have.class", "storiiies-viewer___poi-marker--active");
       cy.get("#storiiies-viewer-0__info-text").contains(
         "This point marks the center of the image.",
       );
     });
 
     it("Should activate the correct point of interest pin when navigating via the info panel", () => {
-      cy.get("#storiiies-viewer-storiiies-viewer-0__previous").click();
-      cy.get("#storiiies-viewer-0__next").click();
+      cy.get("#storiiies-viewer-0__next")
+        .click()
+        .click()
+        .click()
+        .click()
+        .click();
       cy.get(
-        "#storiiies-viewer-0__poi-container button.storiiies-poi[data-poi-index='1']",
-      ).should("have.class", "storiiies-viewer___poi--active");
+        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='4']",
+      ).should("have.class", "storiiies-viewer___poi-marker--active");
+      cy.get(
+        "#storiiies-viewer-0__osd-container .storiiies-viewer___poi-marker--active",
+      ).should("have.length", 1);
       cy.get("#storiiies-viewer-0__info-text").contains(
         "This point marks the bottom right quadrant of the image.",
       );
@@ -75,12 +82,12 @@ function rendering(screenSize: ScreenSize) {
 
     it("Should deactivate an active point of interest when navigating away", () => {
       cy.get(
-        "#storiiies-viewer-0__poi-container button.storiiies-poi[data-poi-index='1']",
+        "#storiiies-viewer-0__osd-container > .openseadragon-container  button.storiiies-viewer__poi-marker[data-poi-index='0']",
       ).click();
       cy.get("#storiiies-viewer-0__next").click();
       cy.get(
-        "#storiiies-viewer-0__poi-container button.storiiies-poi[data-poi-index='1']",
-      ).should("not.have.class", "storiiies-viewer___poi--active");
+        "#storiiies-viewer-0__osd-container > .openseadragon-container  button.storiiies-viewer__poi-marker[data-poi-index='0']",
+      ).should("not.have.class", "storiiies-viewer___poi-marker--active");
     });
 
     // TODO: test expected and actual centre after navigating to POI

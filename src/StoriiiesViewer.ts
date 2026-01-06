@@ -364,11 +364,6 @@ export default class StoriiiesViewer {
    * Rendering of points of interest on the viewer
    */
   #renderPointsOfInterest() {
-    const poiLayer = document.createElement("div");
-    poiLayer.classList.add("storiiies-poi-layer");
-    poiLayer.id = `storiiies-viewer-${this.instanceId}__poi-container`;
-    this.viewer.canvas.appendChild(poiLayer);
-
     // Extract POI data from annotations
     const poiData = this.activeCanvasAnnotations.map((annotation, index) => {
       // TODO: Cast needed here until manifesto.js updates return type of getTarget()
@@ -389,10 +384,11 @@ export default class StoriiiesViewer {
       if (poi) {
         // Render HTML element for each POI
         const poiButton = document.createElement("button");
-        poiButton.classList.add("storiiies-poi");
+        poiButton.type = "button";
+        poiButton.innerText = "+";
+        poiButton.classList.add("storiiies-viewer__poi-marker");
         poiButton.dataset.poiIndex = poi.index.toString();
         poiButton.ariaLabel = `Point of interest ${poi.index + 1}`;
-        poiLayer.appendChild(poiButton);
 
         // Having a click event on an overlay requires a bit of extra legwork
         new OpenSeadragon.MouseTracker({
@@ -472,6 +468,36 @@ export default class StoriiiesViewer {
     const x = Math.max(0, target.selector.x - regionSize / 2);
     const y = Math.max(0, target.selector.y - regionSize / 2);
     return `#xywh=${x},${y},${regionSize},${regionSize}`;
+  }
+
+  /**
+   * Set the active point of interest marker on the viewer
+   **/
+  #updatePointOfInterestMarkers() {
+    const poiMarkers = this.viewer.canvas.querySelectorAll(
+      ".storiiies-viewer__poi-marker",
+    );
+    // Remove active state from all markers
+    poiMarkers.forEach((marker) => {
+      marker.classList.remove("storiiies-viewer___poi-marker--active");
+    });
+
+    if (
+      this.activeAnnotationIndex >= 0 &&
+      this.activeAnnotationIndex < this.activeCanvasAnnotations.length &&
+      this.#isPointOfInterestTarget(
+        this.activeCanvasAnnotations[this.activeAnnotationIndex].getTarget(),
+      )
+    ) {
+      const activeMarker = this.viewer.canvas.querySelector(
+        '.storiiies-viewer__poi-marker[data-poi-index="' +
+          this.activeAnnotationIndex +
+          '"]',
+      );
+      if (activeMarker) {
+        activeMarker.classList.add("storiiies-viewer___poi-marker--active");
+      }
+    }
   }
 
   /**
@@ -585,6 +611,8 @@ export default class StoriiiesViewer {
     }
 
     this.infoTextElement.innerHTML = infoTextElementMarkup;
+
+    this.#updatePointOfInterestMarkers();
 
     this.#updateViewer();
   }
