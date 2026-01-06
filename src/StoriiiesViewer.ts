@@ -59,6 +59,16 @@ type RawAnnotationBody = {
   format: string;
 };
 
+type PointOfInterestTarget = {
+  type: string;
+  source?: string;
+  selector?: {
+    type: "PointSelector";
+    x: number;
+    y: number;
+  };
+};
+
 export default class StoriiiesViewer {
   /** Index pointing to the annotation from the annotationPage, currently being viewed\
    * The active annotationPage is treated as being the same as activeCanvasIndex
@@ -343,6 +353,86 @@ export default class StoriiiesViewer {
     this.viewer.addHandler("open", () => {
       if (this.containerElement) {
         this.containerElement.dataset.loaded = "true";
+        // Remove any existing points of interest and re-render
+        this.viewer.clearOverlays();
+        this.#renderPointsOfInterest();
+      }
+    });
+  }
+
+  /**
+   * Rendering of points of interest on the viewer
+   */
+  #renderPointsOfInterest() {
+    const poiLayer = document.createElement("div");
+    poiLayer.classList.add("storiiies-poi-layer");
+    poiLayer.id = `storiiies-viewer-${this.instanceId}__poi-container`;
+    this.viewer.canvas.appendChild(poiLayer);
+
+    // Extract POI data from annotations
+    const poiData = this.activeCanvasAnnotations.map((annotation, index) => {
+      // TODO: Cast needed here until manifesto.js updates return type of getTarget()
+      const target = annotation.getTarget() as string | PointOfInterestTarget;
+
+      // Only process PointSelector targets
+      if (
+        typeof target === "object" &&
+        target.type === "SpecificResource" &&
+        target.selector?.type === "PointSelector"
+      ) {
+        return {
+          x: target.selector.x,
+          y: target.selector.y,
+          index,
+        };
+      }
+      return null;
+    });
+
+    poiData.forEach((poi) => {
+      if (poi) {
+        // Render HTML element for each POI
+        const poiButton = document.createElement("button");
+        poiButton.classList.add("storiiies-poi");
+        poiButton.dataset.poiIndex = poi.index.toString();
+        poiButton.ariaLabel = `Point of interest ${poi.index + 1}`;
+        poiLayer.appendChild(poiButton);
+
+        poiButton.addEventListener("click", () => {
+          this.activeAnnotationIndex = poi.index;
+        });
+
+        // Try to counteract odd behaviour if focus moves to an out of view POI
+        poiButton.addEventListener("focus", () => {
+          // Delay to ensure focus movement happens after blur event
+          setTimeout(() => {
+            this.viewer.viewport.fitBoundsWithConstraints(
+              this.viewer.viewport.imageToViewportRectangle(
+                poi.x,
+                poi.y,
+                100,
+                100,
+              ),
+              true,
+            );
+          }, 0);
+        });
+
+        // Return to home when POI loses focus
+        // Counteract odd canvas rendering on keyboard navigation
+        poiButton.addEventListener("blur", () => {
+          this.viewer.viewport.goHome(true);
+        });
+
+        // Attach POI to viewer as an OSD overlay
+        this.viewer.addOverlay({
+          element: poiButton,
+          location: this.viewer.viewport.imageToViewportCoordinates(
+            poi.x,
+            poi.y,
+          ),
+          checkResize: false,
+        });
       }
     });
   }

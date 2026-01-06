@@ -34,7 +34,19 @@ function rendering(screenSize: ScreenSize) {
 
     it("Should render points of interest on the canvas", () => {
       cy.get(
-        "div.storiiies-poi-layer > button.storiiies-poi[data-poi-index='1']",
+        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-poi[data-poi-index='0']",
+      ).should("exist");
+      cy.get(
+        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-poi[data-poi-index='2']",
+      ).should("exist");
+      cy.get(
+        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-poi[data-poi-index='3']",
+      ).should("exist");
+      cy.get(
+        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-poi[data-poi-index='4']",
+      ).should("exist");
+      cy.get(
+        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-poi[data-poi-index='5']",
       ).should("exist");
     });
 
