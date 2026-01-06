@@ -398,6 +398,14 @@ export default class StoriiiesViewer {
         poiButton.ariaLabel = `Point of interest ${poi.index + 1}`;
         poiLayer.appendChild(poiButton);
 
+        // Having a click event on an overlay requires a bit of extra legwork
+        new OpenSeadragon.MouseTracker({
+          element: poiButton,
+          // Allow deferring to the native click callback as this runs anyway
+          clickHandler: () => {},
+        });
+
+        // For keyboard actuations as well as mouse clicks
         poiButton.addEventListener("click", () => {
           this.activeAnnotationIndex = poi.index;
         });
