@@ -59,7 +59,7 @@
               "motivation": "commenting",
               "body": {
                 "type": "TextualBody",
-                "value": "This point marks the center of the image.",
+                "value": "This point marks the centre of the image.",
                 "language": "en",
                 "format": "text/plain"
               },

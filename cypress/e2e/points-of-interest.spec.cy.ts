@@ -1,4 +1,10 @@
-import { ScreenSize, screenSizes } from "../support/utils";
+import {
+  assertWithinAcceptableRange,
+  getActualCentre,
+  getExpectedCentre,
+  ScreenSize,
+  screenSizes,
+} from "../support/utils";
 
 function setupViewer(
   screenSize: ScreenSize,
@@ -51,15 +57,121 @@ function rendering(screenSize: ScreenSize) {
     });
 
     it("Should navigate to a point of interest when clicked", () => {
-      cy.get(
-        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0']",
-      ).click();
-      cy.get(
-        "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0']",
-      ).should("have.class", "storiiies-viewer___poi-marker--active");
-      cy.get("#storiiies-viewer-0__info-text").contains(
-        "This point marks the center of the image.",
-      );
+      cy.window().then((window) => {
+        cy.get('#viewer[data-loaded="true"]').then(() => {
+          if (!window.storiiiesViewerInstance) return;
+
+          const { storiiiesViewerInstance } = window;
+          const { viewer } = storiiiesViewerInstance;
+
+          // First POI (centre)
+          cy.get(
+            "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0']",
+          )
+            .click({ force: true })
+            .then(() => {
+              const expectedCentre = getExpectedCentre("1024,1024,0,0");
+              const actualCentre = getActualCentre(viewer);
+
+              assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
+              assertWithinAcceptableRange(expectedCentre.y, actualCentre.y);
+            });
+          cy.get(
+            "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0']",
+          ).should("have.class", "storiiies-viewer___poi-marker--active");
+          cy.get(
+            "#storiiies-viewer-0__osd-container .storiiies-viewer___poi-marker--active",
+          ).should("have.length", 1);
+          cy.get("#storiiies-viewer-0__info-text").contains(
+            "This point marks the centre of the image.",
+          );
+
+          // Second POI (top left)
+          cy.get(
+            "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='2']",
+          )
+            .click({ force: true })
+            .then(() => {
+              const expectedCentre = getExpectedCentre("512,512,0,0");
+              const actualCentre = getActualCentre(viewer);
+
+              assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
+              assertWithinAcceptableRange(expectedCentre.y, actualCentre.y);
+            });
+          cy.get(
+            "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='2']",
+          ).should("have.class", "storiiies-viewer___poi-marker--active");
+          cy.get(
+            "#storiiies-viewer-0__osd-container .storiiies-viewer___poi-marker--active",
+          ).should("have.length", 1);
+          cy.get("#storiiies-viewer-0__info-text").contains(
+            "This point marks the top left quadrant of the image.",
+          );
+
+          // Third POI (bottom top right)
+          cy.get(
+            "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='3']",
+          )
+            .click({ force: true })
+            .then(() => {
+              const expectedCentre = getExpectedCentre("1536,512,0,0");
+              const actualCentre = getActualCentre(viewer);
+              assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
+              assertWithinAcceptableRange(expectedCentre.y, actualCentre.y);
+            });
+          cy.get(
+            "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='3']",
+          ).should("have.class", "storiiies-viewer___poi-marker--active");
+          cy.get(
+            "#storiiies-viewer-0__osd-container .storiiies-viewer___poi-marker--active",
+          ).should("have.length", 1);
+          cy.get("#storiiies-viewer-0__info-text").contains(
+            "This point marks the top right quadrant of the image.",
+          );
+
+          // Fourth POI (bottom right)
+          cy.get(
+            "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='4']",
+          )
+            .click({ force: true })
+            .then(() => {
+              const expectedCentre = getExpectedCentre("1536,1536,0,0");
+              const actualCentre = getActualCentre(viewer);
+              assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
+              assertWithinAcceptableRange(expectedCentre.y, actualCentre.y);
+            });
+          cy.get(
+            "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='4']",
+          ).should("have.class", "storiiies-viewer___poi-marker--active");
+          cy.get(
+            "#storiiies-viewer-0__osd-container .storiiies-viewer___poi-marker--active",
+          ).should("have.length", 1);
+          cy.get("#storiiies-viewer-0__info-text").contains(
+            "This point marks the bottom right quadrant of the image.",
+          );
+
+          // Fifth POI (bottom left)
+          cy.get(
+            "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='5']",
+          )
+            .click({ force: true })
+            .then(() => {
+              const expectedCentre = getExpectedCentre("512,1536,0,0");
+              const actualCentre = getActualCentre(viewer);
+              assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
+              assertWithinAcceptableRange(expectedCentre.y, actualCentre.y);
+            });
+          cy.get(
+            "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='5']",
+          ).should("have.class", "storiiies-viewer___poi-marker--active");
+          cy.get(
+            "#storiiies-viewer-0__osd-container .storiiies-viewer___poi-marker--active",
+          ).should("have.length", 1);
+          cy.get("#storiiies-viewer-0__info-text").contains(
+            "This point marks the bottom left quadrant of the image.",
+          );
+        });
+      });
     });
 
     it("Should activate the correct point of interest pin when navigating via the info panel", () => {
@@ -80,7 +192,7 @@ function rendering(screenSize: ScreenSize) {
       );
     });
 
-    it("Should deactivate an active point of interest when navigating away", () => {
+    it("Shouldn't show any active point of interest when showing a non-POI slide", () => {
       cy.get(
         "#storiiies-viewer-0__osd-container > .openseadragon-container  button.storiiies-viewer__poi-marker[data-poi-index='0']",
       ).click();
@@ -88,10 +200,10 @@ function rendering(screenSize: ScreenSize) {
       cy.get(
         "#storiiies-viewer-0__osd-container > .openseadragon-container  button.storiiies-viewer__poi-marker[data-poi-index='0']",
       ).should("not.have.class", "storiiies-viewer___poi-marker--active");
+      cy.get(
+        "#storiiies-viewer-0__osd-container .storiiies-viewer___poi-marker--active",
+      ).should("have.length", 0);
     });
-
-    // TODO: test expected and actual centre after navigating to POI
-    // (will probably need more implemetation before proceeding with this)
   });
 }
 
