@@ -548,7 +548,7 @@ export default class StoriiiesViewer {
   }
 
   /**
-   * Verify that a target is a PointOfInterestTarget
+   * Verify that a target is a PointOfInterestTarget\
    * Type guard function
    * @param target
    * @returns boolean
@@ -566,7 +566,7 @@ export default class StoriiiesViewer {
   }
 
   /**
-   * Transform a PointOfInterestTarget to a region string
+   * Transform a PointOfInterestTarget to a region string\
    * This should be consumable by #getRegion
    * @param target
    * @returns string
@@ -611,6 +611,39 @@ export default class StoriiiesViewer {
   }
 
   /**
+   * Offset region coordinates to compensate for info area\
+   * This should be performed on raw values before conversion into any coordinate system
+   * @param region OpenSeadragon rectangle representing region
+   * @returns OpenSeadragon rectangle with adjusted coordinates
+   */
+  #offSetRegionByInfoArea(region: OpenSeadragon.Rect): OpenSeadragon.Rect {
+    let x = region.x;
+    // Space taken by info area
+    let infoAreaWidth = this.infoAreaElement.offsetWidth;
+    // Available space in viewer
+    const viewerWidth = this.viewer.container.clientWidth;
+    const halfViewerWidth = viewerWidth / 2;
+    const infoInset = this.containerElement
+      ? parseFloat(
+          getComputedStyle(this.containerElement).getPropertyValue(
+            "--storiiies-viewer-outer-spacing",
+          ),
+        ) || 0
+      : 0;
+
+    infoAreaWidth += infoInset;
+
+    const overlap = infoAreaWidth - halfViewerWidth;
+    const remainingSpace = viewerWidth - infoAreaWidth;
+    const poiButtonWidth = 44;
+
+    // The new focal point becomes the centre of the remaining space
+    x -= overlap + remainingSpace / 2 - poiButtonWidth / 2;
+
+    return new OpenSeadragon.Rect(x, region.y, region.width, region.height);
+  }
+
+  /**
    * Update the viewer
    */
   #updateViewer() {
@@ -637,15 +670,24 @@ export default class StoriiiesViewer {
       ].getTarget() || "";
 
     // Flatten a point of interest into something the viewer can fit to the screen
+    const isPointOfInterest = this.#isPointOfInterestTarget(target);
     if (this.#isPointOfInterestTarget(target)) {
       target = this.#transformPointOfInterestToRegion(target);
     }
 
-    const region = this.#getRegion(target);
-
+    let region = this.#getRegion(target);
     if (region) {
+      // Adjust region under certain conditions
+      if (
+        isPointOfInterest &&
+        this.showInfoArea &&
+        this.viewer.container.clientWidth >= 640
+      ) {
+        region = this.#offSetRegionByInfoArea(region);
+      }
+
       this.viewer.viewport.fitBoundsWithConstraints(
-        region,
+        this.viewer.viewport.imageToViewportRectangle(region),
         this.#prefersReducedMotion,
       );
     } else {
@@ -987,14 +1029,16 @@ export default class StoriiiesViewer {
   }
 
   /**
-   * Get the region from the URL as a Rect relative to the viewport of this instance's viewer
+   * Get the region from the URL as an OSD Rectangle\
+   * This return value is agnostic to any particular OSD coordinate system
+   * @returns OpenSeadragon.Rect using URL values or null if no matching fragment found
    */
   #getRegion(url?: string): OpenSeadragon.Rect | null {
     const xywh = url?.split("#xywh=")[1];
 
     if (xywh) {
       const [x, y, w, h] = xywh.split(",").map(Number);
-      return this.viewer.viewport.imageToViewportRectangle(x, y, w, h);
+      return new OpenSeadragon.Rect(x, y, w, h);
     }
 
     return null;

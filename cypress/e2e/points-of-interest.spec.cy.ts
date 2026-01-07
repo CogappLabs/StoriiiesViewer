@@ -72,8 +72,20 @@ function rendering(screenSize: ScreenSize) {
           )
             .click({ force: true })
             .then(() => {
-              const expectedCentre = getExpectedCentre("1024,1024,0,0");
+              let expectedCentre;
               const actualCentre = getActualCentre(viewer);
+
+              // Compensation for info area intrusion
+              switch (screenSize.width) {
+                case 1920:
+                  expectedCentre = getExpectedCentre("654,1024,0,0");
+                  break;
+                case 720:
+                  expectedCentre = getExpectedCentre("828,1024,0,0");
+                  break;
+                default:
+                  expectedCentre = getExpectedCentre("1024,1024,0,0");
+              }
 
               assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
               assertWithinAcceptableRange(expectedCentre.y, actualCentre.y);
@@ -94,8 +106,20 @@ function rendering(screenSize: ScreenSize) {
           )
             .click({ force: true })
             .then(() => {
-              const expectedCentre = getExpectedCentre("512,512,0,0");
+              let expectedCentre;
               const actualCentre = getActualCentre(viewer);
+
+              // Compensation for info area intrusion
+              switch (screenSize.width) {
+                case 1920:
+                  expectedCentre = getExpectedCentre("142,512,0,0");
+                  break;
+                case 720:
+                  expectedCentre = getExpectedCentre("316,512,0,0");
+                  break;
+                default:
+                  expectedCentre = getExpectedCentre("512,512,0,0");
+              }
 
               assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
               assertWithinAcceptableRange(expectedCentre.y, actualCentre.y);
@@ -110,14 +134,26 @@ function rendering(screenSize: ScreenSize) {
             "This point marks the top left quadrant of the image.",
           );
 
-          // Third POI (bottom top right)
+          // Third POI (top right)
           cy.get(
             "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='3']",
           )
             .click({ force: true })
             .then(() => {
-              const expectedCentre = getExpectedCentre("1536,512,0,0");
+              let expectedCentre;
               const actualCentre = getActualCentre(viewer);
+
+              // Compensation for info area intrusion
+              switch (screenSize.width) {
+                case 1920:
+                  expectedCentre = getExpectedCentre("1166,512,0,0");
+                  break;
+                case 720:
+                  expectedCentre = getExpectedCentre("1340,512,0,0");
+                  break;
+                default:
+                  expectedCentre = getExpectedCentre("1536,512,0,0");
+              }
               assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
               assertWithinAcceptableRange(expectedCentre.y, actualCentre.y);
             });
@@ -137,8 +173,21 @@ function rendering(screenSize: ScreenSize) {
           )
             .click({ force: true })
             .then(() => {
-              const expectedCentre = getExpectedCentre("1536,1536,0,0");
+              let expectedCentre;
               const actualCentre = getActualCentre(viewer);
+
+              // Compensation for info area intrusion
+              switch (screenSize.width) {
+                case 1920:
+                  expectedCentre = getExpectedCentre("1166,1536,0,0");
+                  break;
+                case 720:
+                  expectedCentre = getExpectedCentre("1340,1536,0,0");
+                  break;
+                default:
+                  expectedCentre = getExpectedCentre("1536,1536,0,0");
+              }
+
               assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
               assertWithinAcceptableRange(expectedCentre.y, actualCentre.y);
             });
@@ -158,8 +207,21 @@ function rendering(screenSize: ScreenSize) {
           )
             .click({ force: true })
             .then(() => {
-              const expectedCentre = getExpectedCentre("512,1536,0,0");
+              let expectedCentre;
               const actualCentre = getActualCentre(viewer);
+
+              // Compensation for info area intrusion
+              switch (screenSize.width) {
+                case 1920:
+                  expectedCentre = getExpectedCentre("142,1536,0,0");
+                  break;
+                case 720:
+                  expectedCentre = getExpectedCentre("316,1536,0,0");
+                  break;
+                default:
+                  expectedCentre = getExpectedCentre("512,1536,0,0");
+              }
+
               assertWithinAcceptableRange(expectedCentre.x, actualCentre.x);
               assertWithinAcceptableRange(expectedCentre.y, actualCentre.y);
             });
@@ -197,7 +259,7 @@ function rendering(screenSize: ScreenSize) {
     it("Shouldn't show any active point of interest when showing a non-POI slide", () => {
       cy.get(
         "#storiiies-viewer-0__osd-container > .openseadragon-container  button.storiiies-viewer__poi-marker[data-poi-index='0']",
-      ).click();
+      ).click({ force: true });
       cy.get("#storiiies-viewer-0__next").click();
       cy.get(
         "#storiiies-viewer-0__osd-container > .openseadragon-container  button.storiiies-viewer__poi-marker[data-poi-index='0']",
@@ -292,6 +354,15 @@ function rendering(screenSize: ScreenSize) {
 }
 
 // Run each test at each screen size
-for (const screenSize of screenSizes) {
-  rendering(screenSize);
-}
+screenSizes
+  .concat([
+    {
+      label:
+        "Small enough that the infoArea can intrude on the centre of the viewer",
+      width: 720,
+      height: 1440,
+    },
+  ])
+  .forEach((screenSize) => {
+    rendering(screenSize);
+  });
