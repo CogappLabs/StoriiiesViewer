@@ -12,6 +12,7 @@ import OpenSeadragon from "openseadragon";
 import arrowIcon from "./images/arrow.svg?raw";
 import showIcon from "./images/eye.svg?raw";
 import hideIcon from "./images/hide.svg?raw";
+import poiIcon from "./images/poi.svg?raw";
 import restartIcon from "./images/restart.svg?raw";
 import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
 
@@ -385,8 +386,11 @@ export default class StoriiiesViewer {
         // Render HTML element for each POI
         const poiButton = document.createElement("button");
         poiButton.type = "button";
-        poiButton.innerText = "+";
-        poiButton.classList.add("storiiies-viewer__poi-marker");
+        poiButton.innerHTML = poiIcon;
+        poiButton.classList.add(
+          "storiiies-viewer__icon-button",
+          "storiiies-viewer__poi-marker",
+        );
         poiButton.dataset.poiIndex = poi.index.toString();
         poiButton.ariaLabel = `Point of interest ${poi.index + 1}`;
 
