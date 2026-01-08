@@ -28,7 +28,7 @@
     "lint": "run-p lint:*",
     "lint:biome": "biome check --write",
     "lint:typecheck": "tsc --noEmit",
-    "prepare": "lefthook install",
+    "prepare": "test -d .git && npx lefthook install || true",
     "test": "run-p -r dev cypress",
     "test:gui": "run-p -r dev cypress:gui"
   },
