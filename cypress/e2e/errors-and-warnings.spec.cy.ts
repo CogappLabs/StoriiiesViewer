@@ -1,6 +1,7 @@
 function setupViewer(
   containerSelector: string = "#viewer",
   manifestUrl: string = "http://localhost:43110/manifests/standard-v3/manifest.json",
+  pointOfInterestSvgUrl?: string,
 ) {
   cy.visit("/").then((window) => {
     cy.document().then((document) => {
@@ -8,6 +9,7 @@ function setupViewer(
         container:
           containerSelector && document.querySelector(containerSelector),
         manifestUrl,
+        pointOfInterestSvgUrl,
       };
       // Pass an empty string to remove an option
       // Ignore statements ahoy: TS obviously isn't going like this
@@ -16,6 +18,8 @@ function setupViewer(
       if (!containerSelector) delete options.container;
       // @ts-ignore
       if (!manifestUrl) delete options.manifestUrl;
+      // @ts-ignore
+      if (!pointOfInterestSvgUrl) delete options.pointOfInterestSvgUrl;
       if (!window.StoriiiesViewer) return;
       // @ts-ignore
       window.storiiiesViewerInstance = new window.StoriiiesViewer(options);
@@ -123,6 +127,29 @@ describe("Errors", () => {
     allowFail = "Storiiies Viewer: Missing required config";
     setupViewer("#viewer", "");
   });
+
+  it("Should error if the fetched custom POI SVG is not valid SVG", () => {
+    cy.intercept("GET", "/manifests/standard-v3/manifest.json", {
+      fixture: "/manifests/points-of-interest-v3/manifest.json",
+    }).as("poi-manifest");
+
+    cy.intercept("GET", "/custom-poi.svg", {
+      body: "<div>Not an SVG</div>",
+    }).as("invalid-svg");
+
+    setupViewer(
+      "#viewer",
+      "http://localhost:43110/manifests/standard-v3/manifest.json",
+      "/custom-poi.svg",
+    );
+
+    cy.wait("@poi-manifest");
+    cy.wait("@invalid-svg");
+
+    cy.get("#viewer")
+      .should("have.attr", "data-status")
+      .and("match", /poi-svg-invalid/);
+  });
 });
 
 describe("Warnings", () => {
@@ -166,5 +193,27 @@ describe("Warnings", () => {
     cy.get("#viewer")
       .should("have.attr", "data-status")
       .and("match", /no-ext-anno/);
+  });
+  it("Should warn if the custom POI SVG fails to fetch", () => {
+    cy.intercept("GET", "/manifests/standard-v3/manifest.json", {
+      fixture: "/manifests/points-of-interest-v3/manifest.json",
+    }).as("poi-manifest");
+
+    cy.intercept("GET", "/custom-poi.svg", {
+      statusCode: 404,
+    }).as("404-svg");
+
+    setupViewer(
+      "#viewer",
+      "http://localhost:43110/manifests/standard-v3/manifest.json",
+      "/custom-poi.svg",
+    );
+
+    cy.wait("@poi-manifest");
+    cy.wait("@404-svg");
+
+    cy.get("#viewer")
+      .should("have.attr", "data-status")
+      .and("match", /poi-svg-err/);
   });
 });

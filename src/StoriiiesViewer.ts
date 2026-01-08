@@ -28,6 +28,7 @@ export interface StoriiiesViewerConfig {
   manifestUrl: string;
   showCreditSlide?: boolean;
   disablePanAndZoom?: boolean;
+  pointOfInterestSvgUrl?: string;
 }
 
 type ControlButtons = {
@@ -102,6 +103,9 @@ export default class StoriiiesViewer {
       "Manifest doesn't contain a label. This is required by the IIIF Presentation API",
     ],
     "no-ext-anno": ["warn", "External annotationPages are not supported"],
+    "poi-svg-err": ["warn", "Failed to load custom POI SVG"],
+    "poi-svg-invalid": ["error", "Fetched content is not a valid SVG"],
+    "poi-svg-default-err": ["error", "Failed to parse default POI SVG"],
   };
   /** Index representing the number of StoriiiesViewer instances in the current scope */
   static #instanceCounter: number = 0;
@@ -156,6 +160,14 @@ export default class StoriiiesViewer {
    * @readonly
    */
   public infoToggleElement!: HTMLElement;
+  /** Reference to the point of interest SVG url
+   * @readonly
+   */
+  public pointOfInterestSvgUrl?: string;
+  /** Graphic used for the point of interest markers
+   * @readonly
+   */
+  public pointOfInterestSvg!: SVGElement;
   /** DOMPurify configuration */
   public DOMPurifyConfig: Config = {
     ALLOWED_TAGS: [
@@ -171,8 +183,45 @@ export default class StoriiiesViewer {
       "sub",
       "sup",
       "img",
+      // Common SVG elements
+      "svg",
+      "path",
+      "circle",
+      "rect",
+      "line",
+      "polyline",
+      "polygon",
+      "ellipse",
+      "defs",
+      "mask",
+      "g",
+      "use",
+      "text",
+      "tspan",
     ],
-    ALLOWED_ATTR: ["href", "src", "alt"],
+    ALLOWED_ATTR: ["href", "src", "alt", "class", "id"],
+    ADD_ATTR: [
+      "viewBox",
+      "xmlns",
+      "width",
+      "height",
+      "x",
+      "y",
+      "cx",
+      "cy",
+      "r",
+      "rx",
+      "ry",
+      "fill",
+      "stroke",
+      "stroke-width",
+      "stroke-linecap",
+      "stroke-linejoin",
+      "d",
+      "points",
+      "transform",
+      "xlink:href",
+    ],
   };
 
   constructor(config: StoriiiesViewerConfig) {
@@ -196,6 +245,8 @@ export default class StoriiiesViewer {
     this.showCreditSlide = config.showCreditSlide ?? true;
 
     this.disablePanAndZoom = config.disablePanAndZoom ?? false;
+
+    this.pointOfInterestSvgUrl = config.pointOfInterestSvgUrl;
 
     // Throw if the required config is missing and halt instantiation
     if (!this.containerElement || !this.manifestUrl) {
@@ -362,9 +413,64 @@ export default class StoriiiesViewer {
   }
 
   /**
+   * Set the point of interest SVG graphic\
+   * Fetches from a URL if provided, otherwise uses the default SVG
+   */
+  async #setPointOfInterestSvg() {
+    if (this.pointOfInterestSvgUrl) {
+      try {
+        const response = await fetch(this.pointOfInterestSvgUrl);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch SVG: ${response.statusText}`);
+        }
+        const svgText = await response.text();
+
+        // Sanitize and return as DOM element
+        const sanitized = DOMPurify.sanitize(svgText, {
+          ...this.DOMPurifyConfig,
+          RETURN_DOM_FRAGMENT: true,
+        });
+
+        const svgElement = sanitized.querySelector("svg");
+
+        if (!svgElement) {
+          this.#logger("poi-svg-invalid", true);
+          return;
+        }
+
+        this.pointOfInterestSvg = svgElement;
+      } catch (error) {
+        this.#logger("poi-svg-err");
+        // Fall back to default on error
+        this.#setDefaultPointOfInterestSvg();
+      }
+    } else {
+      this.#setDefaultPointOfInterestSvg();
+    }
+  }
+
+  /**
+   * Set default POI SVG graphic
+   */
+  #setDefaultPointOfInterestSvg() {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(poiIcon, "image/svg+xml");
+    const svgElement = doc.querySelector("svg");
+
+    if (svgElement) {
+      this.pointOfInterestSvg = svgElement;
+    } else {
+      this.#logger("poi-svg-default-err", true);
+    }
+  }
+
+  /**
    * Rendering of points of interest on the viewer
    */
-  #renderPointsOfInterest() {
+  async #renderPointsOfInterest() {
+    // Assign point of interest marker SVG
+    await this.#setPointOfInterestSvg();
+
     // Extract POI data from annotations
     const poiData = this.activeCanvasAnnotations.map((annotation, index) => {
       // TODO: Cast needed here until manifesto.js updates return type of getTarget()
@@ -386,7 +492,7 @@ export default class StoriiiesViewer {
         // Render HTML element for each POI
         const poiButton = document.createElement("button");
         poiButton.type = "button";
-        poiButton.innerHTML = poiIcon;
+        poiButton.appendChild(this.pointOfInterestSvg.cloneNode(true));
         poiButton.classList.add(
           "storiiies-viewer__icon-button",
           "storiiies-viewer__poi-marker",

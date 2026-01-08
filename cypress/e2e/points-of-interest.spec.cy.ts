@@ -10,6 +10,7 @@ function setupViewer(
   screenSize: ScreenSize,
   manifestUrl: string,
   showCreditSlide: boolean = true,
+  pointOfInterestSvgUrl?: string,
 ) {
   cy.visit("/").then((window) => {
     cy.document().then((document) => {
@@ -21,6 +22,7 @@ function setupViewer(
         container,
         manifestUrl,
         showCreditSlide,
+        pointOfInterestSvgUrl: pointOfInterestSvgUrl || undefined,
       });
     });
   });
@@ -203,6 +205,88 @@ function rendering(screenSize: ScreenSize) {
       cy.get(
         "#storiiies-viewer-0__osd-container .storiiies-viewer___poi-marker--active",
       ).should("have.length", 0);
+    });
+  });
+
+  describe(`POI icon rendering (${screenSize.label})`, () => {
+    it("Should render default POI SVG if no SVG URL is provided", () => {
+      setupViewer(
+        screenSize,
+        "http://localhost:43110/manifests/points-of-interest-v3/manifest.json",
+      );
+      cy.get('#viewer[data-loaded="true"]').then(() => {
+        cy.get(
+          "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0']",
+        ).should("exist");
+
+        cy.get(
+          "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0'] svg",
+        )
+          .should("exist")
+          .should("not.have.id", "test-icon");
+      });
+    });
+
+    it("Should sanitize and render custom POI SVG", () => {
+      setupViewer(
+        screenSize,
+        "http://localhost:43110/manifests/points-of-interest-v3/manifest.json",
+        true,
+        "http://localhost:43110/cypress/fixtures/images/icons/eye.svg",
+      );
+      cy.get('#viewer[data-loaded="true"]').then(() => {
+        it("Should sanitize and render custom POI SVG", () => {
+          setupViewer(
+            screenSize,
+            "http://localhost:43110/manifests/points-of-interest-v3/manifest.json",
+            true,
+            "http://localhost:43110/cypress/fixtures/images/icons/eye.svg",
+          );
+          cy.get('#viewer[data-loaded="true"]').then(() => {
+            cy.get(
+              "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0']",
+            ).should("exist");
+
+            cy.get(
+              "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0'] svg",
+            ).should("have.id", "test-icon");
+
+            cy.get(
+              "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0'] svg",
+            ).should("not.have.attr", "onclick");
+          });
+        });
+      });
+    });
+
+    it("Fallback to default icon if custom SVG is missing", () => {
+      setupViewer(
+        screenSize,
+        "http://localhost:43110/manifests/points-of-interest-v3/manifest.json",
+        true,
+        "/missing-icon.svg",
+      );
+      cy.get('#viewer[data-loaded="true"]').then(() => {
+        it("Should sanitize and render custom POI SVG", () => {
+          setupViewer(
+            screenSize,
+            "http://localhost:43110/manifests/points-of-interest-v3/manifest.json",
+            true,
+            "http://localhost:43110/cypress/fixtures/images/icons/eye.svg",
+          );
+          cy.get(
+            "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0']",
+          ).should("exist");
+
+          cy.get(
+            "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0'] svg",
+          ).should("have.id", "test-icon");
+
+          cy.get(
+            "#storiiies-viewer-0__osd-container > .openseadragon-container button.storiiies-viewer__poi-marker[data-poi-index='0'] svg",
+          ).should("not.have.attr", "onclick");
+        });
+      });
     });
   });
 }
