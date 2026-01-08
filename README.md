@@ -82,6 +82,24 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 ```
 
+### Using a custom "point of interest" SVG
+
+You may provide a custom SVG graphic to use with points of interest.
+
+```js
+document.addEventListener("DOMContentLoaded", () => {
+  const myViewer = new StoriiiesViewer({
+    container: "#storiiies-viewer",
+    manifestUrl: "https://path-to-your-storiiies-manifest",
+    pointOfInterestSvgUrl: 'https://path-to-your-svg'
+  });
+});
+```
+
+This overrides the default graphic from StoriiiesViewer. This SVG will be sanitized before it's inserted, and we have a permissive but possibly not exhaustive list of tags and attributes which are allowed.
+
+The default colour and highlighting on activation and hover of points of interest are controlled by a CSS custom property applied to the `color` rule. If you'd like your custom graphic to use this colourisation then you can use `currentColor` on the parts of the graphic that should adopt this.
+
 ## Supported manifest formats
 
 StoriiiesViewer supports a subset of the [IIIF presentation API v3](https://iiif.io/api/presentation/3.0/). Specifically, we target `annotationPages` which are included directly in the manifest ([like in this cookbook recipe](https://iiif.io/api/cookbook/recipe/0258-tagging-external-resource/)).
@@ -89,6 +107,8 @@ StoriiiesViewer supports a subset of the [IIIF presentation API v3](https://iiif
 Text based annotations can either be `text/plain` or `text/html` denoted by the `format` field. For `text/plain` newline characters will be converted and output as `<br>` tags.
 
 Support for audio exists, and StoriiiesViewer will render an `<audio />` element for annotations that have a type of `Sound`, and which are structured [like shown in this cookbook recipe](https://iiif.io/api/cookbook/recipe/0002-mvm-audio/).
+
+Points of interest (markers that target a single point, rather than a region), can be rendered by using a `target` with a type of `specificResource` and a `selector` of `type: "pointSelector"`. See this [cookbook recipe for an example]](https://iiif.io/api/cookbook/recipe/0135-annotating-point-in-canvas/).
 
 StoriiiesViewer has no required fields (aside from those required by the presentation API), but it will render certain values from the manifest if provided. These are:
 
