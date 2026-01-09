@@ -1,6 +1,6 @@
 {
   "name": "@cogapp/storiiies-viewer",
-  "version": "3.0.0",
+  "version": "3.1.0-dev.1",
   "description": "A viewer for Storiiies",
   "exports": {
     ".": {
@@ -28,13 +28,13 @@
     "lint": "run-p lint:*",
     "lint:biome": "biome check --write",
     "lint:typecheck": "tsc --noEmit",
-    "prepare": "lefthook install",
+    "prepare": "test -d .git && npx lefthook install || true",
     "test": "run-p -r dev cypress",
     "test:gui": "run-p -r dev cypress:gui"
   },
   "dependencies": {
     "dompurify": "^3.0.5",
-    "manifesto.js": "^4.2.17",
+    "manifesto.js": "^4.3.0",
     "openseadragon": "^4.1.0"
   },
   "devDependencies": {
@@ -42,7 +42,7 @@
     "@types/dompurify": "^3.0.2",
     "@types/node-fetch": "^2.6.4",
     "@types/openseadragon": "^3.0.8",
-    "cypress": "^13.4.0",
+    "cypress": "^15.8.1",
     "lefthook": "^2.0.4",
     "npm-run-all": "^4.1.5",
     "typedoc": "^0.28.15",
