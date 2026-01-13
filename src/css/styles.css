@@ -19,7 +19,7 @@
   --storiiies-viewer-poi-marker-bg: transparent;
   --storiiies-viewer-poi-marker-fg: var(--storiiies-viewer-fg);
   --storiiies-viewer-poi-marker-hover-bg: transparent;
-  --storiiies-viewer-poi-marker-hover-fg: #ff0000;
+  --storiiies-viewer-poi-marker-hover-fg: #bf0000;
   --storiiies-viewer-accent-outer: var(--storiiies-viewer-button-hover-bg);
   --storiiies-viewer-accent-inner: var(--storiiies-viewer-button-hover-fg);
   --storiiies-viewer-font-family: sans-serif;
