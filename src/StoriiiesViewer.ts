@@ -12,6 +12,7 @@ import OpenSeadragon from "openseadragon";
 import arrowIcon from "./images/arrow.svg?raw";
 import showIcon from "./images/eye.svg?raw";
 import hideIcon from "./images/hide.svg?raw";
+import poiIcon from "./images/poi.svg?raw";
 import restartIcon from "./images/restart.svg?raw";
 import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
 
@@ -27,6 +28,7 @@ export interface StoriiiesViewerConfig {
   manifestUrl: string;
   showCreditSlide?: boolean;
   disablePanAndZoom?: boolean;
+  pointOfInterestSvgUrl?: string;
 }
 
 type ControlButtons = {
@@ -57,6 +59,16 @@ type RawAnnotationBody = {
   value: string;
   language: string;
   format: string;
+};
+
+type PointOfInterestTarget = {
+  type: string;
+  source?: string;
+  selector: {
+    type: "PointSelector";
+    x: number;
+    y: number;
+  };
 };
 
 export default class StoriiiesViewer {
@@ -91,6 +103,9 @@ export default class StoriiiesViewer {
       "Manifest doesn't contain a label. This is required by the IIIF Presentation API",
     ],
     "no-ext-anno": ["warn", "External annotationPages are not supported"],
+    "poi-svg-err": ["warn", "Failed to load custom POI SVG"],
+    "poi-svg-invalid": ["error", "Fetched content is not a valid SVG"],
+    "poi-svg-default-err": ["error", "Failed to parse default POI SVG"],
   };
   /** Index representing the number of StoriiiesViewer instances in the current scope */
   static #instanceCounter: number = 0;
@@ -145,6 +160,14 @@ export default class StoriiiesViewer {
    * @readonly
    */
   public infoToggleElement!: HTMLElement;
+  /** Reference to the point of interest SVG url
+   * @readonly
+   */
+  public pointOfInterestSvgUrl?: string;
+  /** Graphic used for the point of interest markers
+   * @readonly
+   */
+  public pointOfInterestSvg!: SVGElement;
   /** DOMPurify configuration */
   public DOMPurifyConfig: Config = {
     ALLOWED_TAGS: [
@@ -160,8 +183,45 @@ export default class StoriiiesViewer {
       "sub",
       "sup",
       "img",
+      // Common SVG elements
+      "svg",
+      "path",
+      "circle",
+      "rect",
+      "line",
+      "polyline",
+      "polygon",
+      "ellipse",
+      "defs",
+      "mask",
+      "g",
+      "use",
+      "text",
+      "tspan",
     ],
-    ALLOWED_ATTR: ["href", "src", "alt"],
+    ALLOWED_ATTR: ["href", "src", "alt", "class", "id"],
+    ADD_ATTR: [
+      "viewBox",
+      "xmlns",
+      "width",
+      "height",
+      "x",
+      "y",
+      "cx",
+      "cy",
+      "r",
+      "rx",
+      "ry",
+      "fill",
+      "stroke",
+      "stroke-width",
+      "stroke-linecap",
+      "stroke-linejoin",
+      "d",
+      "points",
+      "transform",
+      "xlink:href",
+    ],
   };
 
   constructor(config: StoriiiesViewerConfig) {
@@ -185,6 +245,8 @@ export default class StoriiiesViewer {
     this.showCreditSlide = config.showCreditSlide ?? true;
 
     this.disablePanAndZoom = config.disablePanAndZoom ?? false;
+
+    this.pointOfInterestSvgUrl = config.pointOfInterestSvgUrl;
 
     // Throw if the required config is missing and halt instantiation
     if (!this.containerElement || !this.manifestUrl) {
@@ -343,8 +405,242 @@ export default class StoriiiesViewer {
     this.viewer.addHandler("open", () => {
       if (this.containerElement) {
         this.containerElement.dataset.loaded = "true";
+        // Remove any existing points of interest and re-render
+        this.viewer.clearOverlays();
+        this.#renderPointsOfInterest();
       }
     });
+  }
+
+  /**
+   * Set the point of interest SVG graphic\
+   * Fetches from a URL if provided, otherwise uses the default SVG
+   */
+  async #setPointOfInterestSvg() {
+    if (this.pointOfInterestSvgUrl) {
+      try {
+        const response = await fetch(this.pointOfInterestSvgUrl);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch SVG: ${response.statusText}`);
+        }
+        const svgText = await response.text();
+
+        // Sanitize and return as DOM element
+        const sanitized = DOMPurify.sanitize(svgText, {
+          ...this.DOMPurifyConfig,
+          RETURN_DOM_FRAGMENT: true,
+        });
+
+        const svgElement = sanitized.querySelector("svg");
+
+        if (!svgElement) {
+          this.#logger("poi-svg-invalid", true);
+          return;
+        }
+
+        this.pointOfInterestSvg = svgElement;
+      } catch (error) {
+        this.#logger("poi-svg-err");
+        // Fall back to default on error
+        this.#setDefaultPointOfInterestSvg();
+      }
+    } else {
+      this.#setDefaultPointOfInterestSvg();
+    }
+  }
+
+  /**
+   * Set default POI SVG graphic
+   */
+  #setDefaultPointOfInterestSvg() {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(poiIcon, "image/svg+xml");
+    const svgElement = doc.querySelector("svg");
+
+    if (svgElement) {
+      this.pointOfInterestSvg = svgElement;
+    } else {
+      this.#logger("poi-svg-default-err", true);
+    }
+  }
+
+  /**
+   * Rendering of points of interest on the viewer
+   */
+  async #renderPointsOfInterest() {
+    // Assign point of interest marker SVG
+    await this.#setPointOfInterestSvg();
+
+    // Extract POI data from annotations
+    const poiData = this.activeCanvasAnnotations.map((annotation, index) => {
+      // TODO: Cast needed here until manifesto.js updates return type of getTarget()
+      const target = annotation.getTarget() as
+        | string
+        | null
+        | PointOfInterestTarget;
+      if (this.#isPointOfInterestTarget(target)) {
+        return {
+          index,
+          x: target.selector.x,
+          y: target.selector.y,
+        };
+      }
+    });
+
+    poiData.forEach((poi) => {
+      if (poi) {
+        // Render HTML element for each POI
+        const poiButton = document.createElement("button");
+        poiButton.type = "button";
+        poiButton.appendChild(this.pointOfInterestSvg.cloneNode(true));
+        poiButton.classList.add(
+          "storiiies-viewer__icon-button",
+          "storiiies-viewer__poi-marker",
+        );
+        poiButton.dataset.poiIndex = poi.index.toString();
+        poiButton.ariaLabel = `Point of interest ${poi.index + 1}`;
+
+        // Having a click event on an overlay requires a bit of extra legwork
+        new OpenSeadragon.MouseTracker({
+          element: poiButton,
+          // Allow deferring to the native click callback as this runs anyway
+          clickHandler: () => {},
+        });
+
+        // For keyboard actuations as well as mouse clicks
+        poiButton.addEventListener("click", () => {
+          this.activeAnnotationIndex = poi.index;
+        });
+
+        // Try to counteract odd behaviour if focus moves to an out of view POI
+        poiButton.addEventListener("focus", () => {
+          // Delay to ensure focus movement happens after blur event
+          setTimeout(() => {
+            this.viewer.viewport.fitBoundsWithConstraints(
+              this.viewer.viewport.imageToViewportRectangle(
+                poi.x,
+                poi.y,
+                100,
+                100,
+              ),
+              true,
+            );
+          }, 0);
+        });
+
+        // Return to home when POI loses focus
+        // Counteract odd canvas rendering on keyboard navigation
+        poiButton.addEventListener("blur", () => {
+          this.viewer.viewport.goHome(true);
+        });
+
+        // Attach POI to viewer as an OSD overlay
+        this.viewer.addOverlay({
+          element: poiButton,
+          location: this.viewer.viewport.imageToViewportCoordinates(
+            poi.x,
+            poi.y,
+          ),
+          checkResize: false,
+        });
+      }
+    });
+  }
+
+  /**
+   * Verify that a target is a PointOfInterestTarget\
+   * Type guard function
+   * @param target
+   * @returns boolean
+   */
+  #isPointOfInterestTarget(target: unknown): target is PointOfInterestTarget {
+    if (typeof target !== "object" || target === null) {
+      return false;
+    }
+    const t = target as PointOfInterestTarget;
+    return (
+      t.selector.type === "PointSelector" &&
+      typeof t.selector.x === "number" &&
+      typeof t.selector.y === "number"
+    );
+  }
+
+  /**
+   * Transform a PointOfInterestTarget to a region string\
+   * This should be consumable by #getRegion
+   * @param target
+   * @returns string
+   */
+  #transformPointOfInterestToRegion(target: PointOfInterestTarget) {
+    // Define a region around the point
+    const regionSize = 100;
+
+    const x = Math.max(0, target.selector.x - regionSize / 2);
+    const y = Math.max(0, target.selector.y - regionSize / 2);
+    return `#xywh=${x},${y},${regionSize},${regionSize}`;
+  }
+
+  /**
+   * Set the active point of interest marker on the viewer
+   **/
+  #updatePointOfInterestMarkers() {
+    const poiMarkers = this.viewer.canvas.querySelectorAll(
+      ".storiiies-viewer__poi-marker",
+    );
+    // Remove active state from all markers
+    poiMarkers.forEach((marker) => {
+      marker.classList.remove("storiiies-viewer___poi-marker--active");
+    });
+
+    if (
+      this.activeAnnotationIndex >= 0 &&
+      this.activeAnnotationIndex < this.activeCanvasAnnotations.length &&
+      this.#isPointOfInterestTarget(
+        this.activeCanvasAnnotations[this.activeAnnotationIndex].getTarget(),
+      )
+    ) {
+      const activeMarker = this.viewer.canvas.querySelector(
+        '.storiiies-viewer__poi-marker[data-poi-index="' +
+          this.activeAnnotationIndex +
+          '"]',
+      );
+      if (activeMarker) {
+        activeMarker.classList.add("storiiies-viewer___poi-marker--active");
+      }
+    }
+  }
+
+  /**
+   * Offset region coordinates to compensate for info area\
+   * This should be performed on raw values before conversion into any coordinate system
+   * @param region OpenSeadragon rectangle representing region
+   * @returns OpenSeadragon rectangle with adjusted coordinates
+   */
+  #offSetRegionByInfoArea(region: OpenSeadragon.Rect): OpenSeadragon.Rect {
+    let x = region.x;
+    // Space taken by info area
+    let infoAreaWidth = this.infoAreaElement.offsetWidth;
+    // Available space in viewer
+    const viewerWidth = this.viewer.container.clientWidth;
+    const halfViewerWidth = viewerWidth / 2;
+    const infoInset = this.containerElement
+      ? parseFloat(
+          getComputedStyle(this.containerElement).getPropertyValue(
+            "--storiiies-viewer-outer-spacing",
+          ),
+        ) || 0
+      : 0;
+
+    infoAreaWidth += infoInset;
+
+    const overlap = infoAreaWidth - halfViewerWidth;
+    const remainingSpace = viewerWidth - infoAreaWidth;
+    const poiButtonWidth = 44;
+
+    // The new focal point becomes the centre of the remaining space
+    x -= overlap + remainingSpace / 2 - poiButtonWidth / 2;
+
+    return new OpenSeadragon.Rect(x, region.y, region.width, region.height);
   }
 
   /**
@@ -368,15 +664,30 @@ export default class StoriiiesViewer {
       return;
     }
 
-    const target =
+    let target =
       this.#getActiveCanvasAnnotations()[
         this.activeAnnotationIndex
       ].getTarget() || "";
-    const region = this.#getRegion(target);
 
+    // Flatten a point of interest into something the viewer can fit to the screen
+    const isPointOfInterest = this.#isPointOfInterestTarget(target);
+    if (this.#isPointOfInterestTarget(target)) {
+      target = this.#transformPointOfInterestToRegion(target);
+    }
+
+    let region = this.#getRegion(target);
     if (region) {
+      // Adjust region under certain conditions
+      if (
+        isPointOfInterest &&
+        this.showInfoArea &&
+        this.viewer.container.clientWidth >= 640
+      ) {
+        region = this.#offSetRegionByInfoArea(region);
+      }
+
       this.viewer.viewport.fitBoundsWithConstraints(
-        region,
+        this.viewer.viewport.imageToViewportRectangle(region),
         this.#prefersReducedMotion,
       );
     } else {
@@ -452,6 +763,8 @@ export default class StoriiiesViewer {
     }
 
     this.infoTextElement.innerHTML = infoTextElementMarkup;
+
+    this.#updatePointOfInterestMarkers();
 
     this.#updateViewer();
   }
@@ -707,18 +1020,25 @@ export default class StoriiiesViewer {
    */
   #getActiveCanvasAnnotations(): Array<Annotation> {
     // The current canvas might not have any annotations
+    // TODO: Deprecation warning from manifesto.js
+    // but switching to getAnnotations seems to break methods down the chain.
+    // This needs investigating further, but strongly suspect it's
+    // related to the temporary way we retrieve annotationPages.
+    // This has been patched in manifesto and can be updated.
     return this.annotationPages[this.activeCanvasIndex]?.getItems() || [];
   }
 
   /**
-   * Get the region from the URL as a Rect relative to the viewport of this instance's viewer
+   * Get the region from the URL as an OSD Rectangle\
+   * This return value is agnostic to any particular OSD coordinate system
+   * @returns OpenSeadragon.Rect using URL values or null if no matching fragment found
    */
   #getRegion(url?: string): OpenSeadragon.Rect | null {
     const xywh = url?.split("#xywh=")[1];
 
     if (xywh) {
       const [x, y, w, h] = xywh.split(",").map(Number);
-      return this.viewer.viewport.imageToViewportRectangle(x, y, w, h);
+      return new OpenSeadragon.Rect(x, y, w, h);
     }
 
     return null;

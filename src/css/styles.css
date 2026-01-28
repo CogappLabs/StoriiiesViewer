@@ -16,6 +16,10 @@
   --storiiies-viewer-button-fg: var(--storiiies-viewer-fg);
   --storiiies-viewer-button-hover-bg: var(--storiiies-viewer-button-fg);
   --storiiies-viewer-button-hover-fg: var(--storiiies-viewer-button-bg);
+  --storiiies-viewer-poi-marker-bg: transparent;
+  --storiiies-viewer-poi-marker-fg: var(--storiiies-viewer-fg);
+  --storiiies-viewer-poi-marker-hover-bg: transparent;
+  --storiiies-viewer-poi-marker-hover-fg: #bf0000;
   --storiiies-viewer-accent-outer: var(--storiiies-viewer-button-hover-bg);
   --storiiies-viewer-accent-inner: var(--storiiies-viewer-button-hover-fg);
   --storiiies-viewer-font-family: sans-serif;
@@ -63,12 +67,16 @@
 * ## Buttons
 */
 .storiiies-viewer__icon-button {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   inline-size: 44px;
+  padding: 0;
   color: var(--storiiies-viewer-button-fg);
   cursor: pointer;
   background: var(--storiiies-viewer-button-bg);
   block-size: 44px;
+  border: none;
   border-radius: 50%;
   transition:
     color 100ms,
@@ -196,6 +204,23 @@
   margin: 0;
   font-size: var(--storiiies-viewer-title-font-size);
   line-height: var(--storiiies-viewer-title-line-height);
+}
+
+/*
+* ## Points of Interest markers
+*/
+.storiiies-viewer__poi-marker {
+  color: var(--storiiies-viewer-poi-marker-fg);
+  background-color: var(--storiiies-viewer-poi-marker-bg);
+  translate: -50% -50%;
+}
+
+.storiiies-viewer___poi-marker--active,
+.storiiies-viewer__poi-marker:hover:not(:disabled) {
+  color: var(--storiiies-viewer-poi-marker-hover-fg);
+  background-color: var(--storiiies-viewer-poi-marker-hover-bg);
+  outline: none;
+  box-shadow: none;
 }
 
 /*
