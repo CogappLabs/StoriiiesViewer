@@ -35,7 +35,7 @@
   "dependencies": {
     "dompurify": "^3.0.5",
     "manifesto.js": "^4.3.0",
-    "openseadragon": "^4.1.0"
+    "openseadragon": "^5.0.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",
