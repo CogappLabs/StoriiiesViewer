@@ -22,6 +22,7 @@ import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
  * @property {string} manifestUrl - The URL for the IIIF manifest to be loaded into StoriiiesViewer
  * @property {boolean} showCreditSlide - Whether to show the final credit slide (default: true)
  * @property {boolean} disablePanAndZoom - Whether to disable user panning and zooming (default: false)
+ * @property {string} pointOfInterestSvgUrl - URL for a custom SVG to use for points of interest (default: a ring with a dot in the middle)
  */
 export interface StoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
