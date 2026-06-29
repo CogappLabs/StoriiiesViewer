@@ -108,7 +108,7 @@ Text based annotations can either be `text/plain` or `text/html` denoted by the 
 
 Support for audio exists, and StoriiiesViewer will render an `<audio />` element for annotations that have a type of `Sound`, and which are structured [like shown in this cookbook recipe](https://iiif.io/api/cookbook/recipe/0002-mvm-audio/).
 
-Points of interest (markers that target a single point, rather than a region), can be rendered by using a `target` with a type of `specificResource` and a `selector` of `type: "pointSelector"`. See this [cookbook recipe for an example]](https://iiif.io/api/cookbook/recipe/0135-annotating-point-in-canvas/).
+Points of interest (markers that target a single point, rather than a region), can be rendered by using a `target` with a type of `specificResource` and a `selector` of `type: "pointSelector"`. See this [cookbook recipe for an example](https://iiif.io/api/cookbook/recipe/0135-annotating-point-in-canvas/).
 
 StoriiiesViewer has no required fields (aside from those required by the presentation API), but it will render certain values from the manifest if provided. These are:
 
