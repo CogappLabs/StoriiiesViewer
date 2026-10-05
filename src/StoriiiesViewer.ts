@@ -62,6 +62,12 @@ type RawAnnotationBody = {
   format: string;
 };
 
+/** A step in the story. annotationIndex is -1 for the title slide and equals the canvas's annotation count for the credit slide */
+type Slide = {
+  canvasIndex: number;
+  annotationIndex: number;
+};
+
 type PointOfInterestTarget = {
   type: string;
   source?: string;
@@ -73,20 +79,16 @@ type PointOfInterestTarget = {
 };
 
 export default class StoriiiesViewer {
-  /** Index pointing to the annotation from the annotationPage, currently being viewed\
-   * The active annotationPage is treated as being the same as activeCanvasIndex
-   */
-  #_activeAnnotationIndex: number = -1;
-  /** Index pointing to the canvas from the manifest currently being viewed\
-   * This value is also used to infer the active annotationPage
-   */
-  #_activeCanvasIndex: number = 0;
+  /** Every slide in the story, across all canvases, in viewing order */
+  #slides: Array<Slide> = [];
+  /** Index into #slides for the slide currently being viewed */
+  #_activeSlideIndex: number = 0;
+  /** Annotations from every embedded annotationPage, grouped by canvas index */
+  #canvasAnnotations: Array<Array<Annotation>> = [];
+  /** Index of the canvas whose image is open in OpenSeadragon */
+  #openCanvasIndex: number = 0;
   /** Visibility flag for the infoArea element */
   #_showInfoArea: boolean = true;
-  /** Lowermost number of slides considering factors such as a title slide */
-  #annotationIndexFloor: number = -1;
-  /** Uppermost number of slides considering factors such as credits */
-  #annotationIndexCeiling!: number;
   /** Cached user preference on reduced-motion */
   #prefersReducedMotion!: boolean;
   /** Error codes and their levels and user facing log messages */
@@ -107,6 +109,7 @@ export default class StoriiiesViewer {
     "poi-svg-err": ["warn", "Failed to load custom POI SVG"],
     "poi-svg-invalid": ["error", "Fetched content is not a valid SVG"],
     "poi-svg-default-err": ["error", "Failed to parse default POI SVG"],
+    "img-err": ["warn", "Failed to load canvas image"],
   };
   /** Index representing the number of StoriiiesViewer instances in the current scope */
   static #instanceCounter: number = 0;
@@ -141,8 +144,6 @@ export default class StoriiiesViewer {
   public canvases!: Canvas[];
   /** The annotationPages retrieved from the manifest */
   public annotationPages: AnnotationPage[] = [];
-  /** The annotations for the current canvas */
-  public activeCanvasAnnotations: Array<Annotation> = [];
   /** A reference to the OpenSeadragon viewer */
   public viewer!: OpenSeadragon.Viewer;
   /** A reference to the info-area HTML element
@@ -350,21 +351,64 @@ export default class StoriiiesViewer {
       value: requiredStatementValue || "",
     };
 
-    // It's worth noting display of a title slide is predicated on the presence of a label in the manifest
-    // In lieu of a label, set the floor to 0 to effectively remove the title slide
     if (!this.label) {
-      this.#annotationIndexFloor = 0;
-
-      // But should also warn that this is invalid
       this.#logger("no-label");
     }
 
-    this.annotationPages = this.#getAnnotationPages();
-    this.activeCanvasAnnotations = this.#getActiveCanvasAnnotations();
-    // Calculate the upper bound for the annotation index
-    this.#annotationIndexCeiling = this.showCreditSlide
-      ? this.activeCanvasAnnotations.length
-      : this.activeCanvasAnnotations.length - 1;
+    const pagesByCanvas = this.canvases.map((canvas) =>
+      this.#getAnnotationPages(canvas),
+    );
+    this.annotationPages = pagesByCanvas.flat();
+    this.#canvasAnnotations = pagesByCanvas.map((pages) =>
+      pages.flatMap((page) => page.getItems()),
+    );
+    this.#slides = this.#buildSlides();
+    this.#openCanvasIndex = this.#slides[0]?.canvasIndex ?? 0;
+  }
+
+  /**
+   * Lay out the story as one sequence of slides across all canvases\
+   * Canvases without annotations have no slides, so are never shown
+   */
+  #buildSlides(): Array<Slide> {
+    const slides: Array<Slide> = [];
+
+    // Display of a title slide is predicated on the presence of a label in the manifest
+    if (this.label) {
+      slides.push({ canvasIndex: 0, annotationIndex: -1 });
+    }
+
+    this.#canvasAnnotations.forEach((annotations, canvasIndex) => {
+      annotations.forEach((_, annotationIndex) => {
+        slides.push({ canvasIndex, annotationIndex });
+      });
+    });
+
+    if (this.showCreditSlide) {
+      const canvasIndex = slides.at(-1)?.canvasIndex ?? 0;
+      slides.push({
+        canvasIndex,
+        annotationIndex: this.#canvasAnnotations[canvasIndex].length,
+      });
+    }
+
+    return slides;
+  }
+
+  /** The slide currently being viewed */
+  get #activeSlide(): Slide | undefined {
+    return this.#slides[this.#_activeSlideIndex];
+  }
+
+  #isTitleSlide(slide: Slide): boolean {
+    return slide.annotationIndex === -1;
+  }
+
+  #isCreditSlide(slide: Slide): boolean {
+    return (
+      slide.annotationIndex ===
+      this.#canvasAnnotations[slide.canvasIndex].length
+    );
   }
 
   /**
@@ -377,11 +421,7 @@ export default class StoriiiesViewer {
     this.containerElement?.insertAdjacentElement("afterbegin", osdContainer);
     this.viewer = OpenSeadragon({
       element: osdContainer,
-      tileSources: [
-        this.#expandServiceID(
-          this.canvases[this.activeCanvasIndex].imageServiceIds[0],
-        ),
-      ],
+      tileSources: [this.#getTileSource(this.#openCanvasIndex)],
       crossOriginPolicy: "Anonymous",
       showSequenceControl: false,
       showHomeControl: false,
@@ -402,15 +442,29 @@ export default class StoriiiesViewer {
       `storiiies-viewer-${this.instanceId}__description`,
     );
 
-    // After the image has loaded
-    this.viewer.addHandler("open", () => {
+    // After an image has loaded, including when moving to another canvas
+    this.viewer.addHandler("open", async () => {
       if (this.containerElement) {
         this.containerElement.dataset.loaded = "true";
+        // A new image opens at home, so animating from there reads as a zoom
+        this.#updateViewer(true);
         // Remove any existing points of interest and re-render
         this.viewer.clearOverlays();
-        this.#renderPointsOfInterest();
+        await this.#renderPointsOfInterest();
+        this.#updatePointOfInterestMarkers();
       }
     });
+
+    this.viewer.addHandler("open-failed", () => {
+      this.#logger("img-err");
+    });
+  }
+
+  /**
+   * Get the OpenSeadragon tile source for a canvas
+   */
+  #getTileSource(canvasIndex: number): string {
+    return this.#expandServiceID(this.canvases[canvasIndex].imageServiceIds[0]);
   }
 
   /**
@@ -469,8 +523,10 @@ export default class StoriiiesViewer {
    * Rendering of points of interest on the viewer
    */
   async #renderPointsOfInterest() {
-    // Assign point of interest marker SVG
-    await this.#setPointOfInterestSvg();
+    // Fetched once, then reused for each canvas
+    if (!this.pointOfInterestSvg) {
+      await this.#setPointOfInterestSvg();
+    }
 
     // Extract POI data from annotations
     const poiData = this.activeCanvasAnnotations.map((annotation, index) => {
@@ -647,28 +703,23 @@ export default class StoriiiesViewer {
   /**
    * Update the viewer
    */
-  #updateViewer() {
+  #updateViewer(immediately: boolean = this.#prefersReducedMotion) {
+    const slide = this.#activeSlide;
+    if (!slide) return;
+
     // Show whole image when showing the label
-    if (
-      this.label &&
-      this.activeAnnotationIndex === this.#annotationIndexFloor
-    ) {
-      this.viewer.viewport.goHome(this.#prefersReducedMotion);
+    if (this.#isTitleSlide(slide)) {
+      this.viewer.viewport.goHome(immediately);
       return;
     }
 
     // Do nothing on the credit slide
-    if (
-      this.activeAnnotationIndex === this.#annotationIndexCeiling &&
-      this.showCreditSlide
-    ) {
+    if (this.#isCreditSlide(slide)) {
       return;
     }
 
     let target =
-      this.#getActiveCanvasAnnotations()[
-        this.activeAnnotationIndex
-      ].getTarget() || "";
+      this.activeCanvasAnnotations[slide.annotationIndex].getTarget() || "";
 
     // Flatten a point of interest into something the viewer can fit to the screen
     const isPointOfInterest = this.#isPointOfInterestTarget(target);
@@ -689,10 +740,10 @@ export default class StoriiiesViewer {
 
       this.viewer.viewport.fitBoundsWithConstraints(
         this.viewer.viewport.imageToViewportRectangle(region),
-        this.#prefersReducedMotion,
+        immediately,
       );
     } else {
-      this.viewer.viewport.goHome(this.#prefersReducedMotion);
+      this.viewer.viewport.goHome(immediately);
     }
   }
 
@@ -701,73 +752,91 @@ export default class StoriiiesViewer {
    * Used to determine which canvas is currently active
    */
   get activeCanvasIndex(): number {
-    return this.#_activeCanvasIndex;
+    return this.#activeSlide?.canvasIndex ?? 0;
   }
 
   /**
-   * Set the active canvas index and perform any necessary updates\
-   * Used to navigate between canvases
+   * Move to the first slide of a canvas\
+   * Ignored if the canvas has no slides
    */
   set activeCanvasIndex(index: number) {
-    this.#_activeCanvasIndex = index;
-    this.activeAnnotationIndex = this.#annotationIndexFloor;
+    const slideIndex = this.#slides.findIndex(
+      (slide) => slide.canvasIndex === index,
+    );
+    if (slideIndex !== -1) this.#activeSlideIndex = slideIndex;
+  }
+
+  /** The annotations for the current canvas */
+  get activeCanvasAnnotations(): Array<Annotation> {
+    return this.#canvasAnnotations[this.activeCanvasIndex] ?? [];
   }
 
   /**
-   * Get the active annotation index\
-   * Used to determine which annotation is currently active
+   * Get the active annotation index within the active canvas\
+   * -1 is the title slide, and activeCanvasAnnotations.length is the credit slide
    */
   get activeAnnotationIndex(): number {
-    return this.#_activeAnnotationIndex;
+    return this.#activeSlide?.annotationIndex ?? -1;
   }
 
   /**
-   * Set the active annotation index and perform any necessary updates\
-   * Used to navigate between annotations
+   * Move to an annotation on the active canvas\
+   * Ignored if no slide matches
    */
   set activeAnnotationIndex(index: number) {
-    // Lower bound can only be -1 if there is a label
-    const lowerBound = this.#annotationIndexFloor;
-    const upperBound = this.#annotationIndexCeiling;
-    let infoTextElementMarkup;
+    const slideIndex = this.#slides.findIndex(
+      (slide) =>
+        slide.canvasIndex === this.activeCanvasIndex &&
+        slide.annotationIndex === index,
+    );
+    if (slideIndex !== -1) this.#activeSlideIndex = slideIndex;
+  }
+
+  /**
+   * Move to a slide and perform any necessary updates\
+   * Opens the slide's canvas image first if it isn't already showing
+   */
+  set #activeSlideIndex(index: number) {
+    const slide = this.#slides[index];
 
     // Ignore out of bounds values
-    if (index < lowerBound || index > upperBound) return;
+    if (!slide) return;
 
-    this.#_activeAnnotationIndex = index;
+    this.#_activeSlideIndex = index;
 
     // Reset button states
-    this.controlButtonElements.prev.disabled = false;
+    this.controlButtonElements.prev.disabled = index === 0;
     this.controlButtonElements.next.innerHTML = `<span class="storiiies-viewer__button-icon" inert>${arrowIcon}</span>`;
     this.controlButtonElements.next.ariaLabel = "Next";
 
-    // Update buttons
-    if (index === lowerBound) {
-      this.controlButtonElements.prev.disabled = true;
-    }
-
-    if (index === upperBound) {
+    if (index === this.#slides.length - 1) {
       this.controlButtonElements.next.innerHTML = `<span class="storiiies-viewer__button-icon" inert>${restartIcon}</span>`;
       this.controlButtonElements.next.ariaLabel = "Restart";
     }
 
     // Determine rendering method for info text area
-    if (this.activeAnnotationIndex === this.#annotationIndexFloor) {
-      infoTextElementMarkup = this.#creatTitleSlideMarkup();
-    } else if (
-      this.activeAnnotationIndex === this.#annotationIndexCeiling &&
-      this.showCreditSlide
-    ) {
-      infoTextElementMarkup = this.#createCreditSlideMarkup();
+    if (this.#isTitleSlide(slide)) {
+      this.infoTextElement.innerHTML = this.#creatTitleSlideMarkup();
+    } else if (this.#isCreditSlide(slide)) {
+      this.infoTextElement.innerHTML = this.#createCreditSlideMarkup();
     } else {
-      infoTextElementMarkup = this.#createAnnotationSlideMarkup();
+      this.infoTextElement.innerHTML = this.#createAnnotationSlideMarkup();
     }
 
-    this.infoTextElement.innerHTML = infoTextElementMarkup;
+    // The open handler redraws markers and positions the viewer once loaded
+    if (slide.canvasIndex !== this.#openCanvasIndex) {
+      this.#openCanvasIndex = slide.canvasIndex;
+      this.viewer.open(this.#getTileSource(slide.canvasIndex));
+      return;
+    }
 
     this.#updatePointOfInterestMarkers();
 
     this.#updateViewer();
+  }
+
+  get #activeSlideIndex(): number {
+    return this.#_activeSlideIndex;
   }
 
   /**
@@ -830,13 +899,11 @@ export default class StoriiiesViewer {
     [prevButtonEl, nextButtonEl].forEach((button) => {
       button.addEventListener("click", (e) => {
         if ((e.target as HTMLButtonElement).ariaLabel === "Previous") {
-          this.activeAnnotationIndex = this.activeAnnotationIndex - 1;
+          this.#activeSlideIndex--;
+        } else if (this.#activeSlideIndex === this.#slides.length - 1) {
+          this.#activeSlideIndex = 0;
         } else {
-          if (this.activeAnnotationIndex === this.#annotationIndexCeiling) {
-            this.activeCanvasIndex = 0;
-          } else {
-            this.activeAnnotationIndex = this.activeAnnotationIndex + 1;
-          }
+          this.#activeSlideIndex++;
         }
       });
     });
@@ -885,7 +952,7 @@ export default class StoriiiesViewer {
 
     // Initialise values, let the setters handle the rest
     this.showInfoArea = true;
-    this.activeAnnotationIndex = this.#annotationIndexFloor;
+    this.#activeSlideIndex = 0;
   }
 
   /**
@@ -931,7 +998,7 @@ export default class StoriiiesViewer {
   #createAnnotationSlideMarkup(): string {
     let markup = "";
     const activeAnnotation =
-      this.activeCanvasAnnotations[this.#_activeAnnotationIndex].getBody();
+      this.activeCanvasAnnotations[this.activeAnnotationIndex].getBody();
 
     // getBody will always return AnnotationBody[]
     for (const body of activeAnnotation) {
@@ -974,59 +1041,36 @@ export default class StoriiiesViewer {
   }
 
   /**
-   * Retrieves the annotationPages for the manifest
+   * Retrieves the embedded annotationPages for a canvas
    * (Temporary solution)
    */
-  #getAnnotationPages(): Array<AnnotationPage> {
-    const annotationPages: Array<AnnotationPage> = [];
+  #getAnnotationPages(canvas: Canvas): Array<AnnotationPage> {
+    // "getProperty" ejects and results in raw JSON
+    // We need to instantiate each level with the appropriate constructor
+    const rawAnnotationPages: Array<RawAnnotationPage> =
+      canvas.getProperty("annotations") || [];
 
-    if (this.canvases.length) {
-      this.canvases.forEach((canvas) => {
-        // "getProperty" ejects and results in raw JSON
-        // We need to instantiate each level with the appropriate constructor
-        const rawAnnotationPages: Array<RawAnnotationPage> =
-          canvas.getProperty("annotations") || [];
+    return rawAnnotationPages.flatMap((rawAnnotationPage) => {
+      const rawAnnotations: Array<RawAnnotation> | undefined =
+        rawAnnotationPage.items;
 
-        annotationPages.push(
-          ...rawAnnotationPages.flatMap((rawAnnotationPage) => {
-            const rawAnnotations: Array<RawAnnotation> | undefined =
-              rawAnnotationPage.items;
-
-            // Remove page if annotations aren't embedded
-            if (!rawAnnotations) {
-              this.#logger("no-ext-anno");
-              return [];
-            }
-
-            return new AnnotationPage(
-              {
-                ...rawAnnotationPage,
-                items: rawAnnotations.map((rawAnnotation) => {
-                  return new Annotation(rawAnnotation, this.manifest.options);
-                }),
-                type: rawAnnotationPage.type,
-              },
-              this.manifest.options,
-            );
-          }),
-        );
+      // Remove page if annotations aren't embedded
+      if (!rawAnnotations) {
+        this.#logger("no-ext-anno");
         return [];
-      });
-    }
-    return annotationPages;
-  }
+      }
 
-  /**
-   * Get the annotations for the current canvas
-   */
-  #getActiveCanvasAnnotations(): Array<Annotation> {
-    // The current canvas might not have any annotations
-    // TODO: Deprecation warning from manifesto.js
-    // but switching to getAnnotations seems to break methods down the chain.
-    // This needs investigating further, but strongly suspect it's
-    // related to the temporary way we retrieve annotationPages.
-    // This has been patched in manifesto and can be updated.
-    return this.annotationPages[this.activeCanvasIndex]?.getItems() || [];
+      return new AnnotationPage(
+        {
+          ...rawAnnotationPage,
+          items: rawAnnotations.map((rawAnnotation) => {
+            return new Annotation(rawAnnotation, this.manifest.options);
+          }),
+          type: rawAnnotationPage.type,
+        },
+        this.manifest.options,
+      );
+    });
   }
 
   /**

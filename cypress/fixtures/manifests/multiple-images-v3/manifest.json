@@ -1,0 +1,172 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://localhost:43110/manifests/multiple-images-v3/manifest.json",
+  "type": "Manifest",
+  "label": {
+    "en": ["Multiple images"]
+  },
+  "items": [
+    {
+      "id": "http://localhost:43110/images/exact-tiles/canvases/1",
+      "type": "Canvas",
+      "height": 2048,
+      "width": 2048,
+      "items": [
+        {
+          "id": "http://localhost:43110/images/exact-tiles/pages/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/images/exact-tiles/annotations/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "http://localhost:43110/images/exact-tiles/full/full/0/default.jpg",
+                "type": "Image",
+                "format": "image/jpeg",
+                "height": 2048,
+                "width": 2048,
+                "service": [
+                  {
+                    "id": "http://localhost:43110/images/exact-tiles",
+                    "profile": "level0",
+                    "type": "ImageService3"
+                  }
+                ]
+              },
+              "target": "http://localhost:43110/images/exact-tiles/canvases/1"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:43110/annotations/multiple-images-v3/page-1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/annotations/multiple-images-v3/page-1/annotation/1",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "First image, first annotation",
+                "language": "en",
+                "format": "text/plain"
+              },
+              "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=265,661,100,200"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "http://localhost:43110/images/no-annotations/canvases/1",
+      "type": "Canvas",
+      "height": 2048,
+      "width": 2048,
+      "items": [
+        {
+          "id": "http://localhost:43110/images/no-annotations/pages/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/images/no-annotations/annotations/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "http://localhost:43110/images/exact-tiles/full/full/0/default.jpg",
+                "type": "Image",
+                "format": "image/jpeg",
+                "height": 2048,
+                "width": 2048,
+                "service": [
+                  {
+                    "id": "http://localhost:43110/images/exact-tiles",
+                    "profile": "level0",
+                    "type": "ImageService3"
+                  }
+                ]
+              },
+              "target": "http://localhost:43110/images/no-annotations/canvases/1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "http://localhost:43110/images/tractor/canvases/1",
+      "type": "Canvas",
+      "height": 3023,
+      "width": 4031,
+      "items": [
+        {
+          "id": "http://localhost:43110/images/tractor/pages/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/images/tractor/annotations/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "http://localhost:43110/images/tractor/full/full/0/default.jpg",
+                "type": "Image",
+                "format": "image/jpeg",
+                "height": 3023,
+                "width": 4031,
+                "service": [
+                  {
+                    "id": "http://localhost:43110/images/tractor",
+                    "profile": "level0",
+                    "type": "ImageService3"
+                  }
+                ]
+              },
+              "target": "http://localhost:43110/images/tractor/canvases/1"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:43110/annotations/multiple-images-v3/page-2",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/annotations/multiple-images-v3/page-2/annotation/1",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "Second image, first annotation",
+                "language": "en",
+                "format": "text/plain"
+              },
+              "target": "http://localhost:43110/images/tractor/canvases/1#xywh=1000,1000,400,300"
+            },
+            {
+              "id": "http://localhost:43110/annotations/multiple-images-v3/page-2/annotation/2",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": {
+                "type": "TextualBody",
+                "value": "Second image, second annotation",
+                "language": "en",
+                "format": "text/plain"
+              },
+              "target": {
+                "type": "SpecificResource",
+                "source": "http://localhost:43110/images/tractor/canvases/1",
+                "selector": {
+                  "type": "PointSelector",
+                  "x": 2000,
+                  "y": 1500
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

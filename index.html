@@ -15,11 +15,14 @@
       import StoriiiesViewer from "/src/StoriiiesViewer.ts";
       document.addEventListener("DOMContentLoaded", () => {
         const container = document.querySelector("#viewer");
+        // e.g. /?manifest=multiple-images-v3 to load another fixture
+        const manifest =
+          new URLSearchParams(location.search).get("manifest") ||
+          "standard-v3";
 
         window.storiiiesViewerInstance = new StoriiiesViewer({
           container,
-          manifestUrl:
-            "http://localhost:43110/manifests/standard-v3/manifest.json",
+          manifestUrl: `http://localhost:43110/manifests/${manifest}/manifest.json`,
         });
       });
     </script>
