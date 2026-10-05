@@ -116,11 +116,12 @@ StoriiiesViewer has no required fields (aside from those required by the present
 - [A manifest level `summary`](https://iiif.io/api/presentation/3.0/#summary), which will appear below the label if provided
 - [A manifest level `requiredStatement`](https://iiif.io/api/presentation/3.0/#requiredstatement), which will appear below the summary if provided
 
+Manifests with multiple canvases are shown as one story: the title slide uses the first image, then each canvas's annotations follow in manifest order, with the image changing as the story moves between canvases. Canvases without annotations are skipped.
+
 > [!NOTE]<br>
 > Certain features which aren't currently supported include:
 >
 > - Externally referenced `annotationPages` ([as shown in this cookbook recipe](https://iiif.io/api/cookbook/recipe/0306-linking-annotations-to-manifests/))
-> - Multiple images
 > - Full multi-lingual support
 >
 > However, pathways exist to enable these features with further development.
