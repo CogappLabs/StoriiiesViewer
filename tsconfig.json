@@ -10,6 +10,6 @@
     "types": ["cypress", "node", "vite/client"],
     "allowSyntheticDefaultImports": true
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "**/*.mts"],
   "exclude": ["node_modules"]
 }
