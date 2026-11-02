@@ -1,11 +1,10 @@
-// vite.config.js
 import { resolve } from "path";
 import { defineConfig } from "vite";
 
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, "src/StoriiiesViewer.ts"),
+      entry: resolve(import.meta.dirname, "src/StoriiiesViewer.ts"),
       fileName: (format) => {
         if (format === "umd") {
           return "umd/storiiies-viewer.js";
@@ -27,5 +26,5 @@ export default defineConfig({
     port: 43110,
     strictPort: true,
   },
-  publicDir: resolve(__dirname, "cypress", "fixtures"),
+  publicDir: resolve(import.meta.dirname, "cypress", "fixtures"),
 });
