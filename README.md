@@ -189,16 +189,16 @@ npm ci
   <tbody>
     <tr>
       <td><code>npm run test:gui</code></td>
-      <td>Will start the local dev server and run the e2e tests with the interactive GUI</td>
+      <td>Runs the Playwright e2e tests in UI mode</td>
     </tr>
     <tr>
       <td><code>npm run test</code></td>
-      <td> Starts the dev server as above, but instead runs the tests without the GUI</td>
+      <td>Runs the Playwright e2e tests headless</td>
     </tr>
   </tbody>
 </table>
 
-> [!NOTE]<br> `npm run cypress:gui` and `npm run cypress` will also do the same as the above _without_ starting the dev server, if you already have it running.
+> [!NOTE]<br> Both commands start the dev server, or reuse it if `npm run dev` is already running. Before the first run, install the browser with `npx playwright install chromium`.
 
 ### Linting the code
 

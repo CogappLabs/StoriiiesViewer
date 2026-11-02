@@ -8,8 +8,8 @@ pre-commit:
     lint:
       glob:
         - "src/**"
-        - "cypress/e2e/**"
-        - "cypress/support/**"
+        - "tests/e2e/**"
+        - "tests/support/**"
       run: npx biome check --write {staged_files} && npm run lint:typecheck
       stage_fixed: true
       fail_text: |
