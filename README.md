@@ -100,6 +100,41 @@ This overrides the default graphic from StoriiiesViewer. This SVG will be saniti
 
 The default colour and highlighting on activation and hover of points of interest are controlled by a CSS custom property applied to the `color` rule. If you'd like your custom graphic to use this colourisation then you can use `currentColor` on the parts of the graphic that should adopt this.
 
+### Opening on a specific annotation
+
+Pass `initialAnnotationIndex` (0-based) to open the viewer on an annotation instead of the title slide. It is applied once the image has loaded, without animating. A value outside the range of annotations logs a warning and the viewer starts on the title slide.
+
+```js
+const myViewer = new StoriiiesViewer({
+  container: "#storiiies-viewer",
+  manifestUrl: "https://path-to-your-storiiies-manifest",
+  initialAnnotationIndex: 2, // Opens on the third annotation
+});
+```
+
+### Linking to an annotation with the URL hash
+
+With `useUrlHash: true`, the viewer opens directly on the annotation named in a `#annotation-N` hash, where `N` starts at 1 (`#annotation-1` is the first annotation). As the reader moves between slides, the hash is updated with `history.replaceState`, so the address bar always links to the current annotation. The title and credit slides clear it. Editing the hash in the address bar moves the viewer to that annotation. Other hashes on the page are left alone. `initialAnnotationIndex` takes precedence when both are given.
+
+```js
+const myViewer = new StoriiiesViewer({
+  container: "#storiiies-viewer",
+  manifestUrl: "https://path-to-your-storiiies-manifest",
+  useUrlHash: true, // https://example.com/story#annotation-2 opens on the second annotation
+});
+```
+
+It is off by default because it writes to the host page's URL. Only enable it for one viewer per page.
+
+### Knowing when the viewer is ready
+
+`viewer.ready` is a promise that resolves once the manifest and image have loaded and the initial slide is shown. It rejects if the manifest or image can't be loaded. Wait for it before setting `activeAnnotationIndex`.
+
+```js
+await myViewer.ready;
+myViewer.activeAnnotationIndex = 1;
+```
+
 ## Supported manifest formats
 
 StoriiiesViewer supports a subset of the [IIIF presentation API v3](https://iiif.io/api/presentation/3.0/). Specifically, we target `annotationPages` which are included directly in the manifest ([like in this cookbook recipe](https://iiif.io/api/cookbook/recipe/0258-tagging-external-resource/)).

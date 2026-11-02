@@ -23,6 +23,8 @@ import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
  * @property {boolean} showCreditSlide - Whether to show the final credit slide (default: true)
  * @property {boolean} disablePanAndZoom - Whether to disable user panning and zooming (default: false)
  * @property {string} pointOfInterestSvgUrl - URL for a custom SVG to use for points of interest (default: a ring with a dot in the middle)
+ * @property {number} initialAnnotationIndex - 0-based index of the annotation to open on instead of the title slide. Out of range values are ignored with a warning
+ * @property {boolean} useUrlHash - Read the starting annotation from a `#annotation-N` URL hash (1-based) and keep the hash in sync while navigating (default: false)
  */
 export interface StoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
@@ -30,6 +32,16 @@ export interface StoriiiesViewerConfig {
   showCreditSlide?: boolean;
   disablePanAndZoom?: boolean;
   pointOfInterestSvgUrl?: string;
+  initialAnnotationIndex?: number;
+  useUrlHash?: boolean;
+}
+
+const URL_HASH_PATTERN = /^#annotation-(\d+)$/;
+
+/** Converts a 1-based `#annotation-N` hash to a 0-based index */
+function annotationIndexFromHash(): number | undefined {
+  const match = window.location.hash.match(URL_HASH_PATTERN);
+  return match ? Number(match[1]) - 1 : undefined;
 }
 
 type ControlButtons = {
@@ -89,6 +101,8 @@ export default class StoriiiesViewer {
   #annotationIndexCeiling!: number;
   /** Cached user preference on reduced-motion */
   #prefersReducedMotion!: boolean;
+  /** Skips the viewport animation for the next slide change, so deep links open in place */
+  #jumpToNextSlide: boolean = false;
   /** Error codes and their levels and user facing log messages */
   #statusCodes: statusCodes = {
     "bad-config": ["error", "Missing required config"],
@@ -107,6 +121,11 @@ export default class StoriiiesViewer {
     "poi-svg-err": ["warn", "Failed to load custom POI SVG"],
     "poi-svg-invalid": ["error", "Fetched content is not a valid SVG"],
     "poi-svg-default-err": ["error", "Failed to parse default POI SVG"],
+    "image-err": ["error", "Encountered a problem loading the image"],
+    "bad-initial-index": [
+      "warn",
+      "Initial annotation is out of range, starting from the beginning",
+    ],
   };
   /** Index representing the number of StoriiiesViewer instances in the current scope */
   static #instanceCounter: number = 0;
@@ -165,6 +184,18 @@ export default class StoriiiesViewer {
    * @readonly
    */
   public pointOfInterestSvgUrl?: string;
+  /** 0-based annotation to open on, from config or the `#annotation-N` hash
+   * @readonly
+   */
+  public initialAnnotationIndex?: number;
+  /** Resolves once the manifest and image have loaded and the initial slide is shown.
+   * Rejects if the manifest or image can't be loaded
+   */
+  public ready: Promise<void>;
+  /** Whether the `#annotation-N` URL hash is read on load and updated while navigating
+   * @readonly
+   */
+  public useUrlHash: boolean = false;
   /** Graphic used for the point of interest markers
    * @readonly
    */
@@ -249,6 +280,12 @@ export default class StoriiiesViewer {
 
     this.pointOfInterestSvgUrl = config.pointOfInterestSvgUrl;
 
+    this.useUrlHash = config.useUrlHash ?? false;
+
+    this.initialAnnotationIndex =
+      config.initialAnnotationIndex ??
+      (this.useUrlHash ? annotationIndexFromHash() : undefined);
+
     // Throw if the required config is missing and halt instantiation
     if (!this.containerElement || !this.manifestUrl) {
       this.#logger("bad-config", true);
@@ -261,11 +298,12 @@ export default class StoriiiesViewer {
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    this.#initManifest().then(() => {
+    this.ready = this.#initManifest().then(() => {
       // Should only get styles if manifest can load
       this.containerElement?.classList.add("storiiies-viewer");
-      this.#initViewer();
+      const opened = this.#initViewer();
       this.#insertInfoAndControls();
+      return opened;
     });
   }
 
@@ -370,7 +408,7 @@ export default class StoriiiesViewer {
   /**
    * Initialize the viewer
    */
-  #initViewer() {
+  #initViewer(): Promise<void> {
     const osdContainer = document.createElement("div");
     osdContainer.id = `storiiies-viewer-${this.instanceId}__osd-container`;
     osdContainer.classList.add("storiiies-viewer__osd-container");
@@ -402,14 +440,59 @@ export default class StoriiiesViewer {
       `storiiies-viewer-${this.instanceId}__description`,
     );
 
-    // After the image has loaded
-    this.viewer.addHandler("open", () => {
-      if (this.containerElement) {
-        this.containerElement.dataset.loaded = "true";
-        // Remove any existing points of interest and re-render
-        this.viewer.clearOverlays();
-        this.#renderPointsOfInterest();
-      }
+    return new Promise((resolve, reject) => {
+      this.viewer.addOnceHandler("open-failed", () => {
+        this.#logger("image-err");
+        reject(
+          new Error(
+            "Storiiies Viewer: Encountered a problem loading the image",
+          ),
+        );
+      });
+
+      // After the image has loaded
+      this.viewer.addHandler("open", async () => {
+        // finally: a bad custom POI SVG throws, but shouldn't stop the deep link or leave ready pending
+        try {
+          if (this.containerElement) {
+            this.containerElement.dataset.loaded = "true";
+            // Remove any existing points of interest and re-render
+            this.viewer.clearOverlays();
+            // Markers must exist before navigating so the active one is highlighted
+            await this.#renderPointsOfInterest();
+          }
+        } finally {
+          // Regions can't be fitted to the viewport before the image opens
+          const index = this.initialAnnotationIndex;
+          if (index !== undefined) {
+            if (
+              Number.isInteger(index) &&
+              index >= 0 &&
+              index < this.activeCanvasAnnotations.length
+            ) {
+              this.#jumpToNextSlide = true;
+              this.activeAnnotationIndex = index;
+              this.#jumpToNextSlide = false;
+            } else {
+              this.#logger("bad-initial-index");
+            }
+          }
+
+          // Editing the hash in the address bar doesn't reload the page
+          if (this.useUrlHash) {
+            window.addEventListener("hashchange", () => {
+              const hashIndex = annotationIndexFromHash();
+              if (
+                hashIndex !== undefined &&
+                hashIndex < this.activeCanvasAnnotations.length
+              ) {
+                this.activeAnnotationIndex = hashIndex;
+              }
+            });
+          }
+          resolve();
+        }
+      });
     });
   }
 
@@ -648,12 +731,14 @@ export default class StoriiiesViewer {
    * Update the viewer
    */
   #updateViewer() {
+    const immediately = this.#prefersReducedMotion || this.#jumpToNextSlide;
+
     // Show whole image when showing the label
     if (
       this.label &&
       this.activeAnnotationIndex === this.#annotationIndexFloor
     ) {
-      this.viewer.viewport.goHome(this.#prefersReducedMotion);
+      this.viewer.viewport.goHome(immediately);
       return;
     }
 
@@ -689,10 +774,10 @@ export default class StoriiiesViewer {
 
       this.viewer.viewport.fitBoundsWithConstraints(
         this.viewer.viewport.imageToViewportRectangle(region),
-        this.#prefersReducedMotion,
+        immediately,
       );
     } else {
-      this.viewer.viewport.goHome(this.#prefersReducedMotion);
+      this.viewer.viewport.goHome(immediately);
     }
   }
 
@@ -768,6 +853,31 @@ export default class StoriiiesViewer {
     this.#updatePointOfInterestMarkers();
 
     this.#updateViewer();
+
+    // Before the image opens this is the placeholder title slide, which would clear the hash
+    if (this.useUrlHash && this.viewer.isOpen()) this.#updateUrlHash();
+  }
+
+  /**
+   * Sync the `#annotation-N` hash with the active slide\
+   * Uses replaceState so slide changes don't fill the browser history. Hashes set by the host page are left alone
+   */
+  #updateUrlHash() {
+    const { hash } = window.location;
+    const onAnnotation =
+      this.activeAnnotationIndex >= 0 &&
+      this.activeAnnotationIndex < this.activeCanvasAnnotations.length;
+    const newHash = onAnnotation
+      ? `#annotation-${this.activeAnnotationIndex + 1}`
+      : "";
+
+    if (hash === newHash || (!onAnnotation && !URL_HASH_PATTERN.test(hash))) {
+      return;
+    }
+
+    const url = new URL(window.location.href);
+    url.hash = newHash;
+    history.replaceState(history.state, "", url);
   }
 
   /**
