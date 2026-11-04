@@ -143,6 +143,29 @@ Text based annotations can either be `text/plain` or `text/html` denoted by the 
 
 Support for audio exists, and StoriiiesViewer will render an `<audio />` element for annotations that have a type of `Sound`, and which are structured [like shown in this cookbook recipe](https://iiif.io/api/cookbook/recipe/0002-mvm-audio/).
 
+Annotation bodies with a type of `Video` render as a `<video />` element when their `format` is a `video/*` type. A `Video` body with a `format` of `text/html` is an embed page, such as a YouTube player, and renders in an `<iframe>` only if its `id` starts with one of the `embedOrigins` prefixes. Anything else is skipped with a console warning. The default allows YouTube's privacy-enhanced player:
+
+```js
+new StoriiiesViewer({
+  container: "#viewer",
+  manifestUrl: "https://example.com/manifest.json",
+  embedOrigins: [
+    "https://www.youtube-nocookie.com/embed/",
+    "https://player.vimeo.com/video/",
+  ],
+});
+```
+
+```json
+{
+  "id": "https://www.youtube-nocookie.com/embed/aqz-KE-bpKQ",
+  "type": "Video",
+  "format": "text/html"
+}
+```
+
+End each prefix with `/`, otherwise `https://example.com` would also match `https://example.com.attacker.net`. Pass `[]` to turn embeds off.
+
 Points of interest (markers that target a single point, rather than a region), can be rendered by using a `target` with a type of `specificResource` and a `selector` of `type: "pointSelector"`. See this [cookbook recipe for an example](https://iiif.io/api/cookbook/recipe/0135-annotating-point-in-canvas/).
 
 StoriiiesViewer has no required fields (aside from those required by the presentation API), but it will render certain values from the manifest if provided. These are:

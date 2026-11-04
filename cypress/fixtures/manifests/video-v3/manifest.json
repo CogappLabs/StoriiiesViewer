@@ -1,0 +1,147 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://localhost:43110/manifests/video-v3/manifest.json",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+    ]
+  },
+  "summary": {
+    "en": [
+      "<div><p><em>Pellentesque tempor ante non congue pulvinar.</em> Maecenas non ipsum non metus imperdiet facilisis. Vestibulum ante ipsum primis in <strong>faucibus</strong> orci luctus et ultrices posuere cubilia curae; Praesent sem felis, porta eu nisl in, rhoncus luctus nunc.<br/>Morbi bibendum, eros eu sollicitudin egestas, nisi dui convallis nisi, sed lacinia velit augue eu lectus. In enim est, elementum ac elit a, ultricies pellentesque nibh.</p></div>"
+    ]
+  },
+  "requiredStatement": {
+    "label": {
+      "en": [
+        "Attribution"
+      ]
+    },
+    "value": {
+      "en": [
+        "Provided courtesy of Example Institution"
+      ]
+    }
+  },
+  "items": [
+    {
+      "id": "http://localhost:43110/images/exact-tiles/canvases/1",
+      "type": "Canvas",
+      "height": 2048,
+      "width": 2048,
+      "items": [
+        {
+          "id": "http://localhost:43110/images/exact-tiles/pages/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/images/exact-tiles/annotations/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": "http://localhost:43110/images/exact-tiles/full/full/0/default.jpg",
+                "type": "Image",
+                "format": "image/jpeg",
+                "height": 2048,
+                "width": 2048,
+                "service": [
+                  {
+                    "id": "http://localhost:43110/images/exact-tiles",
+                    "profile": "level0",
+                    "type": "ImageService3"
+                  }
+                ]
+              },
+              "target": "http://localhost:43110/images/exact-tiles/canvases/1"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "http://localhost:43110/annotations/video-v3/page-1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "http://localhost:43110/annotations/video-v3/page-1/annotation/1",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "Video annotation",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "https://www.youtube-nocookie.com/embed/aqz-KE-bpKQ",
+                  "type": "Video",
+                  "format": "text/html"
+                }
+              ],
+              "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=265,661,100,200"
+            },
+            {
+              "id": "http://localhost:43110/annotations/video-v3/page-1/annotation/2",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "Video annotation",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "https://example.com/not-allowed",
+                  "type": "Video",
+                  "format": "text/html"
+                }
+              ],
+              "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=265,661,100,200"
+            },
+            {
+              "id": "http://localhost:43110/annotations/video-v3/page-1/annotation/3",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "Video annotation",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/video/example.mp4",
+                  "type": "Video",
+                  "format": "video/mp4"
+                }
+              ],
+              "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=265,661,100,200"
+            },
+            {
+              "id": "http://localhost:43110/annotations/video-v3/page-1/annotation/4",
+              "type": "Annotation",
+              "motivation": "commenting",
+              "body": [
+                {
+                  "type": "TextualBody",
+                  "value": "Video annotation",
+                  "language": "en",
+                  "format": "text/plain"
+                },
+                {
+                  "id": "http://localhost:43110/audio/x.mp3\" onplay=\"alert(1)",
+                  "type": "Sound",
+                  "format": "audio/mpeg"
+                }
+              ],
+              "target": "http://localhost:43110/images/exact-tiles/canvases/1#xywh=265,661,100,200"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
