@@ -25,6 +25,7 @@ import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
  * @property {string} pointOfInterestSvgUrl - URL for a custom SVG to use for points of interest (default: a ring with a dot in the middle)
  * @property {number} initialAnnotationIndex - 0-based index of the annotation to open on instead of the title slide. Out of range values are ignored with a warning
  * @property {boolean} useUrlHash - Read the starting annotation from a `#annotation-N` URL hash (1-based) and keep the hash in sync while navigating (default: false)
+ * @property {string[]} embedOrigins - URL prefixes a `text/html` Video body may load in an iframe. End each with a `/` so the host can't be extended (default: YouTube's privacy-enhanced embed URL)
  */
 export interface StoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
@@ -34,6 +35,7 @@ export interface StoriiiesViewerConfig {
   pointOfInterestSvgUrl?: string;
   initialAnnotationIndex?: number;
   useUrlHash?: boolean;
+  embedOrigins?: string[];
 }
 
 const URL_HASH_PATTERN = /^#annotation-(\d+)$/;
@@ -126,6 +128,10 @@ export default class StoriiiesViewer {
       "warn",
       "Initial annotation is out of range, starting from the beginning",
     ],
+    "embed-blocked": [
+      "warn",
+      "Video embed URL doesn't match embedOrigins, so it wasn't shown",
+    ],
   };
   /** Index representing the number of StoriiiesViewer instances in the current scope */
   static #instanceCounter: number = 0;
@@ -188,6 +194,10 @@ export default class StoriiiesViewer {
    * @readonly
    */
   public initialAnnotationIndex?: number;
+  /** URL prefixes a `text/html` Video body may load in an iframe
+   * @readonly
+   */
+  public embedOrigins: string[];
   /** Resolves once the manifest and image have loaded and the initial slide is shown.
    * Rejects if the manifest or image can't be loaded
    */
@@ -281,6 +291,10 @@ export default class StoriiiesViewer {
     this.pointOfInterestSvgUrl = config.pointOfInterestSvgUrl;
 
     this.useUrlHash = config.useUrlHash ?? false;
+
+    this.embedOrigins = config.embedOrigins ?? [
+      "https://www.youtube-nocookie.com/embed/",
+    ];
 
     this.initialAnnotationIndex =
       config.initialAnnotationIndex ??
@@ -1059,19 +1073,41 @@ export default class StoriiiesViewer {
         // Sanitize the value (e.g. it may be text/html)
         markup += sanitiseHTML(value, this.DOMPurifyConfig);
       } else if (body.getType() === "sound") {
-        const soundUrl = body.id;
-        // Create the audio link and sanitize the src
-        const audioElement = `<audio controls src="${sanitiseHTML(
-          soundUrl,
-          this.DOMPurifyConfig,
-        )}">Your browser does not support the audio element.</audio>`;
-        markup += audioElement;
+        const audio = document.createElement("audio");
+        audio.controls = true;
+        audio.src = body.id;
+        audio.textContent = "Your browser does not support the audio element.";
+        markup += audio.outerHTML;
+      } else if (body.getType() === "video") {
+        const format: string = body.getFormat() ?? "";
+        if (format === "text/html") {
+          if (this.embedOrigins.some((origin) => body.id.startsWith(origin))) {
+            const iframe = document.createElement("iframe");
+            iframe.src = body.id;
+            iframe.title = "Embedded video";
+            iframe.allow = "encrypted-media; picture-in-picture; fullscreen";
+            iframe.allowFullscreen = true;
+            // YouTube refuses to play embeds that arrive without a referrer
+            iframe.referrerPolicy = "strict-origin-when-cross-origin";
+            iframe.className = "storiiies-viewer__embed";
+            markup += iframe.outerHTML;
+          } else {
+            this.#logger("embed-blocked");
+          }
+        } else if (format.startsWith("video/")) {
+          const video = document.createElement("video");
+          video.controls = true;
+          video.src = body.id;
+          video.textContent =
+            "Your browser does not support the video element.";
+          markup += video.outerHTML;
+        }
       }
       markup += "</div>";
     }
 
-    // The return value isn't sanitised to avoid needing to open up the allowed tags and attributes
-    // Remember to sanitise your values when extending this!
+    // The return value isn't sanitised to avoid needing to open up the allowed tags and attributes.
+    // Build media elements with createElement so attribute values are escaped
     return markup;
   }
 

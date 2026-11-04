@@ -200,6 +200,18 @@
   height: auto;
 }
 
+.storiiies-viewer__text-section video,
+.storiiies-viewer__embed {
+  display: block;
+  inline-size: 100%;
+}
+
+.storiiies-viewer__embed {
+  aspect-ratio: 16 / 9;
+  block-size: auto;
+  border: 0;
+}
+
 .storiiies-viewer__title {
   margin: 0;
   font-size: var(--storiiies-viewer-title-font-size);
