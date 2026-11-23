@@ -284,6 +284,55 @@
   .storiiies-viewer__info-area--hidden {
     translate: -88px 0;
   }
+
+  /* Right-hand corners mirror the controls so the toggle stays in the corner */
+  :is(.storiiies-viewer--info-top-right, .storiiies-viewer--info-bottom-right) {
+    .storiiies-viewer__info-area {
+      inset-inline-start: auto;
+      inset-inline-end: var(--storiiies-viewer-outer-spacing);
+      grid-template-columns: repeat(2, 44px) 1fr;
+    }
+
+    .storiiies-viewer__previous {
+      grid-column: 1 / 2;
+    }
+
+    .storiiies-viewer__next {
+      grid-column: 2 / 3;
+    }
+
+    .storiiies-viewer__info-toggle {
+      inset-inline-start: auto;
+      inset-inline-end: calc(var(--storiiies-viewer-outer-spacing) * 2);
+    }
+
+    .storiiies-viewer__info-area--hidden {
+      translate: 88px 0;
+    }
+  }
+
+  /* Bottom corners put the controls row last, level with the toggle */
+  :is(.storiiies-viewer--info-bottom-left, .storiiies-viewer--info-bottom-right) {
+    .storiiies-viewer__info-area {
+      inset-block-start: auto;
+      inset-block-end: var(--storiiies-viewer-outer-spacing);
+      grid-template-rows: 1fr 44px;
+    }
+
+    .storiiies-viewer__previous,
+    .storiiies-viewer__next {
+      grid-row: 2;
+    }
+
+    .storiiies-viewer__info-text {
+      grid-row: 1;
+    }
+
+    .storiiies-viewer__info-toggle {
+      inset-block-start: auto;
+      inset-block-end: calc(var(--storiiies-viewer-outer-spacing) * 2);
+    }
+  }
 }
 
 /*
