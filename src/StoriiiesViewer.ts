@@ -26,6 +26,7 @@ import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
  * @property {number} initialAnnotationIndex - 0-based index of the annotation to open on instead of the title slide. Out of range values are ignored with a warning
  * @property {boolean} useUrlHash - Read the starting annotation from a `#annotation-N` URL hash (1-based) and keep the hash in sync while navigating (default: false)
  * @property {string[]} embedOrigins - URL prefixes a `text/html` Video body may load in an iframe. End each with a `/` so the host can't be extended (default: YouTube's privacy-enhanced embed URL)
+ * @property {InfoPosition} infoPosition - Corner the info area sits in on wide viewers, so it can be kept off the subject of the image (default: "top-left"). Narrow viewers always show it below the image
  */
 export interface StoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
@@ -36,7 +37,17 @@ export interface StoriiiesViewerConfig {
   initialAnnotationIndex?: number;
   useUrlHash?: boolean;
   embedOrigins?: string[];
+  infoPosition?: InfoPosition;
 }
+
+const INFO_POSITIONS = [
+  "top-left",
+  "top-right",
+  "bottom-left",
+  "bottom-right",
+] as const;
+
+export type InfoPosition = (typeof INFO_POSITIONS)[number];
 
 const URL_HASH_PATTERN = /^#annotation-(\d+)$/;
 
@@ -128,6 +139,7 @@ export default class StoriiiesViewer {
       "warn",
       "Initial annotation is out of range, starting from the beginning",
     ],
+    "bad-info-position": ["warn", "Unknown infoPosition, using top-left"],
     "embed-blocked": [
       "warn",
       "Video embed URL doesn't match embedOrigins, so it wasn't shown",
@@ -198,6 +210,10 @@ export default class StoriiiesViewer {
    * @readonly
    */
   public embedOrigins: string[];
+  /** Corner the info area sits in on wide viewers
+   * @readonly
+   */
+  public infoPosition: InfoPosition = "top-left";
   /** Resolves once the manifest and image have loaded and the initial slide is shown.
    * Rejects if the manifest or image can't be loaded
    */
@@ -296,6 +312,14 @@ export default class StoriiiesViewer {
       "https://www.youtube-nocookie.com/embed/",
     ];
 
+    if (config.infoPosition !== undefined) {
+      if (INFO_POSITIONS.includes(config.infoPosition)) {
+        this.infoPosition = config.infoPosition;
+      } else {
+        this.#logger("bad-info-position");
+      }
+    }
+
     this.initialAnnotationIndex =
       config.initialAnnotationIndex ??
       (this.useUrlHash ? annotationIndexFromHash() : undefined);
@@ -314,7 +338,10 @@ export default class StoriiiesViewer {
 
     this.ready = this.#initManifest().then(() => {
       // Should only get styles if manifest can load
-      this.containerElement?.classList.add("storiiies-viewer");
+      this.containerElement?.classList.add(
+        "storiiies-viewer",
+        `storiiies-viewer--info-${this.infoPosition}`,
+      );
       const opened = this.#initViewer();
       this.#insertInfoAndControls();
       return opened;
@@ -735,8 +762,10 @@ export default class StoriiiesViewer {
     const remainingSpace = viewerWidth - infoAreaWidth;
     const poiButtonWidth = 44;
 
-    // The new focal point becomes the centre of the remaining space
-    x -= overlap + remainingSpace / 2 - poiButtonWidth / 2;
+    // The new focal point becomes the centre of the remaining space,
+    // on whichever side the info area leaves free
+    const shift = overlap + remainingSpace / 2 - poiButtonWidth / 2;
+    x += this.infoPosition.endsWith("right") ? shift : -shift;
 
     return new OpenSeadragon.Rect(x, region.y, region.width, region.height);
   }

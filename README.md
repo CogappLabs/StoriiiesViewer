@@ -100,6 +100,18 @@ This overrides the default graphic from StoriiiesViewer. This SVG will be saniti
 
 The default colour and highlighting on activation and hover of points of interest are controlled by a CSS custom property applied to the `color` rule. If you'd like your custom graphic to use this colourisation then you can use `currentColor` on the parts of the graphic that should adopt this.
 
+### Positioning the info area
+
+On viewers 640px wide and up, the info area sits over the top-left corner of the image. Pass `infoPosition` to move it to another corner when it would cover the subject: `"top-left"` (default), `"top-right"`, `"bottom-left"` or `"bottom-right"`. The toggle and navigation buttons follow it into the corner. Narrower viewers always show the info area below the image.
+
+```js
+const myViewer = new StoriiiesViewer({
+  container: "#storiiies-viewer",
+  manifestUrl: "https://path-to-your-storiiies-manifest",
+  infoPosition: "bottom-left",
+});
+```
+
 ### Opening on a specific annotation
 
 Pass `initialAnnotationIndex` (0-based) to open the viewer on an annotation instead of the title slide. It is applied once the image has loaded, without animating. A value outside the range of annotations logs a warning and the viewer starts on the title slide.
