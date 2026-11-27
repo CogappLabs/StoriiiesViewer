@@ -82,6 +82,28 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 ```
 
+### Showing a fullscreen button
+
+If you want to let users view the whole viewer (image, annotations and controls) in fullscreen, you can pass the `showFullscreenButton` option when initializing the viewer. This is off by default.
+
+```js
+document.addEventListener("DOMContentLoaded", () => {
+  const myViewer = new StoriiiesViewer({
+    container: "#storiiies-viewer",
+    manifestUrl: "https://path-to-your-storiiies-manifest",
+    showFullscreenButton: true, // Adds a button to enter and exit fullscreen
+  });
+});
+```
+
+The button is only shown in browsers that allow elements to be made fullscreen, so it won't appear on some mobile browsers (such as Safari on iPhone, at time of writing).
+
+If you're embedding StoriiiesViewer in an `<iframe>`, the iframe must allow fullscreen for the button to appear:
+
+```HTML
+<iframe src="https://path-to-your-viewer-page" allow="fullscreen"></iframe>
+```
+
 ### Using a custom "point of interest" SVG
 
 You may provide a custom SVG graphic to use with points of interest.

@@ -10,6 +10,8 @@ import {
 } from "manifesto.js";
 import OpenSeadragon from "openseadragon";
 import arrowIcon from "./images/arrow.svg?raw";
+import enterFullscreenIcon from "./images/enter-fullscreen.svg?raw";
+import exitFullscreenIcon from "./images/exit-fullscreen.svg?raw";
 import showIcon from "./images/eye.svg?raw";
 import hideIcon from "./images/hide.svg?raw";
 import poiIcon from "./images/poi.svg?raw";
@@ -23,6 +25,7 @@ import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
  * @property {boolean} showCreditSlide - Whether to show the final credit slide (default: true)
  * @property {boolean} disablePanAndZoom - Whether to disable user panning and zooming (default: false)
  * @property {string} pointOfInterestSvgUrl - URL for a custom SVG to use for points of interest (default: a ring with a dot in the middle)
+ * @property {boolean} showFullscreenButton - Whether to show a button to toggle fullscreen (default: false)
  */
 export interface StoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
@@ -30,6 +33,7 @@ export interface StoriiiesViewerConfig {
   showCreditSlide?: boolean;
   disablePanAndZoom?: boolean;
   pointOfInterestSvgUrl?: string;
+  showFullscreenButton?: boolean;
 }
 
 type ControlButtons = {
@@ -107,6 +111,7 @@ export default class StoriiiesViewer {
     "poi-svg-err": ["warn", "Failed to load custom POI SVG"],
     "poi-svg-invalid": ["error", "Fetched content is not a valid SVG"],
     "poi-svg-default-err": ["error", "Failed to parse default POI SVG"],
+    "fullscreen-err": ["warn", "Unable to enter fullscreen"],
   };
   /** Index representing the number of StoriiiesViewer instances in the current scope */
   static #instanceCounter: number = 0;
@@ -122,6 +127,10 @@ export default class StoriiiesViewer {
   public manifestUrl: string;
   /** Whether to disable panning and scrolling */
   public disablePanAndZoom: boolean = false;
+  /** Whether to show the fullscreen toggle button. Defaults to false, can be overriden in StoriiiesViewerConfig
+   * @readonly
+   */
+  public showFullscreenButton: boolean = false;
   /** ID used for creating id attributes that shouldn't clash, or referencing a particular instance of StoriiiesViewer
    * @readonly
    */
@@ -161,6 +170,10 @@ export default class StoriiiesViewer {
    * @readonly
    */
   public infoToggleElement!: HTMLElement;
+  /** A reference to the fullscreen toggle HTML element (only set if the button is rendered)
+   * @readonly
+   */
+  public fullscreenToggleElement?: HTMLButtonElement;
   /** Reference to the point of interest SVG url
    * @readonly
    */
@@ -248,6 +261,8 @@ export default class StoriiiesViewer {
     this.disablePanAndZoom = config.disablePanAndZoom ?? false;
 
     this.pointOfInterestSvgUrl = config.pointOfInterestSvgUrl;
+
+    this.showFullscreenButton = config.showFullscreenButton ?? false;
 
     // Throw if the required config is missing and halt instantiation
     if (!this.containerElement || !this.manifestUrl) {
@@ -883,9 +898,84 @@ export default class StoriiiesViewer {
     };
     this.infoToggleElement = infoToggleEl;
 
+    // Optional fullscreen toggle
+    // Only rendered where the browser allows element fullscreen
+    // (e.g. not iPhone Safari, or an iframe without allow="fullscreen")
+    if (this.showFullscreenButton && document.fullscreenEnabled) {
+      this.#insertFullscreenToggle();
+    }
+
     // Initialise values, let the setters handle the rest
     this.showInfoArea = true;
     this.activeAnnotationIndex = this.#annotationIndexFloor;
+  }
+
+  /**
+   * Whether this instance's container is currently the fullscreen element
+   */
+  get isFullscreen(): boolean {
+    return (
+      this.containerElement !== null &&
+      document.fullscreenElement === this.containerElement
+    );
+  }
+
+  /**
+   * Create the fullscreen toggle button\
+   * Placed directly after the info toggle so tab order matches visual order
+   */
+  #insertFullscreenToggle() {
+    const fullscreenToggleEl = document.createElement("button");
+
+    fullscreenToggleEl.type = "button";
+    fullscreenToggleEl.id = `storiiies-viewer-${this.instanceId}__fullscreen-toggle`;
+    fullscreenToggleEl.classList.add(
+      "storiiies-viewer__icon-button",
+      "storiiies-viewer__fullscreen-toggle",
+    );
+
+    fullscreenToggleEl.addEventListener("click", () => {
+      if (this.isFullscreen) {
+        document.exitFullscreen();
+      } else {
+        this.containerElement?.requestFullscreen().catch(() => {
+          this.#logger("fullscreen-err");
+        });
+      }
+    });
+
+    this.infoToggleElement.insertAdjacentElement(
+      "afterend",
+      fullscreenToggleEl,
+    );
+    this.fullscreenToggleElement = fullscreenToggleEl;
+
+    // Fullscreen can also be exited with Esc or browser controls, or another
+    // element on the page might take over fullscreen, so keep the button
+    // in sync with the browser rather than with clicks
+    document.addEventListener("fullscreenchange", () => {
+      this.#updateFullscreenToggle();
+    });
+
+    // Set initial icon and label
+    this.#updateFullscreenToggle();
+  }
+
+  /**
+   * Update the fullscreen toggle's icon, label and state to match the current fullscreen state
+   */
+  #updateFullscreenToggle() {
+    if (!this.fullscreenToggleElement) return;
+
+    const isFullscreen = this.isFullscreen;
+
+    this.fullscreenToggleElement.ariaLabel = `${isFullscreen ? "Exit" : "Enter"} full screen`;
+    this.fullscreenToggleElement.ariaPressed = `${isFullscreen}`;
+    this.fullscreenToggleElement.innerHTML = `
+      <span class="storiiies-viewer__button-icon" inert>
+        ${isFullscreen ? exitFullscreenIcon : enterFullscreenIcon}
+      </span>
+    `;
   }
 
   /**
