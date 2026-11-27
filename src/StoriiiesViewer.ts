@@ -27,6 +27,7 @@ import { IIIFSaysThisIsHTML, nl2br, sanitiseHTML } from "./utils";
  * @property {boolean} useUrlHash - Read the starting annotation from a `#annotation-N` URL hash (1-based) and keep the hash in sync while navigating (default: false)
  * @property {string[]} embedOrigins - URL prefixes a `text/html` Video body may load in an iframe. End each with a `/` so the host can't be extended (default: YouTube's privacy-enhanced embed URL)
  * @property {InfoPosition} infoPosition - Corner the info area sits in on wide viewers, so it can be kept off the subject of the image (default: "top-left"). Narrow viewers always show it below the image
+ * @property {boolean} regionMarkers - Show a clickable circle at the centre of each region annotation. Hidden while the info area is hidden (default: false)
  */
 export interface StoriiiesViewerConfig {
   container: HTMLElement | Element | string | null;
@@ -38,6 +39,7 @@ export interface StoriiiesViewerConfig {
   useUrlHash?: boolean;
   embedOrigins?: string[];
   infoPosition?: InfoPosition;
+  regionMarkers?: boolean;
 }
 
 const INFO_POSITIONS = [
@@ -222,6 +224,10 @@ export default class StoriiiesViewer {
    * @readonly
    */
   public useUrlHash: boolean = false;
+  /** Whether region annotations get a clickable marker at their centre
+   * @readonly
+   */
+  public regionMarkers: boolean = false;
   /** Graphic used for the point of interest markers
    * @readonly
    */
@@ -307,6 +313,8 @@ export default class StoriiiesViewer {
     this.pointOfInterestSvgUrl = config.pointOfInterestSvgUrl;
 
     this.useUrlHash = config.useUrlHash ?? false;
+
+    this.regionMarkers = config.regionMarkers ?? false;
 
     this.embedOrigins = config.embedOrigins ?? [
       "https://www.youtube-nocookie.com/embed/",
@@ -501,6 +509,7 @@ export default class StoriiiesViewer {
             this.viewer.clearOverlays();
             // Markers must exist before navigating so the active one is highlighted
             await this.#renderPointsOfInterest();
+            if (this.regionMarkers) this.#renderRegionMarkers();
           }
         } finally {
           // Regions can't be fitted to the viewport before the image opens
@@ -673,6 +682,41 @@ export default class StoriiiesViewer {
   }
 
   /**
+   * Add a marker at the centre of each region annotation
+   */
+  #renderRegionMarkers() {
+    this.activeCanvasAnnotations.forEach((annotation, index) => {
+      const target = annotation.getTarget();
+      const region = typeof target === "string" && this.#getRegion(target);
+      if (!region) return;
+
+      const marker = document.createElement("button");
+      marker.type = "button";
+      marker.classList.add("storiiies-viewer__region-marker");
+      marker.dataset.annotationIndex = index.toString();
+      marker.ariaLabel = `Annotation ${index + 1}`;
+
+      // Without a tracker, OSD treats the click as the start of a drag
+      new OpenSeadragon.MouseTracker({
+        element: marker,
+        clickHandler: () => {},
+      });
+      marker.addEventListener("click", () => {
+        this.activeAnnotationIndex = index;
+      });
+
+      this.viewer.addOverlay({
+        element: marker,
+        location: this.viewer.viewport.imageToViewportCoordinates(
+          region.x + region.width / 2,
+          region.y + region.height / 2,
+        ),
+        checkResize: false,
+      });
+    });
+  }
+
+  /**
    * Verify that a target is a PointOfInterestTarget\
    * Type guard function
    * @param target
@@ -732,6 +776,15 @@ export default class StoriiiesViewer {
       if (activeMarker) {
         activeMarker.classList.add("storiiies-viewer___poi-marker--active");
       }
+    }
+
+    for (const marker of this.viewer.canvas.querySelectorAll<HTMLElement>(
+      ".storiiies-viewer__region-marker",
+    )) {
+      marker.classList.toggle(
+        "storiiies-viewer__region-marker--active",
+        Number(marker.dataset.annotationIndex) === this.activeAnnotationIndex,
+      );
     }
   }
 

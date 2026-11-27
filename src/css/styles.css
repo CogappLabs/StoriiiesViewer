@@ -20,6 +20,10 @@
   --storiiies-viewer-poi-marker-fg: var(--storiiies-viewer-fg);
   --storiiies-viewer-poi-marker-hover-bg: transparent;
   --storiiies-viewer-poi-marker-hover-fg: #bf0000;
+  --storiiies-viewer-region-marker-size: 32px;
+  --storiiies-viewer-region-marker-bg: rgb(255 255 255 / 25%);
+  --storiiies-viewer-region-marker-border: rgb(255 255 255 / 85%);
+  --storiiies-viewer-region-marker-active-bg: rgb(255 255 255 / 60%);
   --storiiies-viewer-accent-outer: var(--storiiies-viewer-button-hover-bg);
   --storiiies-viewer-accent-inner: var(--storiiies-viewer-button-hover-fg);
   --storiiies-viewer-font-family: sans-serif;
@@ -233,6 +237,36 @@
   background-color: var(--storiiies-viewer-poi-marker-hover-bg);
   outline: none;
   box-shadow: none;
+}
+
+/*
+* ## Region markers
+*/
+.storiiies-viewer__region-marker {
+  inline-size: var(--storiiies-viewer-region-marker-size);
+  block-size: var(--storiiies-viewer-region-marker-size);
+  padding: 0;
+  cursor: pointer;
+  background: var(--storiiies-viewer-region-marker-bg);
+  border: 2px solid var(--storiiies-viewer-region-marker-border);
+  border-radius: 50%;
+  box-shadow: 0 0 4px hsl(0deg 0% 0% / 50%);
+  translate: -50% -50%;
+}
+
+.storiiies-viewer__region-marker--active,
+.storiiies-viewer__region-marker:hover {
+  background: var(--storiiies-viewer-region-marker-active-bg);
+}
+
+.storiiies-viewer__region-marker:focus-visible {
+  outline: 2px solid var(--storiiies-viewer-accent-inner);
+  box-shadow: 0 0 0 4px var(--storiiies-viewer-accent-outer);
+}
+
+/* OSD sets display inline on overlays, so hide with visibility */
+.storiiies-viewer--info-hidden .storiiies-viewer__region-marker {
+  visibility: hidden;
 }
 
 /*

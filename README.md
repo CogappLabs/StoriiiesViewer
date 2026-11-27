@@ -112,6 +112,18 @@ const myViewer = new StoriiiesViewer({
 });
 ```
 
+### Region markers
+
+Pass `regionMarkers: true` to put a translucent circle at the centre of each region annotation. Clicking a circle opens that annotation. The circles are hidden while the info area is hidden. Points of interest keep their own markers. The circles can be themed with the `--storiiies-viewer-region-marker-*` custom properties.
+
+```js
+const myViewer = new StoriiiesViewer({
+  container: "#storiiies-viewer",
+  manifestUrl: "https://path-to-your-storiiies-manifest",
+  regionMarkers: true,
+});
+```
+
 ### Opening on a specific annotation
 
 Pass `initialAnnotationIndex` (0-based) to open the viewer on an annotation instead of the title slide. It is applied once the image has loaded, without animating. A value outside the range of annotations logs a warning and the viewer starts on the title slide.
